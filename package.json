@@ -1,0 +1,11 @@
+{
+  "name": "orbit-matter",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "verificar": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}
