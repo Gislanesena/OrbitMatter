@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Estúdio orbital</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #0b0f19;
+      overflow: hidden;
+      font-family: "Segoe UI", system-ui, sans-serif;
+    }
+
+    /* O canvas ocupa a janela inteira; o tamanho real em pixels é definido no JS. */
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .legend {
+      position: fixed;
+      left: 24px;
+      bottom: 20px;
+      color: #c9d2e3;
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      pointer-events: none;
+      text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+    }
+
+    .legend strong {
+      display: block;
+      color: #ff5722;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="cena" aria-label="Satélite metálico girando em um estúdio escuro. Arraste para orbitar e use a roda do mouse para aproximar."></canvas>
+  <p class="legend">
+    <strong>Estúdio orbital</strong>
+    Arraste para orbitar · role para aproximar
+  </p>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script>
+    // Paleta pedida: fundo espacial e laranja de segurança.
+    const FUNDO = 0x0b0f19;
+    const LARANJA = 0xff5722;
+
+    const canvas = document.getElementById("cena");
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.15;
+
+    const cena = new THREE.Scene();
+    cena.background = new THREE.Color(FUNDO);
+
+    const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+    camera.position.set(3.2, 1.6, 4.4);
+
+    // Arrastar e zoom não alteram a proporção do canvas: só a câmera se move.
+    const controles = new THREE.OrbitControls(camera, canvas);
+    controles.enableDamping = true;
+    controles.dampingFactor = 0.08;
+    controles.enablePan = false;
+    controles.minDistance = 3.2;
+    controles.maxDistance = 9;
+    controles.target.set(0, 0.15, 0);
+
+    // Luz ambiente suave + ponto laranja, como um estúdio cósmico.
+    cena.add(new THREE.AmbientLight(0xb9c4da, 0.42));
+    const luzLaranja = new THREE.PointLight(LARANJA, 2.4, 0, 2);
+    luzLaranja.position.set(3.4, 2.2, 2.6);
+    cena.add(luzLaranja);
+
+    // Pequeno volume luminoso para a luz pontual ser legível no escuro.
+    const brilho = new THREE.Mesh(
+      new THREE.SphereGeometry(0.06, 16, 16),
+      new THREE.MeshBasicMaterial({ color: LARANJA })
+    );
+    brilho.position.copy(luzLaranja.position);
+    cena.add(brilho);
+
+    const mapaAmbiente = criarMapaDeAmbiente();
+    const satelite = criarSatelite(mapaAmbiente);
+    cena.add(satelite);
+    cena.add(criarEstrelas());
+
+    ajustarTamanho();
+    window.addEventListener("resize", ajustarTamanho);
+
+    const relogio = new THREE.Clock();
+
+    function animar() {
+      requestAnimationFrame(animar);
+      const dt = relogio.getDelta();
+      // Giro contínuo e suave, independente da taxa de quadros.
+      satelite.rotation.x += 0.18 * dt;
+      satelite.rotation.y += 0.42 * dt;
+      controles.update();
+      renderer.render(cena, camera);
+    }
+
+    animar();
+
+    /** Mantém o canvas nítido e sem distorção quando a janela muda de tamanho. */
+    function ajustarTamanho() {
+      const largura = window.innerWidth;
+      const altura = Math.max(window.innerHeight, 1);
+      camera.aspect = largura / altura;
+      camera.updateProjectionMatrix();
+      renderer.setSize(largura, altura, false);
+    }
+
+    function criarSatelite(envMap) {
+      const grupo = new THREE.Group();
+
+      const metalEscovado = new THREE.MeshStandardMaterial({
+        map: texturaMetal(),
+        color: 0xd5dce8,
+        roughness: 0.22,
+        metalness: 0.92,
+        envMap: envMap,
+        envMapIntensity: 1.15
+      });
+
+      const nucleo = new THREE.Mesh(new THREE.SphereGeometry(0.72, 64, 48), metalEscovado);
+      grupo.add(nucleo);
+
+      const anel = new THREE.Mesh(
+        new THREE.TorusGeometry(0.86, 0.035, 16, 80),
+        new THREE.MeshStandardMaterial({
+          color: LARANJA,
+          roughness: 0.32,
+          metalness: 0.74,
+          envMap: envMap,
+          envMapIntensity: 0.8,
+          emissive: LARANJA,
+          emissiveIntensity: 0.18
+        })
+      );
+      anel.rotation.x = Math.PI / 2;
+      grupo.add(anel);
+
+      const painel = new THREE.MeshStandardMaterial({
+        map: texturaPainel(),
+        color: 0x9eb0c8,
+        roughness: 0.48,
+        metalness: 0.62,
+        envMap: envMap,
+        envMapIntensity: 0.45
+      });
+
+      [-1, 1].forEach(function (lado) {
+        const braco = new THREE.Mesh(
+          new THREE.BoxGeometry(0.55, 0.06, 0.06),
+          metalEscovado
+        );
+        braco.position.x = lado * 1.05;
+        grupo.add(braco);
+
+        const asa = new THREE.Mesh(new THREE.BoxGeometry(1.15, 0.72, 0.035), painel);
+        asa.position.x = lado * 1.85;
+        grupo.add(asa);
+      });
+
+      const haste = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.55, 12), metalEscovado);
+      haste.position.y = 0.95;
+      grupo.add(haste);
+
+      const antena = new THREE.Mesh(
+        new THREE.SphereGeometry(0.16, 24, 16, 0, Math.PI * 2, 0, Math.PI / 2),
+        new THREE.MeshStandardMaterial({
+          color: 0xf2f5f8,
+          roughness: 0.16,
+          metalness: 0.88,
+          envMap: envMap,
+          envMapIntensity: 1.3,
+          side: THREE.DoubleSide
+        })
+      );
+      antena.position.y = 1.22;
+      grupo.add(antena);
+
+      return grupo;
+    }
+
+    /** Riscos finos de painel, para o metal não ficar liso demais. */
+    function texturaMetal() {
+      const c = document.createElement("canvas");
+      c.width = c.height = 512;
+      const g = c.getContext("2d");
+      g.fillStyle = "#c5ceda";
+      g.fillRect(0, 0, 512, 512);
+      g.strokeStyle = "rgba(70, 82, 102, 0.45)";
+      g.lineWidth = 2;
+      for (let i = 0; i <= 512; i += 32) {
+        g.beginPath();
+        g.moveTo(i, 0);
+        g.lineTo(i, 512);
+        g.stroke();
+        g.beginPath();
+        g.moveTo(0, i);
+        g.lineTo(512, i);
+        g.stroke();
+      }
+      const tex = new THREE.CanvasTexture(c);
+      tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+      tex.encoding = THREE.sRGBEncoding;
+      return tex;
+    }
+
+    function texturaPainel() {
+      const c = document.createElement("canvas");
+      c.width = 256;
+      c.height = 160;
+      const g = c.getContext("2d");
+      g.fillStyle = "#1c2636";
+      g.fillRect(0, 0, 256, 160);
+      for (let y = 8; y < 160; y += 28) {
+        for (let x = 8; x < 256; x += 28) {
+          g.fillStyle = (x + y) % 56 === 0 ? "#243044" : "#31425c";
+          g.fillRect(x, y, 22, 20);
+        }
+      }
+      const tex = new THREE.CanvasTexture(c);
+      tex.encoding = THREE.sRGBEncoding;
+      return tex;
+    }
+
+    /**
+     * Cubo de ambiente simples: o metalness só reflete algo
+     * se existir um envMap. As faces trazem o escuro do fundo
+     * e um foco laranja, no mesmo tom da luz pontual.
+     */
+    function criarMapaDeAmbiente() {
+      const faces = [];
+      for (let i = 0; i < 6; i++) {
+        const c = document.createElement("canvas");
+        c.width = c.height = 256;
+        const g = c.getContext("2d");
+        const grad = g.createLinearGradient(0, 0, 256, 256);
+        grad.addColorStop(0, "#1a2436");
+        grad.addColorStop(0.55, "#0b0f19");
+        grad.addColorStop(1, "#24140f");
+        g.fillStyle = grad;
+        g.fillRect(0, 0, 256, 256);
+        if (i === 0) {
+          const foco = g.createRadialGradient(170, 70, 8, 170, 70, 120);
+          foco.addColorStop(0, "#ff5722");
+          foco.addColorStop(1, "rgba(255, 87, 34, 0)");
+          g.fillStyle = foco;
+          g.fillRect(0, 0, 256, 256);
+        }
+        faces.push(c);
+      }
+      const tex = new THREE.CubeTexture(faces);
+      tex.needsUpdate = true;
+      tex.encoding = THREE.sRGBEncoding;
+      return tex;
+    }
+
+    function criarEstrelas() {
+      const total = 700;
+      const pos = new Float32Array(total * 3);
+      for (let i = 0; i < total; i++) {
+        const raio = 18 + Math.random() * 22;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+        pos[i * 3] = raio * Math.sin(phi) * Math.cos(theta);
+        pos[i * 3 + 1] = raio * Math.cos(phi);
+        pos[i * 3 + 2] = raio * Math.sin(phi) * Math.sin(theta);
+      }
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+      return new THREE.Points(
+        geo,
+        new THREE.PointsMaterial({
+          color: 0xd7e2f2,
+          size: 0.045,
+          transparent: true,
+          opacity: 0.8,
+          depthWrite: false
+        })
+      );
+    }
+  </script>
+</body>
+</html>

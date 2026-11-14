@@ -1,6 +1,6 @@
 # OrbitMatter
 
-Atlas do lixo espacial. O protótipo visual continua na raiz (`Atlas do Lixo Espacial.html`, `atlas.css`, `dados-objetos.js`). A lógica tipada que a interface consome fica nas pastas abaixo.
+Atlas do lixo espacial. O protótipo visual fica em `frontend/` (`Atlas do Lixo Espacial.html`, `atlas.css`, `dados-objetos.js`). A lógica tipada que a interface consome fica nas pastas abaixo.
 
 ## Estrutura
 
