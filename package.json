@@ -3,9 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "node scripts/dev.mjs",
     "verificar": "tsc --noEmit"
   },
   "devDependencies": {
+    "serve": "^14.2.4",
     "typescript": "^5.8.3"
   }
 }

@@ -1,5 +1,5 @@
-Start-Process<!doctype html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -29,9 +29,9 @@ Start-Process<!doctype html>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="9" r="6"/><path d="M8.5 14 7 22l5-3 5 3-1.5-8"/></svg>
       <span id="badgeCount">0/8</span>
     </button>
-    <button class="lang-btn" id="langBtn" aria-label="Switch language">PT</button>
+    <button class="lang-btn" id="langBtn" type="button" data-lang-toggle aria-label="Mudar para português">PT</button>
     <div class="profile-wrap" id="profileWrap">
-      <button class="profile-btn" id="profileBtn" aria-label="Perfil do jogador" aria-expanded="false"></button>
+      <button class="profile-btn" id="profileBtn" aria-label="Perfil do jogador" aria-expanded="false" data-i18n="hud.profile.aria" data-i18n-attr="aria-label"></button>
       <div class="profile-menu" id="profileMenu" hidden role="menu">
         <div class="profile-menu-header">
           <strong id="pmNome">—</strong>
@@ -39,16 +39,16 @@ Start-Process<!doctype html>
         </div>
         <button id="pmEscolherImg" role="menuitem">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
-          Escolher imagem
+          <span data-i18n="hud.profile.chooseImg">Escolher imagem</span>
         </button>
         <button id="pmRemoverImg" role="menuitem" hidden>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>
-          Remover imagem
+          <span data-i18n="hud.profile.removeImg">Remover imagem</span>
         </button>
         <div class="profile-menu-sep"></div>
         <button id="pmSair" class="danger" role="menuitem">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
-          Sair
+          <span data-i18n="hud.profile.logout">Sair</span>
         </button>
       </div>
       <input type="file" id="profileImgInput" accept="image/jpeg,image/png,image/webp">
@@ -99,6 +99,7 @@ Start-Process<!doctype html>
 <!-- Modal de Login / Cadastro -->
 <div class="overlay" id="loginModal" hidden>
   <div class="modal narrow" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+    <button class="lang-btn login-lang" type="button" data-lang-toggle aria-label="Mudar para português">PT</button>
     <div class="modal-body" style="gap:20px">
       <div class="login-welcome">
         <span class="eyebrow" data-i18n="login.eyebrow">Atlas do Lixo Espacial</span>
@@ -126,7 +127,7 @@ Start-Process<!doctype html>
         <div class="login-divider" data-i18n="login.divider">ou</div>
         <button class="btn-google" id="btnGoogle">
           <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-          Entrar com Google
+          <span data-i18n="login.btn.google">Entrar com Google</span>
         </button>
         <p class="muted" style="font-size:12px;text-align:center"><span data-i18n="login.google.note">O login com Google requer servidor local ou hospedagem.</span> <a href="#" id="linkGoogleInfo" style="color:var(--data)" data-i18n="login.google.more">Saiba mais.</a></p>
       </div>
@@ -142,7 +143,7 @@ Start-Process<!doctype html>
         <div class="login-divider" data-i18n="login.divider">ou</div>
         <button class="btn-google" id="btnGoogleLogin">
           <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-          Entrar com Google
+          <span data-i18n="login.btn.google">Entrar com Google</span>
         </button>
       </div>
 
@@ -269,6 +270,18 @@ Start-Process<!doctype html>
 'use strict';
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const tt = (key) => (window.I18n ? I18n.t(key) : key);
+const TYPE_KEY = { fragmento: 'type.fragment', satelite: 'type.satellite', estagio: 'type.stage' };
+const TYPE_PLURAL_KEY = { fragmento: 'atlas.type.fragment', satelite: 'atlas.type.satellite', estagio: 'atlas.type.stage' };
+const FIELD_KEY = { origem: 'obj.field.origin', altitude: 'obj.field.altitude', velocidade: 'obj.field.speed', permanencia: 'obj.field.time', riscos: 'obj.field.risks', destinos: 'obj.field.destinations' };
+const STEP_KEY = { origem: 'obj.analysis.step1', permanencia: 'obj.analysis.step2', riscos: 'obj.analysis.step3' };
+const METER_KEY = { seg: 'meter.seg', comb: 'meter.comb', orc: 'meter.orc', ciencia: 'meter.ciencia' };
+function typeLabel(key) { return tt(TYPE_KEY[key]); }
+function typePlural(key) { return tt(TYPE_PLURAL_KEY[key]); }
+function destLabel(id) { return tt('dest.' + id); }
+function destArticle(id) { return tt('dest.' + id + '.article'); }
+function missionText(m, part) { return tt('mission.' + m.id + '.' + part); }
+function nounArticle(label) { return I18n.lang === 'en' && /^[aeiou]/i.test(label) ? 'an' : (I18n.lang === 'en' ? 'a' : 'um'); }
 const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* =====================================================================
@@ -337,7 +350,7 @@ const counters = { fragmento: 0, satelite: 0, estagio: 0 };
   }
 });
 const byId = Object.fromEntries(OBJECTS.map((o) => [o.id, o]));
-const bandOf = (o) => DEST[o.body].band || (o.r < 1.8 ? 'Órbita baixa' : o.r < 2.6 ? 'Órbita média' : 'Órbita alta');
+const bandOf = (o) => o.body === 'lua' ? tt('obj.band.lunar') : o.body === 'marte' ? tt('obj.band.martian') : tt(o.r < 1.8 ? 'obj.band.low' : o.r < 2.6 ? 'obj.band.mid' : 'obj.band.high');
 
 const STRATEGIES = [
   { id: 'desvio', name: 'Manobra de desvio', desc: 'Mover a nave ou o satélite ativo para fora da rota do objeto.', base: { seg: 68, comb: 48, orc: 76, ciencia: 50 } },
@@ -469,12 +482,12 @@ function toast(html, kind) {
 /* =====================================================================
    3. INTERFACE: HUD, MISSÃO ATUAL, ATLAS, FICHA
    ===================================================================== */
-const PHASES = ['Descoberta', 'Investigação', 'Análise', 'Decisão', 'Aprendizado'];
+const PHASES = ['phase.1', 'phase.2', 'phase.3', 'phase.4', 'phase.5'];
 function renderHUD() {
   const p = phaseIndex();
   $('phases').innerHTML = PHASES.map((n, i) =>
-    '<li class="' + (i < p ? 'done' : i === p ? 'now' : '') + '"' + (i === p ? ' aria-current="step"' : '') + '><b>' + (i + 1) + '</b>' + n + '</li>').join('');
-  $('lvlName').textContent = 'Nível ' + level();
+    '<li class="' + (i < p ? 'done' : i === p ? 'now' : '') + '"' + (i === p ? ' aria-current="step"' : '') + '><b>' + (i + 1) + '</b>' + tt(n) + '</li>').join('');
+  $('lvlName').textContent = tt('hud.level') + ' ' + level();
   $('xpText').textContent = (S.xp % XP_PER_LEVEL) + '/' + XP_PER_LEVEL + ' XP';
   $('xpBar').style.width = ((S.xp % XP_PER_LEVEL) / XP_PER_LEVEL * 100) + '%';
   $('badgeCount').textContent = S.badges.length + '/' + BADGES.length;
@@ -486,44 +499,45 @@ function renderMissionCard() {
   const m = currentMission();
   const el = $('missionCard');
   if (!m) {
-    el.innerHTML = '<div class="mc-head"><span class="eyebrow">Campanha concluída</span></div>' +
-      '<h2>Todos os capítulos concluídos</h2><p class="muted mc-brief">Continue explorando o atlas ou teste cenários na simulação.</p>' +
-      '<button class="btn" data-open="diary">Ver diário</button>';
+    el.innerHTML = '<div class="mc-head"><span class="eyebrow">' + tt('mc.done') + '</span></div>' +
+      '<h2>' + tt('mc.done.title') + '</h2><p class="muted mc-brief">' + tt('mc.done.sub') + '</p>' +
+      '<button class="btn" data-open="diary">' + tt('mc.done.diary') + '</button>';
     return;
   }
   const t = TYPES[m.target];
+  const label = typeLabel(m.target);
   const s1 = hasSeenType(m.target), s2 = hasAnalyzedType(m.target);
-  const next = !s1 ? 'Investigue ' + t.label.toLowerCase() : !s2 ? 'Conclua a análise' : 'Tome a decisão';
+  const next = !s1 ? tt('mc.investigate') + ' ' + label.toLowerCase() : !s2 ? tt('mc.conclude') : tt('mc.decide');
   el.innerHTML =
-    '<div class="mc-head"><span class="eyebrow">Capítulo ' + m.chapter + ' de ' + MISSIONS.length + '</span><span class="chip target"><span class="dot" style="background:' + t.css + '"></span>Alvo</span></div>' +
-    '<div><h2>' + esc(m.title) + '</h2><span class="mc-next">' + next + '</span></div>' +
-    '<p class="muted mc-brief" style="font-size:13.5px">' + esc(m.briefing) + '</p>' +
+    '<div class="mc-head"><span class="eyebrow">' + tt('mc.chapter') + ' ' + m.chapter + ' ' + tt('mc.of') + ' ' + MISSIONS.length + '</span><span class="chip target"><span class="dot" style="background:' + t.css + '"></span>' + tt('mc.target') + '</span></div>' +
+    '<div><h2>' + esc(missionText(m, 'title')) + '</h2><span class="mc-next">' + next + '</span></div>' +
+    '<p class="muted mc-brief" style="font-size:13.5px">' + esc(missionText(m, 'briefing')) + '</p>' +
     '<ul class="checklist">' +
-      '<li class="' + (s1 ? 'ok' : 'cur') + '"><span class="tick"></span>Investigar um ' + t.label.toLowerCase() + '</li>' +
-      '<li class="' + (s2 ? 'ok' : s1 ? 'cur' : '') + '"><span class="tick"></span>Concluir a análise do objeto</li>' +
-      '<li class="' + (s2 ? 'cur' : '') + '"><span class="tick"></span>Escolher uma estratégia</li>' +
+      '<li class="' + (s1 ? 'ok' : 'cur') + '"><span class="tick"></span>' + tt('mc.check1pre') + ' ' + nounArticle(label) + ' ' + label.toLowerCase() + '</li>' +
+      '<li class="' + (s2 ? 'ok' : s1 ? 'cur' : '') + '"><span class="tick"></span>' + tt('mc.check2') + '</li>' +
+      '<li class="' + (s2 ? 'cur' : '') + '"><span class="tick"></span>' + tt('mc.check3') + '</li>' +
     '</ul>' +
-    (s2 ? '<button class="btn primary" data-open="missions">Tomar decisão</button>'
-        : '<button class="btn" data-open="atlas" data-filter="' + m.target + '">Ver alvos no atlas</button>');
+    (s2 ? '<button class="btn primary" data-open="missions">' + tt('mc.decide.btn') + '</button>'
+        : '<button class="btn" data-open="atlas" data-filter="' + m.target + '">' + tt('mc.atlas.btn') + '</button>');
 }
 
 let filter = 'todos';
 let selectedId = null;
 function renderFilters() {
-  const opts = [['todos', 'Todos', null]].concat(Object.entries(TYPES).map(([k, t]) => [k, t.plural, t.css]));
+  const opts = [['todos', tt('atlas.filter.all'), null]].concat(Object.keys(TYPES).map((k) => [k, typePlural(k), TYPES[k].css]));
   $('filters').innerHTML = opts.map(([k, label, c]) =>
     '<button data-f="' + k + '" aria-pressed="' + (filter === k) + '">' + (c ? '<span class="dot" style="background:' + c + '"></span>' : '') + label + '</button>').join('');
 }
 function renderAtlas() {
   const m = currentMission();
   const here = OBJECTS.filter((o) => o.body === curDest);
-  $('atlasTitle').textContent = 'Atlas orbital · ' + DEST[curDest].label;
-  $('atlasCount').textContent = here.filter((o) => S.seen.includes(o.id)).length + '/' + here.length + ' investigados';
+  $('atlasTitle').textContent = tt('atlas.title') + ' · ' + destLabel(curDest);
+  $('atlasCount').textContent = here.filter((o) => S.seen.includes(o.id)).length + '/' + here.length + ' ' + tt('atlas.investigated');
   const list = here.filter((o) => filter === 'todos' || o.type === filter);
-  $('objList').innerHTML = (list.length ? '' : '<li class="muted" style="padding:10px">Nenhum objeto deste tipo aqui.</li>') + list.map((o) => {
+  $('objList').innerHTML = (list.length ? '' : '<li class="muted" style="padding:10px">' + tt('atlas.none') + '</li>') + list.map((o) => {
     const an = S.analyzed.includes(o.id), seen = S.seen.includes(o.id);
     const tg = m && m.target === o.type && !an;
-    const st = an ? '<span class="status an">Analisado</span>' : seen ? '<span class="status seen">Investigado</span>' : tg ? '<span class="status tg">Alvo</span>' : '<span class="status">Novo</span>';
+    const st = an ? '<span class="status an">' + tt('atlas.status.analyzed') + '</span>' : seen ? '<span class="status seen">' + tt('atlas.status.investigated') + '</span>' : tg ? '<span class="status tg">' + tt('atlas.status.target') + '</span>' : '<span class="status">' + tt('atlas.status.new') + '</span>';
     return '<li><button data-obj="' + o.id + '" class="' + (selectedId === o.id ? 'sel' : '') + '"><span class="dot" style="background:' + TYPES[o.type].css + '"></span>' +
       '<span class="nm">' + esc(o.name) + '<small>' + bandOf(o) + '</small></span>' + st + '</button></li>';
   }).join('');
@@ -538,39 +552,39 @@ function renderObjPanel() {
   const analyzed = S.analyzed.includes(o.id);
   const m = currentMission();
   const isTarget = m && m.target === o.type;
-  const facts = FIELDS.map(([k, label]) =>
-    '<div class="fact"><dt>' + label + '</dt><dd>' + (o.data[k] ? esc(o.data[k]) : 'Sem dados disponíveis') + '</dd></div>').join('');
+  const facts = FIELDS.map(([k]) =>
+    '<div class="fact"><dt>' + tt(FIELD_KEY[k]) + '</dt><dd>' + (o.data[k] ? esc(o.data[k]) : tt('obj.nodata')) + '</dd></div>').join('');
   // Verifica se o objeto tem dados reais preenchidos
   const temDadosReais = Object.values(o.data).some(v => v !== null && v !== undefined);
   const badgeHtml = temDadosReais
     ? ''
-    : '<span class="eyebrow" style="color:var(--warn)">Dados reais em breve</span>';
+    : '<span class="eyebrow" style="color:var(--warn)">' + tt('obj.soon') + '</span>';
   const stepsHtml = ANALYSIS.map((a, i) => {
     const done = steps.includes(a.id);
     // Busca o texto de análise específico do objeto
     const textoAnalise = (o._analise && o._analise[a.id])
       ? o._analise[a.id]
-      : 'Informação não disponível nos arquivos de referência para este objeto.';
+      : tt('obj.analysis.noref');
     return '<button class="step' + (done ? ' done' : '') + '" data-step="' + a.id + '" aria-expanded="' + (openStep === a.id) + '">' +
-      '<span class="s-l"><span class="num">' + (done ? '✓' : '0' + (i + 1)) + '</span>' + a.label + '</span><span class="xp">' + (done ? 'Feito' : '+10 XP') + '</span></button>' +
+      '<span class="s-l"><span class="num">' + (done ? '✓' : '0' + (i + 1)) + '</span>' + tt(STEP_KEY[a.id]) + '</span><span class="xp">' + (done ? tt('obj.analysis.done') : tt('obj.analysis.xp')) + '</span></button>' +
       (openStep === a.id ? '<p class="reveal">' + esc(textoAnalise) + '</p>' : '');
   }).join('');
   let action;
   if (analyzed) {
-    action = '<span class="chip ok">Análise concluída</span>' +
-      (isTarget && m ? '<button class="btn primary block" data-open="missions">Ir para a decisão</button>' : '');
+    action = '<span class="chip ok">' + tt('obj.analyzed') + '</span>' +
+      (isTarget && m ? '<button class="btn primary block" data-open="missions">' + tt('obj.go.decision') + '</button>' : '');
   } else {
-    action = '<button class="btn primary block" id="concludeBtn"' + (steps.length < ANALYSIS.length ? ' disabled' : '') + '>Concluir análise · +20 XP</button>' +
-      (steps.length < ANALYSIS.length ? '<p class="muted" style="font-size:12.5px">Abra as três etapas da análise para concluir.</p>' : '');
+    action = '<button class="btn primary block" id="concludeBtn"' + (steps.length < ANALYSIS.length ? ' disabled' : '') + '>' + tt('obj.conclude') + '</button>' +
+      (steps.length < ANALYSIS.length ? '<p class="muted" style="font-size:12.5px">' + tt('obj.conclude.hint') + '</p>' : '');
   }
   el.innerHTML =
     '<div class="op-head"><div style="display:grid;gap:8px;min-width:0">' +
-      '<div style="display:flex;gap:6px;flex-wrap:wrap"><span class="chip"><span class="dot" style="background:' + t.css + '"></span>' + t.label + '</span>' +
-      (isTarget && !analyzed ? '<span class="chip target">Alvo da missão</span>' : '') + '</div>' +
-      '<h2>' + esc(o.name) + '</h2><span class="eyebrow">' + bandOf(o) + ' · posição ilustrativa</span></div>' +
-      '<button class="icon-btn" id="closeObj" aria-label="Fechar ficha"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>' +
-    '<div><div class="section-title" style="margin-bottom:8px"><h3>Ficha do objeto</h3>' + badgeHtml + '</div><dl class="facts" style="margin:0">' + facts + '</dl></div>' +
-    '<div class="steps"><div class="section-title"><h3>Análise</h3><span class="eyebrow mono">' + steps.length + '/' + ANALYSIS.length + '</span></div>' + stepsHtml + '</div>' +
+      '<div style="display:flex;gap:6px;flex-wrap:wrap"><span class="chip"><span class="dot" style="background:' + t.css + '"></span>' + typeLabel(o.type) + '</span>' +
+      (isTarget && !analyzed ? '<span class="chip target">' + tt('obj.mission.target') + '</span>' : '') + '</div>' +
+      '<h2>' + esc(o.name) + '</h2><span class="eyebrow">' + bandOf(o) + ' · ' + tt('obj.position') + '</span></div>' +
+      '<button class="icon-btn" id="closeObj" aria-label="' + tt('obj.close.aria') + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>' +
+    '<div><div class="section-title" style="margin-bottom:8px"><h3>' + tt('obj.sheet') + '</h3>' + badgeHtml + '</div><dl class="facts" style="margin:0">' + facts + '</dl></div>' +
+    '<div class="steps"><div class="section-title"><h3>' + tt('obj.analysis') + '</h3><span class="eyebrow mono">' + steps.length + '/' + ANALYSIS.length + '</span></div>' + stepsHtml + '</div>' +
     '<div style="display:grid;gap:8px">' + action + '</div>';
   el.hidden = false;
 }
@@ -627,7 +641,7 @@ function computeMeters(m, sid, L) {
   const score = Math.round(avg * 0.7 + Math.min(...vals) * 0.3);
   return { m: b, score };
 }
-const gradeOf = (s) => (s >= 80 ? ['Excelente', 'var(--good)'] : s >= 65 ? ['Boa', 'var(--data)'] : s >= 50 ? ['Arriscada', 'var(--warn)'] : ['Crítica', 'var(--bad)']);
+const gradeOf = (s) => (s >= 80 ? [tt('grade.excellent'), 'var(--good)'] : s >= 65 ? [tt('grade.good'), 'var(--data)'] : s >= 50 ? [tt('grade.risky'), 'var(--warn)'] : [tt('grade.critical'), 'var(--bad)']);
 const meterColor = (v) => (v >= 65 ? 'var(--good)' : v >= 40 ? 'var(--warn)' : 'var(--bad)');
 
 function renderMissions() {
@@ -636,37 +650,37 @@ function renderMissions() {
   $('chapterList').innerHTML = MISSIONS.map((m) => {
     const done = !!S.done[m.id];
     const unlocked = done || (cur && cur.id === m.id);
-    const st = done ? '<span class="st done">Concluído · ' + S.done[m.id].score + ' pts</span>' : unlocked ? '<span class="st cur">Em andamento</span>' : '<span class="st lock">Bloqueado</span>';
+    const st = done ? '<span class="st done">' + tt('missions.status.done') + ' · ' + S.done[m.id].score + ' ' + tt('missions.status.pts') + '</span>' : unlocked ? '<span class="st cur">' + tt('missions.status.ongoing') + '</span>' : '<span class="st lock">' + tt('missions.status.locked') + '</span>';
     return '<li><button data-mission="' + m.id + '"' + (unlocked ? '' : ' disabled') + ' aria-current="' + (viewMission === m.id) + '">' +
-      '<span class="eyebrow">Capítulo ' + m.chapter + '</span><strong>' + esc(m.title) + '</strong>' + st + '</button></li>';
+      '<span class="eyebrow">' + tt('missions.chapter') + ' ' + m.chapter + '</span><strong>' + esc(missionText(m, 'title')) + '</strong>' + st + '</button></li>';
   }).join('');
 
   const m = MISSIONS.find((x) => x.id === viewMission);
   const t = TYPES[m.target];
   const done = S.done[m.id];
-  let html = '<div style="display:grid;gap:8px"><span class="eyebrow">Etapa 4 · Decisão</span><h3>' + esc(m.title) + '</h3>' +
-    '<p class="placeholder">' + esc(m.briefing) + '</p></div>';
+  let html = '<div style="display:grid;gap:8px"><span class="eyebrow">' + tt('missions.eyebrow2') + '</span><h3>' + esc(missionText(m, 'title')) + '</h3>' +
+    '<p class="placeholder">' + esc(missionText(m, 'briefing')) + '</p></div>';
   if (done) {
     const s = STRATEGIES.find((x) => x.id === done.strategy);
     const [g, c] = gradeOf(done.score);
-    html += '<div class="placeholder" style="border-style:solid">Você escolheu <b>' + esc(s.name) + '</b> e tirou <b style="color:' + c + '">' + done.score + ' pontos (' + g + ')</b>.</div>' +
-      '<div class="placeholder">' + esc(m.explain) + '</div>';
+    html += '<div class="placeholder" style="border-style:solid">' + tt('missions.youChose') + ' <b>' + esc(tt('strat.' + s.id)) + '</b> ' + tt('missions.andScored') + ' <b style="color:' + c + '">' + done.score + ' ' + tt('missions.points') + ' (' + g + ')</b>.</div>' +
+      '<div class="placeholder">' + esc(missionText(m, 'explain')) + '</div>';
   } else if (!hasAnalyzedType(m.target)) {
-    html += '<div class="locked-note"><span>Para liberar a decisão, investigue e conclua a análise de um <b style="color:' + t.css + '">' + t.label.toLowerCase() + '</b>.</span>' +
-      '<button class="btn" data-open="atlas" data-filter="' + m.target + '">Ver alvos no atlas</button></div>';
+    html += '<div class="locked-note"><span>' + tt('missions.locked.msg') + ' <b style="color:' + t.css + '">' + typeLabel(m.target).toLowerCase() + '</b>.</span>' +
+      '<button class="btn" data-open="atlas" data-filter="' + m.target + '">' + tt('missions.locked.btn') + '</button></div>';
   } else {
-    html += '<div style="display:grid;gap:8px"><div class="section-title"><h3 style="font-size:15px">Escolha uma estratégia</h3></div><div class="strategies" role="radiogroup" aria-label="Estratégias">' +
-      STRATEGIES.map((s) => '<button class="strategy" role="radio" aria-checked="' + (choice === s.id) + '" data-strategy="' + s.id + '"><strong>' + s.name + '</strong><span>' + s.desc + '</span></button>').join('') + '</div></div>' +
-      '<div class="slider-row"><label for="leadRange">Antecedência da ação <b class="mono">' + lead + '/10</b></label><input type="range" id="leadRange" min="1" max="10" value="' + lead + '"><span class="muted" style="font-size:12.5px">Agir cedo gasta menos combustível, mas deixa menos tempo para estudar o objeto.</span></div>';
+    html += '<div style="display:grid;gap:8px"><div class="section-title"><h3 style="font-size:15px">' + tt('missions.strategy.title') + '</h3></div><div class="strategies" role="radiogroup" aria-label="' + tt('missions.strategy.title') + '">' +
+      STRATEGIES.map((s) => '<button class="strategy" role="radio" aria-checked="' + (choice === s.id) + '" data-strategy="' + s.id + '"><strong>' + tt('strat.' + s.id) + '</strong><span>' + tt('strat.' + s.id + '.desc') + '</span></button>').join('') + '</div></div>' +
+      '<div class="slider-row"><label for="leadRange">' + tt('missions.lead.label') + ' <b class="mono">' + lead + '/10</b></label><input type="range" id="leadRange" min="1" max="10" value="' + lead + '"><span class="muted" style="font-size:12.5px">' + tt('missions.lead.hint') + '</span></div>';
     if (choice) {
       const r = computeMeters(m, choice, lead);
       const [g, c] = gradeOf(r.score);
-      html += '<div class="meters">' + METERS.map(([k, label]) =>
-        '<div class="meter"><div class="mt"><span>' + label + '</span><b>' + r.m[k] + '</b></div><div class="bar"><i style="width:' + r.m[k] + '%;background:' + meterColor(r.m[k]) + '"></i></div></div>').join('') + '</div>' +
-        '<div class="score-line"><div><span class="eyebrow">Previsão</span><div class="sc" style="color:' + c + '">' + r.score + ' · ' + g + '</div></div>' +
-        '<button class="btn primary" id="confirmDecision">Confirmar decisão</button></div>';
+      html += '<div class="meters">' + METERS.map(([k]) =>
+        '<div class="meter"><div class="mt"><span>' + tt(METER_KEY[k]) + '</span><b>' + r.m[k] + '</b></div><div class="bar"><i style="width:' + r.m[k] + '%;background:' + meterColor(r.m[k]) + '"></i></div></div>').join('') + '</div>' +
+        '<div class="score-line"><div><span class="eyebrow">' + tt('missions.preview') + '</span><div class="sc" style="color:' + c + '">' + r.score + ' · ' + g + '</div></div>' +
+        '<button class="btn primary" id="confirmDecision">' + tt('missions.confirm') + '</button></div>';
     } else {
-      html += '<p class="muted" style="font-size:13.5px">Selecione uma estratégia para ver o equilíbrio entre segurança, combustível, custo e ciência.</p>';
+      html += '<p class="muted" style="font-size:13.5px">' + tt('missions.hint.choose') + '</p>';
     }
   }
   $('mDetail').innerHTML = html;
@@ -686,14 +700,14 @@ function confirmDecision() {
   const [g, c] = gradeOf(r.score);
   const next = currentMission();
   $('rBody').innerHTML =
-    '<div class="result-top"><div class="grade" style="color:' + c + '">' + r.score + '</div><div><strong style="font-family:var(--display);font-size:20px">' + g + '</strong><p class="muted">Capítulo ' + m.chapter + ' · ' + esc(m.title) + '</p></div></div>' +
-    '<div class="meters">' + METERS.map(([k, label]) =>
-      '<div class="meter"><div class="mt"><span>' + label + '</span><b>' + r.m[k] + '</b></div><div class="bar"><i style="width:' + r.m[k] + '%;background:' + meterColor(r.m[k]) + '"></i></div></div>').join('') + '</div>' +
-    '<div style="display:grid;gap:6px"><span class="eyebrow">Explicação científica</span><p class="placeholder">' + esc(m.explain) + '</p></div>' +
+    '<div class="result-top"><div class="grade" style="color:' + c + '">' + r.score + '</div><div><strong style="font-family:var(--display);font-size:20px">' + g + '</strong><p class="muted">' + tt('result.chapter') + ' ' + m.chapter + ' · ' + esc(missionText(m, 'title')) + '</p></div></div>' +
+    '<div class="meters">' + METERS.map(([k]) =>
+      '<div class="meter"><div class="mt"><span>' + tt(METER_KEY[k]) + '</span><b>' + r.m[k] + '</b></div><div class="bar"><i style="width:' + r.m[k] + '%;background:' + meterColor(r.m[k]) + '"></i></div></div>').join('') + '</div>' +
+    '<div style="display:grid;gap:6px"><span class="eyebrow">' + tt('result.science.eyebrow') + '</span><p class="placeholder">' + esc(missionText(m, 'explain')) + '</p></div>' +
     '<div class="gained"><span class="chip target">+' + xp + ' XP</span>' +
-      gained.map((id) => '<span class="chip ok">' + esc(BADGES.find((b) => b.id === id).name) + '</span>').join('') +
-      (next ? '<span class="chip">Capítulo ' + next.chapter + ' liberado</span>' : '<span class="chip ok">Campanha concluída</span>') + '</div>' +
-    '<div><button class="btn primary" id="continueBtn">' + (next ? 'Seguir para o capítulo ' + next.chapter : 'Continuar explorando') + '</button></div>';
+      gained.map((id) => '<span class="chip ok">' + esc(tt('badge.' + id)) + '</span>').join('') +
+      (next ? '<span class="chip">' + tt('result.chapter') + ' ' + next.chapter + ' ' + tt('result.unlocked') + '</span>' : '<span class="chip ok">' + tt('result.campaignDone') + '</span>') + '</div>' +
+    '<div><button class="btn primary" id="continueBtn">' + (next ? tt('result.next') + ' ' + next.chapter : tt('result.keepExploring')) + '</button></div>';
   choice = null; lead = 5;
   openModal('resultModal');
   refresh();
@@ -739,22 +753,22 @@ function renderDiary() {
   const path = S.path.length
     ? S.path.map((p, i) => '<li><span class="n">' + String(i + 1).padStart(2, '0') + '</span><span>' + esc(p.label) + '<small>' +
         new Date(p.t).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) + '</small></span></li>').join('')
-    : '<li><span class="n">—</span><span class="muted">Seu trajeto aparece aqui. Escolha qualquer objeto no mapa para começar.</span></li>';
+    : '<li><span class="n">—</span><span class="muted">' + tt('diary.path.empty') + '</span></li>';
   const star = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="9" r="6"/><path d="M8.5 14 7 22l5-3 5 3-1.5-8"/></svg>';
   $('dBody').innerHTML =
-    '<div class="stat-row">' + stat('Nível ' + level(), S.xp + ' XP no total') + stat(objCount + '/' + OBJECTS.length, 'Objetos investigados') +
-      stat(S.analyzed.length, 'Análises concluídas') + stat(Object.keys(S.done).length + '/' + MISSIONS.length, 'Capítulos concluídos') + '</div>' +
-    '<div class="diary"><div style="display:grid;gap:10px;align-content:start"><div class="section-title"><h3>Seu trajeto</h3><span class="eyebrow">Na ordem que você escolheu</span></div><ol class="path">' + path + '</ol></div>' +
-    '<div style="display:grid;gap:10px;align-content:start"><div class="section-title"><h3>Distintivos</h3><span class="eyebrow mono">' + S.badges.length + '/' + BADGES.length + '</span></div><div class="badges">' +
-      BADGES.map((b) => '<div class="bdg' + (S.badges.includes(b.id) ? ' on' : '') + '"><span class="ico">' + star + '</span><div><strong>' + esc(b.name) + '</strong><span>' + esc(b.desc) + '</span></div></div>').join('') + '</div></div></div>' +
+    '<div class="stat-row">' + stat(tt('hud.level') + ' ' + level(), S.xp + ' ' + tt('diary.stat.level')) + stat(objCount + '/' + OBJECTS.length, tt('diary.stat.objects')) +
+      stat(S.analyzed.length, tt('diary.stat.analyses')) + stat(Object.keys(S.done).length + '/' + MISSIONS.length, tt('diary.stat.chapters')) + '</div>' +
+    '<div class="diary"><div style="display:grid;gap:10px;align-content:start"><div class="section-title"><h3>' + tt('diary.path') + '</h3><span class="eyebrow">' + tt('diary.path.sub') + '</span></div><ol class="path">' + path + '</ol></div>' +
+    '<div style="display:grid;gap:10px;align-content:start"><div class="section-title"><h3>' + tt('diary.badges') + '</h3><span class="eyebrow mono">' + S.badges.length + '/' + BADGES.length + '</span></div><div class="badges">' +
+      BADGES.map((b) => '<div class="bdg' + (S.badges.includes(b.id) ? ' on' : '') + '"><span class="ico">' + star + '</span><div><strong>' + esc(tt('badge.' + b.id)) + '</strong><span>' + esc(tt('badge.' + b.id + '.desc')) + '</span></div></div>').join('') + '</div></div></div>' +
     '<div class="confirm-row">' + (confirmReset
-      ? '<span class="muted">Apagar todo o progresso deste navegador?</span><button class="btn danger" id="doReset">Apagar progresso</button><button class="btn ghost" id="cancelReset">Cancelar</button>'
-      : '<button class="btn ghost" id="askReset">Recomeçar jornada</button>') + '</div>';
+      ? '<span class="muted">' + tt('diary.reset.confirm') + '</span><button class="btn danger" id="doReset">' + tt('diary.reset.btn') + '</button><button class="btn ghost" id="cancelReset">' + tt('diary.reset.cancel') + '</button>'
+      : '<button class="btn ghost" id="askReset">' + tt('diary.reset.ask') + '</button>') + '</div>';
 }
 
 function renderIntro() {
   const m = MISSIONS[0];
-  $('introBrief').innerHTML = '<span class="eyebrow" style="color:var(--accent)">Sua primeira missão · Capítulo 1</span><strong style="font-family:var(--display);font-size:18px">' + esc(m.title) + '</strong><span class="muted" style="font-size:13.5px">' + esc(m.briefing) + '</span>';
+  $('introBrief').innerHTML = '<span class="eyebrow" style="color:var(--accent)">' + tt('intro.mission.eyebrow') + '</span><strong style="font-family:var(--display);font-size:18px">' + esc(missionText(m, 'title')) + '</strong><span class="muted" style="font-size:13.5px">' + esc(missionText(m, 'briefing')) + '</span>';
 }
 
 /* Eventos globais por delegação */
@@ -1165,11 +1179,11 @@ function flyTo(id) {
   curDest = id; S.dest = id;
   if (!S.visited.includes(id)) {
     S.visited.push(id);
-    if (id !== 'terra') { addPath('viagem', id, 'Viajou para ' + DEST[id].article); gainXP(15, 'Novo destino'); }
+    if (id !== 'terra') { addPath('viagem', id, (I18n.lang === 'en' ? 'Traveled to ' : 'Viajou para ') + destArticle(id)); gainXP(15, I18n.lang === 'en' ? 'New destination' : 'Novo destino'); }
     checkBadges();
   }
   selectedId = null; openStep = null;
-  toast('<b>Destino</b>' + DEST[id].label);
+  toast('<b>' + tt('navbar.destination') + '</b>' + destLabel(id));
   if (hasGL && renderer) {
     fly = { start: performance.now(), dur: reduceMotion ? 1 : 2600, c0: camera.position.clone(), t0: controls.target.clone() };
     fly.dir = sunViewDir();
@@ -1183,7 +1197,7 @@ const labels = {};
 function makeLabels() {
   Object.keys(DEST).forEach((id) => {
     const b = document.createElement('button');
-    b.className = 'body-label'; b.textContent = DEST[id].label; b.dataset.dest = id; b.hidden = true;
+    b.className = 'body-label'; b.textContent = destLabel(id); b.dataset.dest = id; b.hidden = true;
     document.body.appendChild(b); labels[id] = b;
   });
 }
@@ -1202,7 +1216,7 @@ function updateLabels() {
     if (off) { const k = 0.9 / Math.max(Math.abs(x), Math.abs(y), 0.0001); x *= k; y *= k; if (y < -0.62) y = -0.62; if (y > 0.72) y = 0.72; }
     el.hidden = false;
     el.classList.toggle('edge', off);
-    el.textContent = (off ? (x < -0.3 ? '← ' : x > 0.3 ? '' : '') : '') + DEST[id].label + (off && x > 0.3 ? ' →' : '');
+    el.textContent = (off ? (x < -0.3 ? '← ' : x > 0.3 ? '' : '') : '') + destLabel(id) + (off && x > 0.3 ? ' →' : '');
     el.style.transform = 'translate(' + ((x + 1) / 2 * window.innerWidth) + 'px,' + ((1 - y) / 2 * window.innerHeight) + 'px) translate(-50%, ' + (off ? '-50%' : '14px') + ')';
   });
 }
@@ -1246,10 +1260,10 @@ function hideHint() { if (hintGone) return; hintGone = true; $('hint').style.opa
 let clockT = 0;
 function updateClock() {
   const d = new Date(TIME.ms);
-  $('clockText').textContent = d.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+  $('clockText').textContent = d.toLocaleString(I18n.lang === 'en' ? 'en-GB' : 'pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
   const sun = lastSun || sunState(TIME.ms);
   const day = isDayAt(-15.78, -47.93, sun);
-  const el = $('dayText'); el.textContent = day ? 'Dia em Brasília' : 'Noite em Brasília'; el.className = 'daynight ' + (day ? 'day' : 'night');
+  const el = $('dayText'); el.textContent = day ? tt('navbar.time.day') : tt('navbar.time.night'); el.className = 'daynight ' + (day ? 'day' : 'night');
 }
 function setSpeed(k) {
   TIME.speed = k; TIME.mult = SPEEDS[k];
@@ -1397,10 +1411,10 @@ function kTrigger() {
 }
 function kRisk() {
   const rate = K.recent.length; // colisões no último ciclo
-  if (rate >= 25) return ['Cascata em andamento', 'var(--bad)'];
-  if (rate >= 12) return ['Risco alto', 'var(--bad)'];
-  if (rate >= 5) return ['Risco moderado', 'var(--warn)'];
-  return ['Risco baixo', 'var(--good)'];
+  if (rate >= 25) return [tt('kessler.risk.critical'), 'var(--bad)'];
+  if (rate >= 12) return [tt('kessler.risk.high'), 'var(--bad)'];
+  if (rate >= 5) return [tt('kessler.risk.mid'), 'var(--warn)'];
+  return [tt('kessler.risk.low'), 'var(--good)'];
 }
 function kStats() {
   const frags = K.parts.reduce((n, p) => n + (p.frag ? 1 : 0), 0);
@@ -1477,12 +1491,12 @@ function kLoop(now) {
   kDraw(); kStats();
   K.raf = requestAnimationFrame(kLoop);
 }
-function kPlay() { if (K.running) { kPause(); return; } K.running = true; K.last = 0; $('kPlay').textContent = 'Pausar'; K.raf = requestAnimationFrame(kLoop); }
-function kPause() { K.running = false; cancelAnimationFrame(K.raf); $('kPlay').textContent = K.t > 0 ? 'Continuar' : 'Iniciar'; }
+function kPlay() { if (K.running) { kPause(); return; } K.running = true; K.last = 0; $('kPlay').textContent = tt('kessler.pause'); K.raf = requestAnimationFrame(kLoop); }
+function kPause() { K.running = false; cancelAnimationFrame(K.raf); $('kPlay').textContent = K.t > 0 ? tt('kessler.continue') : tt('kessler.start'); }
 function kOpen() { if (!K.parts.length) kReset(); requestAnimationFrame(() => { kDraw(); kStats(); }); }
 $('kPlay').addEventListener('click', kPlay);
 $('kTrigger').addEventListener('click', kTrigger);
-$('kReset').addEventListener('click', () => { kPause(); kReset(); $('kPlay').textContent = 'Iniciar'; });
+$('kReset').addEventListener('click', () => { kPause(); kReset(); $('kPlay').textContent = tt('kessler.start'); });
 [['kLaunch', (v) => v], ['kRemove', (v) => v], ['kSpeed', (v) => v + '×']].forEach(([id, f]) => {
   $(id).addEventListener('input', () => { $(id + 'V').textContent = f($(id).value); });
 });
@@ -1832,6 +1846,19 @@ $('loading').remove();
 })();
 /* fim SISTEMA DE LOGIN E PERFIL */
 
+window._onLangChange = () => {
+  renderFilters();
+  refresh();
+  updateClock();
+  if (hasGL) updateLabels();
+  if (!$('missionsModal').hidden) renderMissions();
+  if (!$('diaryModal').hidden) renderDiary();
+  if (!$('introModal').hidden) renderIntro();
+  if (!$('kesslerModal').hidden) {
+    kStats();
+    $('kPlay').textContent = K.running ? tt('kessler.pause') : (K.t > 0 ? tt('kessler.continue') : tt('kessler.start'));
+  }
+};
 setSpeed('agora');
 refresh();
 // A exibição do introModal é gerenciada pelo initAuth (após login).

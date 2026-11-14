@@ -107,7 +107,7 @@ window.I18n = (() => {
     'mc.investigate':              { pt: 'Investigue',                             en: 'Investigate' },
     'mc.conclude':                 { pt: 'Conclua a análise',                      en: 'Complete the analysis' },
     'mc.decide':                   { pt: 'Tome a decisão',                         en: 'Make the decision' },
-    'mc.check1pre':                { pt: 'Investigar um',                          en: 'Investigate a' },
+    'mc.check1pre':                { pt: 'Investigar',                             en: 'Investigate' },
     'mc.check2':                   { pt: 'Concluir a análise do objeto',           en: 'Complete the object analysis' },
     'mc.check3':                   { pt: 'Escolher uma estratégia',                en: 'Choose a strategy' },
     'mc.decide.btn':               { pt: 'Tomar decisão',                          en: 'Make decision' },
@@ -119,6 +119,23 @@ window.I18n = (() => {
     'phase.3':                     { pt: 'Análise',                                en: 'Analysis' },
     'phase.4':                     { pt: 'Decisão',                                en: 'Decision' },
     'phase.5':                     { pt: 'Aprendizado',                            en: 'Learning' },
+
+    /* ---- mission copy ---- */
+    'mission.m1.title':            { pt: 'Estágio à deriva',                       en: 'Drifting stage' },
+    'mission.m1.briefing':         { pt: 'Briefing da missão (a definir): um estágio de foguete abandonado cruza a rota de uma missão planejada.',
+                                     en: 'Mission briefing (to be defined): an abandoned rocket stage crosses the path of a planned mission.' },
+    'mission.m1.explain':          { pt: 'Explicação científica (a definir): por que estágios de foguete são grandes fontes de risco e quais estratégias funcionam melhor para eles.',
+                                     en: 'Scientific explanation (to be defined): why rocket stages are major risk sources and which strategies work best for them.' },
+    'mission.m2.title':            { pt: 'Satélite silencioso',                    en: 'Silent satellite' },
+    'mission.m2.briefing':         { pt: 'Briefing da missão (a definir): um satélite inativo perdeu o controle e se aproxima de uma constelação ativa.',
+                                     en: 'Mission briefing (to be defined): an inactive satellite lost control and is approaching an active constellation.' },
+    'mission.m2.explain':          { pt: 'Explicação científica (a definir): o que acontece com satélites no fim da vida útil e como planejar a desorbitação.',
+                                     en: 'Scientific explanation (to be defined): what happens to satellites at end of life and how to plan deorbiting.' },
+    'mission.m3.title':            { pt: 'Nuvem de fragmentos',                    en: 'Fragment cloud' },
+    'mission.m3.briefing':         { pt: 'Briefing da missão (a definir): uma nuvem de fragmentos se espalha por uma faixa de órbita muito usada.',
+                                     en: 'Mission briefing (to be defined): a fragment cloud spreads across a heavily used orbital band.' },
+    'mission.m3.explain':          { pt: 'Explicação científica (a definir): por que fragmentos pequenos são difíceis de rastrear e como eles alimentam a síndrome de Kessler.',
+                                     en: 'Scientific explanation (to be defined): why small fragments are hard to track and how they feed Kessler syndrome.' },
 
     /* ---- intro modal ---- */
     'intro.eyebrow':               { pt: 'Etapa 1 · Descoberta',                   en: 'Stage 1 · Discovery' },
@@ -331,7 +348,12 @@ window.I18n = (() => {
 
   /* ── estado ─────────────────────────────────────────────────────── */
   let _lang = (() => {
-    try { return localStorage.getItem('atlas:lang') || 'pt'; } catch { return 'pt'; }
+    try {
+      const saved = localStorage.getItem('atlas:lang');
+      const chosen = localStorage.getItem('atlas:lang-chosen') === '1';
+      if (chosen && (saved === 'en' || saved === 'pt')) return saved;
+      return 'en';
+    } catch { return 'en'; }
   })();
 
   /* ── API ────────────────────────────────────────────────────────── */
@@ -344,7 +366,10 @@ window.I18n = (() => {
   function setLang(lang) {
     if (lang !== 'pt' && lang !== 'en') return;
     _lang = lang;
-    try { localStorage.setItem('atlas:lang', lang); } catch { /* ignora */ }
+    try {
+      localStorage.setItem('atlas:lang', lang);
+      localStorage.setItem('atlas:lang-chosen', '1');
+    } catch { /* ignora */ }
     _apply();
     // Notifica o jogo para re-renderizar
     if (window._onLangChange) window._onLangChange(lang);
@@ -367,9 +392,18 @@ window.I18n = (() => {
     });
     // Atualiza lang no <html>
     document.documentElement.lang = _lang === 'pt' ? 'pt-BR' : 'en';
-    // Atualiza botão
-    const btn = document.getElementById('langBtn');
-    if (btn) btn.textContent = _lang === 'pt' ? 'EN' : 'PT';
+    // Atualiza botão e garante o clique
+    const label = _lang === 'pt' ? 'EN' : 'PT';
+    const aria = _lang === 'pt' ? 'Switch to English' : 'Mudar para português';
+    document.querySelectorAll('[data-lang-toggle]').forEach((btn) => {
+      btn.type = 'button';
+      btn.textContent = label;
+      btn.setAttribute('aria-label', aria);
+      if (!btn.dataset.boundLang) {
+        btn.dataset.boundLang = '1';
+        btn.addEventListener('click', () => setLang(_lang === 'pt' ? 'en' : 'pt'));
+      }
+    });
   }
 
   /* ── executa ao carregar ────────────────────────────────────────── */
