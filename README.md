@@ -6,10 +6,10 @@ Atlas do lixo espacial. O protótipo visual continua na raiz (`Atlas do Lixo Esp
 
 | Pasta | Conteúdo |
 |---|---|
-| `data/` | Catálogo de artefatos. `artifacts.ts` guarda Luna 2, Luna 9 e Surveyor 1. `schemas/artifact.ts` valida cada registro. |
-| `ia/` | Game Master. O esquema de entrada e de missão fica em `ia/esquema/`. O prompt, a reserva e a chamada ao modelo ficam em `ia/game-master/`. |
-| `simulacao/` | Motor orbital da Síndrome de Kessler. Cada ciclo é uma função pura. |
-| `app/atlas.ts` | Fachada única. Exporta `criarAtlas()`, os tipos e as constantes dos controles. |
+| `data/` | Catálogo de artefatos. `artifacts.ts` guarda Luna 2, Luna 9 e Surveyor 1. `schemas/artifact.ts` valida cada registro. Guia: `data/etapa-1-catalogo.md`. |
+| `ia/` | Game Master. O esquema de entrada e de missão fica em `ia/esquema/`. O prompt, a reserva e a chamada ao modelo ficam em `ia/game-master/`. Guia: `ia/etapa-2-game-master.md`. |
+| `simulacao/` | Motor orbital da Síndrome de Kessler. Cada ciclo é uma função pura. Guia: `simulacao/etapa-3-simulador.md`. |
+| `app/atlas.ts` | Fachada única. Exporta `criarAtlas()`, os tipos e as constantes dos controles. Guia: `app/etapa-4-fachada.md`. |
 
 A tela importa só `app/atlas.ts`. Catálogo, missão e órbita passam por esse módulo.
 
