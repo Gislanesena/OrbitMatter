@@ -342,3 +342,84 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 @media (prefers-reduced-motion: reduce){
   *{animation:none!important;transition:none!important}
 }
+
+/* =====================================================================
+   MODAL DE LOGIN / PERFIL
+   ===================================================================== */
+
+/* Modal de entrada — aparece sobre tudo, Esc não fecha antes do login */
+#loginModal .modal { width: min(480px, 100%); }
+.login-tabs { display: flex; gap: 4px; padding: 4px; border-radius: 10px; background: var(--raise); border: 1px solid var(--line); }
+.login-tabs button { flex: 1; border: 0; background: transparent; border-radius: 7px; padding: 8px 10px; font-size: 13.5px; color: var(--muted); font-family: var(--body); font-weight: 500; transition: background .15s, color .15s; }
+.login-tabs button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.login-tabs button:hover:not([aria-pressed="true"]) { background: var(--line-soft); color: var(--fg); }
+
+.login-pane { display: grid; gap: 14px; }
+.login-pane[hidden] { display: none !important; }
+
+.form-field { display: grid; gap: 5px; }
+.form-field label { font-size: 13px; color: var(--muted); font-family: var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+.form-field input {
+  width: 100%; box-sizing: border-box;
+  padding: 10px 12px; border-radius: 8px;
+  border: 1.5px solid var(--line); background: var(--deep);
+  color: var(--fg); font: 15px var(--body); outline: none;
+  transition: border-color .15s;
+}
+.form-field input:focus { border-color: var(--accent); }
+.form-field input[aria-invalid="true"] { border-color: var(--bad); }
+.form-field .field-error { font-size: 12.5px; color: var(--bad); font-family: var(--mono); min-height: 16px; }
+
+.login-divider { display: flex; align-items: center; gap: 10px; color: var(--faint); font-size: 12px; font-family: var(--mono); letter-spacing: .08em; }
+.login-divider::before, .login-divider::after { content: ''; flex: 1; height: 1px; background: var(--line-soft); }
+
+.btn-google {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; padding: 10px 16px; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--raise);
+  color: var(--fg); font: 500 14px var(--body); cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.btn-google:hover { border-color: var(--faint); background: var(--deep); }
+.btn-google svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+.login-welcome { text-align: center; display: grid; gap: 6px; padding-top: 4px; }
+.login-welcome h2 { font-size: 24px; }
+.login-welcome p { font-size: 13.5px; color: var(--muted); }
+
+/* ---- Ícone de perfil no HUD ---- */
+.profile-wrap { position: relative; }
+.profile-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 2px solid var(--line); background: var(--raise);
+  cursor: pointer; overflow: hidden; display: grid; place-items: center;
+  font-family: var(--display); font-size: 15px; font-weight: 700;
+  color: var(--fg); transition: border-color .15s;
+  flex-shrink: 0;
+}
+.profile-btn:hover { border-color: var(--accent); }
+.profile-btn img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
+
+/* Menu suspenso do perfil */
+.profile-menu {
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 50;
+  background: var(--panel-solid); border: 1px solid var(--line); border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0,0,0,.55); min-width: 220px;
+  display: grid; gap: 0; overflow: hidden;
+}
+.profile-menu[hidden] { display: none !important; }
+.profile-menu-header { padding: 12px 14px; border-bottom: 1px solid var(--line-soft); }
+.profile-menu-header strong { display: block; font-family: var(--display); font-size: 15px; font-weight: 600; }
+.profile-menu-header span { font-size: 11.5px; color: var(--muted); font-family: var(--mono); }
+.profile-menu button {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  text-align: left; border: 0; background: transparent;
+  padding: 10px 14px; font-size: 13.5px; color: var(--fg);
+  cursor: pointer; font-family: var(--body); transition: background .12s;
+}
+.profile-menu button:hover { background: var(--raise); }
+.profile-menu button svg { width: 15px; height: 15px; color: var(--muted); flex-shrink: 0; }
+.profile-menu button.danger { color: var(--bad); }
+.profile-menu button.danger svg { color: var(--bad); }
+.profile-menu-sep { height: 1px; background: var(--line-soft); margin: 2px 0; }
+#profileImgInput { display: none; }
