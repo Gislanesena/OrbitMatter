@@ -347,14 +347,8 @@ window.I18n = (() => {
   };
 
   /* ── estado ─────────────────────────────────────────────────────── */
-  let _lang = (() => {
-    try {
-      const saved = localStorage.getItem('atlas:lang');
-      const chosen = localStorage.getItem('atlas:lang-chosen') === '1';
-      if (chosen && (saved === 'en' || saved === 'pt')) return saved;
-      return 'en';
-    } catch { return 'en'; }
-  })();
+  // A página abre sempre em inglês. PT só entra se a pessoa clicar no botão.
+  let _lang = 'en';
 
   /* ── API ────────────────────────────────────────────────────────── */
   function t(key) {
@@ -366,10 +360,7 @@ window.I18n = (() => {
   function setLang(lang) {
     if (lang !== 'pt' && lang !== 'en') return;
     _lang = lang;
-    try {
-      localStorage.setItem('atlas:lang', lang);
-      localStorage.setItem('atlas:lang-chosen', '1');
-    } catch { /* ignora */ }
+    try { localStorage.removeItem('atlas:lang'); localStorage.removeItem('atlas:lang-chosen'); } catch { /* ignora */ }
     _apply();
     // Notifica o jogo para re-renderizar
     if (window._onLangChange) window._onLangChange(lang);
@@ -393,8 +384,8 @@ window.I18n = (() => {
     // Atualiza lang no <html>
     document.documentElement.lang = _lang === 'pt' ? 'pt-BR' : 'en';
     // Atualiza botão e garante o clique
-    const label = _lang === 'pt' ? 'EN' : 'PT';
-    const aria = _lang === 'pt' ? 'Switch to English' : 'Mudar para português';
+    const label = _lang === 'pt' ? 'PT' : 'EN';
+    const aria = _lang === 'pt' ? 'Idioma português. Clique para inglês.' : 'English. Click to switch to Portuguese.';
     document.querySelectorAll('[data-lang-toggle]').forEach((btn) => {
       btn.type = 'button';
       btn.textContent = label;
