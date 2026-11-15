@@ -383,7 +383,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
 
 
 /* ===================================================================
-   ROBOZINHO: assistente orbital (robô + seta + chat com IA)
+   ROBOZINHO: SojournBot (robô + seta + chat com IA)
    Usa as mesmas cores/fontes do resto do Atlas (variáveis :root).
    =================================================================== */
 #robotAssistant {
@@ -414,8 +414,9 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
 }
 
 #robotCharacter {
-  width: 80px;
-  height: 95px;
+  width: 118px;
+  height: 84px;
+  overflow: visible;
   padding: 0;
   border: 0;
   background: transparent;
@@ -489,12 +490,14 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
 .robot-id { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .robot-avatar {
   flex: none;
-  width: 38px;
-  height: 38px;
-  padding: 3px;
-  border-radius: 50%;
-  border: 1.5px solid var(--accent);
-  background: var(--raise);
+  width: 64px;
+  height: 46px;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  object-fit: contain;
+  overflow: visible;
 }
 .robot-id strong {
   display: block;
@@ -664,7 +667,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
 
 /* ---------- Celular: o chat vira uma folha na parte de baixo ---------- */
 @media (max-width: 760px) {
-  #robotCharacter { width: 64px; height: 76px; }
+  #robotCharacter { width: 96px; height: 68px; }
   #robotArrow { width: 26px; height: 50px; }
   #robotAssistant.robot-open .robot-launcher { display: none; }
   #robotAssistant.robot-open #robotBubble {
@@ -2425,7 +2428,7 @@ document.addEventListener('DOMContentLoaded', () => {
     'qwen/qwen3.8-27b',
   ];
   const GROQ_SYSTEM = [
-    'Você é o Assistente Orbital oficial do Atlas do Lixo Espacial, um guia amigável, inteligente e especialista em exploração espacial, ciência e sustentabilidade orbital. Seu objetivo é ajudar entusiastas em idade escolar e curiosos a descobrirem as máquinas históricas que a humanidade e a NASA deixaram na Lua, em Marte e no espaço profundo, além de explicar os riscos dos detritos orbitais e da Síndrome de Kessler.',
+    'Você é o SojournBot, um rover inteligente do Atlas do Lixo Espacial. Seu nome é SojournBot: apresente-se e reconheça-se sempre com esse nome. Você é especializado em orientação espacial e em dados de detritos orbitais. Ajude entusiastas em idade escolar e curiosos a descobrirem as máquinas históricas que a humanidade e a NASA deixaram na Lua, em Marte e no espaço profundo, e explique os riscos dos detritos orbitais e da Síndrome de Kessler.',
     'Diretrizes:',
     '1. Tom: Empolgante, acolhedor, curioso e educativo. Trate os artefatos históricos (como a Surveyor 1 ou a Voyager 1) como monumentos silenciosos e marcos da ciência.',
     '2. Clareza: Use analogias simples para explicar conceitos complexos, evitando jargões técnicos excessivos sem explicá-los.',
@@ -2483,7 +2486,7 @@ document.addEventListener('DOMContentLoaded', () => {
     robotBtn.setAttribute('aria-expanded', String(open));
     arrowBtn.setAttribute('aria-expanded', String(open));
     arrowBtn.setAttribute('aria-label', open ? 'Fechar chat' : 'Abrir chat');
-    robotBtn.setAttribute('aria-label', open ? 'Fechar assistente' : 'Abrir assistente');
+    robotBtn.setAttribute('aria-label', open ? 'Fechar SojournBot' : 'Abrir SojournBot');
     if (open) {
       scrollDown();
       if (window.matchMedia('(pointer: fine)').matches) input.focus();
@@ -2554,7 +2557,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function addTyping() {
     const div = document.createElement('div');
     div.className = 'robot-msg bot robot-typing';
-    div.setAttribute('aria-label', 'Assistente está respondendo');
+    div.setAttribute('aria-label', 'SojournBot está respondendo');
     div.innerHTML = '<i></i><i></i><i></i>';
     list.appendChild(div);
     scrollDown();
@@ -2567,11 +2570,35 @@ document.addEventListener('DOMContentLoaded', () => {
     statusEl.textContent = STATUS[state] || STATUS.idle;
   }
   function updateSend() { sendBtn.disabled = busy || input.value.trim() === ''; }
+  const ROBOT_IDLE = 'frente.png';
+  const ROBOT_THINK = ['apontando_olhando_esquerda.png', 'frente.png', 'apontando_olhando_direita.png'];
+  const reduceRobotMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let thinkTimer = null;
+  let thinkFrame = 0;
+  function setRobotPose(src) {
+    root.querySelectorAll('.robot-img').forEach((img) => { if (img.getAttribute('src') !== src) img.src = src; });
+  }
+  function startThinking() {
+    stopThinking(false);
+    if (reduceRobotMotion) return;
+    thinkFrame = 0;
+    setRobotPose(ROBOT_THINK[0]);
+    thinkTimer = setInterval(() => {
+      thinkFrame = (thinkFrame + 1) % ROBOT_THINK.length;
+      setRobotPose(ROBOT_THINK[thinkFrame]);
+    }, 350);
+  }
+  function stopThinking(reset) {
+    if (thinkTimer) { clearInterval(thinkTimer); thinkTimer = null; }
+    if (reset !== false) setRobotPose(ROBOT_IDLE);
+  }
   function setBusy(b) {
     busy = b;
     micBtn.disabled = b;
     input.disabled = b;
     setState(b ? 'thinking' : 'idle');
+    if (b) startThinking();
+    else stopThinking(true);
     updateSend();
     const aberto = !bubble.classList.contains('hidden');
     if (!b && aberto && window.matchMedia('(pointer: fine)').matches) input.focus();
@@ -2775,12 +2802,12 @@ document.addEventListener('DOMContentLoaded', () => {
 <div id="robotAssistant">
 
   <!-- Janela do chat (só aparece depois do clique no robô ou na seta) -->
-  <section id="robotBubble" class="hidden" role="dialog" aria-label="Chat com o Assistente Orbital">
+  <section id="robotBubble" class="hidden" role="dialog" aria-label="Chat com o SojournBot">
     <header class="robot-header">
       <div class="robot-id">
-        <img class="robot-img robot-avatar" src="robo-assistente.svg" alt="">
+        <img class="robot-img robot-avatar" src="frente.png" alt="">
         <div>
-          <strong>Assistente Orbital</strong>
+          <strong>SojournBot</strong>
           <span class="robot-status" id="robotStatus">Pronto para ajudar</span>
         </div>
       </div>
@@ -2791,7 +2818,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     <!-- Histórico de mensagens -->
     <div id="robotMessages" role="log" aria-live="polite">
-      <div class="robot-msg bot">Olá! Sou o assistente orbital. Pergunte sobre lixo espacial, órbitas e as missões do Atlas. Você pode digitar ou usar o microfone.</div>
+      <div class="robot-msg bot">Olá! Sou o SojournBot. Pergunte sobre lixo espacial, órbitas e as missões do Atlas. Você pode digitar ou usar o microfone.</div>
     </div>
 
     <!-- Perguntas prontas -->
@@ -2815,8 +2842,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   <!-- Robô animado + seta à direita: os dois abrem e fecham o chat -->
   <div class="robot-launcher">
-    <button type="button" id="robotCharacter" aria-label="Abrir assistente" aria-expanded="false" aria-controls="robotBubble">
-      <img class="robot-img" src="robo-assistente.svg" alt="">
+    <button type="button" id="robotCharacter" aria-label="Abrir SojournBot" aria-expanded="false" aria-controls="robotBubble">
+      <img class="robot-img" src="frente.png" alt="">
     </button>
     <button type="button" id="robotArrow" aria-label="Abrir chat" aria-expanded="false" aria-controls="robotBubble">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>
