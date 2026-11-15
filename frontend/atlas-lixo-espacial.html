@@ -3,7 +3,7 @@
 
 
 </style></head><body>
-<title>Atlas do Lixo Espacial</title>
+<title>Memórias do Espaço</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -84,10 +84,18 @@ p{margin:0}
   backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 20px 50px rgba(0,0,0,.45)}
 #missionCard{left:var(--gutter-l);top:calc(78px + env(safe-area-inset-top,0px));width:300px;padding:16px;display:grid;gap:12px}
 #missionCard h2{font-size:18px}
-#expertNote{left:var(--gutter-l);width:300px;padding:14px 16px;display:grid;gap:8px;align-content:start;overflow:auto;z-index:15}
-#expertNote p{font-size:13.5px;color:var(--muted)}
-#expertNote strong{color:var(--fg);font-weight:600}
-#expertNote em{color:var(--fg);font-style:italic}
+#expertNote{left:var(--gutter-l);width:300px;padding:14px 16px;display:grid;gap:10px;align-content:start;overflow:auto;z-index:15}
+.expert-head{display:flex;align-items:center;gap:8px;min-width:0}
+.expert-head div{min-width:0}
+.expert-badge{width:28px;height:28px;display:grid;place-items:center;border-radius:8px;background:var(--raise);border:1px solid var(--line);font-size:15px;line-height:1;flex:none}
+#expertNote h3{margin:2px 0 0;font-size:14px;line-height:1.3;font-weight:650}
+.aware-taxon{justify-self:start;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 8px}
+.aware-themes{display:flex;flex-wrap:wrap;gap:6px}
+.aware-themes button{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:4px 8px;font-size:11px;line-height:1.2}
+.aware-themes button[aria-pressed="true"]{color:var(--fg);border-color:var(--faint);background:var(--raise)}
+#expertNote p{margin:0;font-size:13px;line-height:1.55;color:var(--muted)}
+#awareMore{color:var(--fg)}
+#awareMoreBtn{justify-self:start;border:0;background:transparent;color:var(--data);padding:0;font-size:12.5px;font-weight:600}
 .mc-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .checklist{list-style:none;margin:0;padding:0;display:grid;gap:8px}
 .checklist li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--muted)}
@@ -377,7 +385,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
   #missionCard .btn{padding:7px 12px;font-size:13px}
   #voyagerPin{max-width:calc(100vw - var(--gutter-l) - var(--gutter-r) - 32px)}
   #voyagerPin img{width:36px;height:36px}
-  #expertNote{width:min(300px, calc(100vw - var(--gutter-l) - var(--gutter-r) - 32px));padding:12px}
+  #expertNote{width:min(300px, calc(100vw - var(--gutter-l) - var(--gutter-r) - 32px));padding:14px 14px 16px 16px}
   #objPanel,#atlasDrawer{left:0;right:0;width:auto;bottom:calc(var(--dock-h) + env(safe-area-inset-bottom,0px));top:auto;z-index:16;
     max-height:58%;border-radius:14px 14px 0 0;border-bottom:0;
     padding-left:var(--gutter-l);padding-right:var(--gutter-r)}
@@ -718,7 +726,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
 
 <header class="hud">
   <div class="brand">
-    <h1>Atlas do Lixo Espacial</h1>
+    <h1>Memórias do Espaço</h1>
     <span>Protótipo · dados de exemplo</span>
   </div>
   <ol class="phases" id="phases" aria-label="Etapas da jornada"></ol>
@@ -739,10 +747,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
   <img alt="" src="https://images-assets.nasa.gov/image/PIA14111/PIA14111~small.jpg">
   <span><b>Voyager 1</b><small>Espaço profundo</small></span>
 </button>
-<aside class="panel" id="expertNote" aria-label="Nota do especialista">
-  <span class="eyebrow">Nota do especialista</span>
-  <p><strong>Arqueologia Espacial vs. Detritos:</strong> <em>“Diferenciar detritos gerados por explosões de naves históricas (como sondas e landers) é o primeiro passo para a sustentabilidade espacial. Enquanto o lixo comum (fragmentos e estágios vazios) exige remoção urgente para travar a Síndrome de Kessler, o hardware legado (como o que a NASA deixou na Lua e em Marte) representa os nossos primeiros passos e deve ser tratado como arqueologia espacial: monumentos que ensinaram a humanidade a olhar para as estrelas.”</em></p>
-</aside>
+<aside class="panel" id="expertNote" aria-label="Consciência Espacial"></aside>
 
 <aside class="panel" id="objPanel" hidden aria-label="Ficha do objeto"></aside>
 
@@ -958,7 +963,7 @@ const OBJECTS = [];
 const counters = { fragmento: 0, satelite: 0, estagio: 0, artefato: 0 };
 [['terra', 'fragmento', 8], ['terra', 'satelite', 5], ['terra', 'estagio', 5],
  ['lua', 'satelite', 1], ['lua', 'estagio', 1], ['lua', 'fragmento', 1],
- ['marte', 'estagio', 1], ['marte', 'fragmento', 1]].forEach(([body, type, n]) => {
+ ['marte', 'satelite', 2], ['marte', 'estagio', 1], ['marte', 'fragmento', 1]].forEach(([body, type, n]) => {
   for (let i = 0; i < n; i++) {
     const R = BODY_R[body];
     let r;
@@ -975,23 +980,6 @@ const counters = { fragmento: 0, satelite: 0, estagio: 0, artefato: 0 };
   }
 });
 [
-  {
-    id: 'curiosity', type: 'artefato', body: 'marte', name: 'Curiosity',
-    r: BODY_R.marte * 1.35, incl: 0.2, node: 0.4, phase: 0.6, surface: true,
-    data: {
-      origem: 'NASA / JPL · Mars Science Laboratory. Pouso em 6 de agosto de 2012 na cratera Gale.',
-      altitude: 'Superfície, cratera Gale (cerca de 4,6° S, 137,4° E). A posição no mapa é ilustrativa.',
-      velocidade: 'No solo. Não está em órbita.',
-      permanencia: 'Em operação desde 2012. Em 2026 ainda envia dados científicos.',
-      riscos: 'Ainda faz ciência. Tratar o rover como lixo apagaria um instrumento ativo.',
-      destinos: 'Seguir como arquivo vivo da geologia de Marte.',
-    },
-    analysis: {
-      origem: 'O rover Curiosity foi lançado em 26 de novembro de 2011 e pousou na cratera Gale em 6 de agosto de 2012. O JPL, laboratório da NASA, o enviou para ler as rochas e procurar sinais de que Marte já teve condições para a vida.',
-      permanencia: 'Curiosity não orbita Marte. Trabalha na superfície desde 2012 e, em 2026, continua ativo. Por isso não entra na conta de detrito a remover.',
-      riscos: 'O risco não é uma colisão em órbita. É interromper um instrumento que ainda produz ciência na cratera Gale.',
-    },
-  },
   {
     id: 'insight', type: 'artefato', body: 'marte', name: 'InSight',
     r: BODY_R.marte * 1.48, incl: -0.25, node: 2.1, phase: 2.4, surface: true,
@@ -1096,23 +1084,23 @@ const ALL_MISSIONS = [
 
   /* ==================== MARTE ==================== */
   { id: 'marte1', body: 'marte', chapter: 1, title: 'Estágio à deriva', target: 'estagio',
-    briefing: 'Em Marte, os estágios usados para chegar à superfície ficam para trás. O estágio de cruzeiro da Curiosity queimou ao entrar na atmosfera, mas o guindaste aéreo, de 680 kg, foi descartado e fez um pouso forçado. Agora um estágio abandonado está no caminho de uma missão nova. O que você faz?',
-    explain: 'Marte tem uma atmosfera fina, então parte dos estágios pode queimar na entrada, como o de cruzeiro da Curiosity. O que sobra cai na superfície e vira lixo que pode atrapalhar missões futuras. Por isso, tirar o objeto do caminho ou fazê-lo entrar na atmosfera funciona melhor do que só desviar a nave.',
+    briefing: 'Em Marte, os estágios usados para chegar à superfície ficam para trás. O estágio de cruzeiro do Mars Science Laboratory queimou ao entrar na atmosfera, e o guindaste aéreo, de 680 kg, foi descartado num pouso forçado. Agora um estágio abandonado está no caminho de uma missão nova. O que você faz?',
+    explain: 'Marte tem uma atmosfera fina, então parte dos estágios pode queimar na entrada, como o estágio de cruzeiro do Mars Science Laboratory. O que sobra cai na superfície e vira lixo que pode atrapalhar missões futuras. Por isso, tirar o objeto do caminho ou fazê-lo entrar na atmosfera funciona melhor do que só desviar a nave.',
     comentarios: {
       desvio: 'Desviar a nave resolve só dessa vez. O estágio continua lá e pode atrapalhar as próximas missões.',
       remocao: 'Capturar o estágio tira o perigo de vez. É a opção mais segura, mas Marte fica muito longe da Terra, então é cara e difícil.',
-      desorbitar: 'Em Marte existe atmosfera, ainda que fina, então parte do estágio pode queimar, como o de cruzeiro da Curiosity. O que sobrar cai na superfície, então o local da queda precisa ser escolhido com cuidado.',
+      desorbitar: 'Em Marte existe atmosfera, ainda que fina, então parte do estágio pode queimar, como o estágio de cruzeiro do Mars Science Laboratory. O que sobrar cai na superfície, então o local da queda precisa ser escolhido com cuidado.',
       monitorar: 'Ficar só observando é arriscado, porque o estágio é grande, pesado e sem controle.'
     },
     bonus: { remocao: { seg: 6, ciencia: 6 }, monitorar: { seg: -8 } } },
   { id: 'marte2', body: 'marte', chapter: 2, title: 'Hardware legado', target: 'artefato',
-    briefing: 'Na superfície de Marte há máquinas da NASA com histórias diferentes. O rover Curiosity, operado pelo JPL, ainda trabalha na cratera Gale. O lander InSight, também do JPL, encerrou o contato em dezembro de 2022 e permanece em Elysium Planitia. Uma missão nova precisa passar perto desse hardware. O que você faz?',
-    explain: 'JPL é o Jet Propulsion Laboratory, o laboratório da NASA que opera essas missões. Curiosity ainda envia ciência, então deve ser tratado como instrumento ativo, não como lixo. InSight já está inativo: é um monumento da exploração, e removê-lo sem estudo apaga o registro.',
+    briefing: 'Na superfície de Marte há hardware de missões já encerradas. O lander InSight, operado pelo JPL, perdeu o contato em dezembro de 2022 e permanece em Elysium Planitia. Uma missão nova precisa passar perto desse lander. O que você faz?',
+    explain: 'JPL é o Jet Propulsion Laboratory, o laboratório da NASA que operou o InSight. O lander já está inativo: é um monumento da exploração, e removê-lo sem estudo apaga o registro.',
     comentarios: {
-      desvio: 'Desviar protege a missão nova agora. Curiosity continua trabalhando e InSight continua no solo, então o cuidado precisa se repetir na próxima passagem.',
-      remocao: 'Retirar o hardware apaga o registro. Curiosity ainda faz ciência, e InSight é um monumento inativo. Levar os dois embora, tão longe da Terra, também é caro.',
-      desorbitar: 'Não se aplica: os dois já estão na superfície. A atmosfera fina de Marte não remove um rover nem um lander que já pousaram.',
-      monitorar: 'Observar Curiosity faz sentido enquanto ele opera. Para InSight, só observar adia a decisão de preservá-lo como marco.'
+      desvio: 'Desviar protege a missão nova agora. O InSight continua no solo, então o cuidado precisa se repetir na próxima passagem.',
+      remocao: 'Retirar o lander apaga o registro de uma missão encerrada. Levá-lo embora, tão longe da Terra, também é caro.',
+      desorbitar: 'Não se aplica: o InSight já está na superfície. A atmosfera fina de Marte não remove um lander que já pousou.',
+      monitorar: 'Só observar adia a decisão de preservar o InSight como marco de uma missão encerrada.'
     },
     bonus: { desvio: { comb: 8 }, desorbitar: { seg: 6, orc: 6 } } },
   { id: 'marte3', body: 'marte', chapter: 3, title: 'Nuvem de fragmentos', target: 'fragmento',
@@ -1152,14 +1140,16 @@ const KEY = 'atlas-lixo-espacial-v1';
 const blank = () => ({ started: false, xp: 0, seen: [], analyzed: [], steps: {}, done: {}, badges: [], path: [], kesslerMax: 0, visited: ['terra'], dest: 'terra' });
 let S = blank();
 try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(blank(), JSON.parse(raw)); } catch (e) { /* sem armazenamento */ }
+S.seen = (S.seen || []).filter((id) => byId[id]);
+S.analyzed = (S.analyzed || []).filter((id) => byId[id]);
 function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* ignora */ } }
 
 let curDest = DEST[S.dest] ? S.dest : 'terra';
 let MISSIONS = ALL_MISSIONS.filter((m) => m.body === curDest); // só as missões do planeta atual
 const level = () => Math.floor(S.xp / XP_PER_LEVEL) + 1;
 const currentMission = () => MISSIONS.find((m) => !S.done[m.id]) || null;
-const hasAnalyzedType = (t, b = curDest) => S.analyzed.some((id) => byId[id].type === t && (!b || byId[id].body === b));
-const hasSeenType = (t, b = curDest) => S.seen.some((id) => byId[id].type === t && (!b || byId[id].body === b));
+const hasAnalyzedType = (t, b = curDest) => S.analyzed.some((id) => { const o = byId[id]; return o && o.type === t && (!b || o.body === b); });
+const hasSeenType = (t, b = curDest) => S.seen.some((id) => { const o = byId[id]; return o && o.type === t && (!b || o.body === b); });
 let showLearning = false;
 
 function phaseIndex() {
@@ -1411,6 +1401,142 @@ function conclude() {
   refresh();
 }
 
+const AWARE_THEMES = [
+  { id: 'arqueologia', icon: '🏛', label: 'Arqueologia' },
+  { id: 'sustentabilidade', icon: '♻️', label: 'Sustentabilidade' },
+  { id: 'kessler', icon: '🌀', label: 'Kessler' },
+  { id: 'legado', icon: '📡', label: 'Legado' },
+  { id: 'responsabilidade', icon: '🧭', label: 'Responsabilidade' },
+];
+const AWARE = {
+  detrito: {
+    taxon: 'Detrito espacial',
+    arqueologia: ['Um fragmento de explosão ou colisão não é um sítio arqueológico.', 'Arqueologia espacial trata de hardware deixado de propósito, como os locais Apollo na Lua.'],
+    sustentabilidade: ['O Orbital Debris Program Office da NASA chama de detrito o objeto feito por humanos que já não tem função útil.', 'Fragmentos assim ocupam a órbita e aumentam o risco para satélites ativos.'],
+    kessler: ['Em 1978, Donald Kessler descreveu uma cascata: colisões geram fragmentos, que causam novas colisões.', 'O teste contra o Fengyun-1C em 2007 e a colisão Iridium 33–Cosmos 2251 em 2009 aumentaram muito essa população.'],
+    legado: ['O fragmento registra uma falha ou uma colisão, mas não é um monumento a manter no caminho de outras missões.', 'Preservar a história não exige deixar o pedaço em órbita.'],
+    responsabilidade: ['Quem lança responde pelo que fica para trás.', 'As práticas de mitigação dos EUA, revisadas em 2022, pedem tirar de órbita baixa o satélite em até cinco anos após o fim da missão.'],
+  },
+  estagio: {
+    taxon: 'Estágio sem função',
+    arqueologia: ['Um estágio abandonado em órbita não é hardware legado de superfície.', 'Ele já cumpriu o lançamento e, sem função, entra na conta de detrito.'],
+    sustentabilidade: ['Estágios com combustível restante podem explodir anos depois.', 'A NASA pede passivação: esvaziar a energia que sobrou para o estágio não se partir sozinho.'],
+    kessler: ['Corpos de foguete são peças grandes. Uma explosão deles vira centenas de fragmentos.', 'Esse é um caminho clássico para a cascata descrita por Kessler.'],
+    legado: ['O estágio ajuda a contar como a missão subiu, mas o valor histórico não apaga o risco de colisão.', 'O registro fica nos dados. A peça em órbita precisa de um plano de saída.'],
+    responsabilidade: ['Descarte do estágio faz parte do lançamento, não é um detalhe depois.', 'A mesma prática de cinco anos vale para tirar estágios da órbita baixa quando a missão acaba.'],
+  },
+  inativo: {
+    taxon: 'Equipamento desativado',
+    arqueologia: ['Um satélite inteiro e desligado não é o mesmo que um fragmento anônimo.', 'Ele pode guardar uma missão histórica e, ainda assim, ser detrito se já não opera.'],
+    sustentabilidade: ['Sem energia e sem manobra, o satélite inativo só cruza a rota dos que ainda funcionam.', 'Por isso a NASA separa “não tem mais função” de “ainda faz ciência”.'],
+    kessler: ['Um satélite morto é um alvo grande numa cascata.', 'Tirá-lo ou desviá-lo reduz a chance de ele virar uma nuvem de fragmentos.'],
+    legado: ['A missão continua nos artigos, nas fotos e no catálogo.', 'Manter o corpo em órbita sem controle não é a forma de honrar esse legado.'],
+    responsabilidade: ['Desligar o satélite inclui um plano para sair da órbita útil.', 'Deixar o veículo à deriva transfere o risco para as missões seguintes.'],
+  },
+  insight: {
+    taxon: 'Hardware legado',
+    arqueologia: ['O contato do InSight acabou em dezembro de 2022, quando a poeira cobriu os painéis.', 'O lander ficou inteiro em Elysium Planitia: é registro de uma missão, não fragmento em órbita.'],
+    sustentabilidade: ['Ele não orbita e não alimenta uma cascata de colisões.', 'Sustentabilidade, neste caso, é não apagar o instrumento sem estudo.'],
+    kessler: ['Kessler descreve colisões em órbita. O InSight está no chão.', 'O risco dele não é gerar detrito orbital.'],
+    legado: ['A missão ouviu martemotos e mediu o interior de Marte.', 'O hardware que sobrou é a evidência física desse trabalho.'],
+    responsabilidade: ['Encerrar o contato não transforma o lander em lixo comum.', 'A decisão correta começa por reconhecer uma missão concluída.'],
+  },
+  voyager: {
+    taxon: 'Equipamento ativo',
+    arqueologia: ['A Voyager 1 ainda se comunica. Não é um artefato abandonado.', 'Ela é o objeto humano mais distante e segue sendo operada pelo JPL.'],
+    sustentabilidade: ['A sonda está fora das órbitas da Terra desde o lançamento, em 5 de setembro de 1977.', 'Não compete com satélites ativos nem entra na conta de detrito orbital.'],
+    kessler: ['Em 25 de agosto de 2012 ela cruzou a heliopausa.', 'A cascata de Kessler acontece perto da Terra, não no espaço interestelar.'],
+    legado: ['Os sobrevoos de Júpiter e Saturno continuam como marco da exploração.', 'O legado, aqui, é uma missão que ainda envia dados.'],
+    responsabilidade: ['Cuidar da Voyager é manter o contato, não limpar a trajetória.', 'Confundir uma sonda ativa com detrito apaga essa diferença.'],
+  },
+  lunar: {
+    taxon: 'Hardware legado',
+    arqueologia: ['A Lunar Orbiter 1 mapeou a Lua e foi guiada até o impacto em 29 de outubro de 1966.', 'Foi um fim de missão decidido, não um fragmento perdido na órbita da Terra.'],
+    sustentabilidade: ['Tirar a nave da órbita lunar evitou que ela cruzasse missões posteriores.', 'Isso é o oposto de abandonar um estágio na órbita baixa da Terra.'],
+    kessler: ['O risco de cascata que Kessler estudou está na órbita terrestre.', 'Um impacto lunar controlado em 1966 não alimenta essa cascata.'],
+    legado: ['As fotos da Lunar Orbiter ajudaram a escolher locais de pouso.', 'O valor está no mapa que ela fez, não em tratar o impacto como lixo qualquer.'],
+    responsabilidade: ['A equipe encerrou a órbita de propósito.', 'Essa escolha mostra responsabilidade com as missões que viriam depois.'],
+  },
+  beresheet: {
+    taxon: 'Detrito de impacto',
+    arqueologia: ['A Beresheet, da SpaceIL, bateu na Lua em 11 de abril de 2019 durante a tentativa de pouso.', 'Um impacto acidental não é o mesmo que um sítio Apollo deixado de propósito.'],
+    sustentabilidade: ['O acidente ficou na superfície, não numa órbita compartilhada com satélites ativos.', 'Ainda assim, o pedaço não volta a ser uma nave operacional.'],
+    kessler: ['Kessler trata de colisões que se multiplicam em órbita.', 'O impacto da Beresheet não criou essa cascata na Terra.'],
+    legado: ['A missão foi a primeira tentativa privada de pousar na Lua.', 'O legado é a tentativa e os dados, não uma licença para chamar todo hardware lunar de lixo.'],
+    responsabilidade: ['Falhar no pouso pede registro honesto do acidente.', 'Não pede apagar a diferença entre impacto e monumento histórico.'],
+  },
+  schiaparelli: {
+    taxon: 'Detrito de impacto',
+    arqueologia: ['O módulo Schiaparelli, da ExoMars, caiu em Marte em 19 de outubro de 2016.', 'O local do impacto é um acidente documentado, não um laboratório ainda em uso.'],
+    sustentabilidade: ['Ele está no solo. Não ocupa a órbita da Terra.', 'Sustentabilidade orbital se resolve nos objetos que ainda cruzam satélites ativos.'],
+    kessler: ['A queda não gera a cascata de Kessler.', 'Esse risco continua sendo o das colisões em órbita.'],
+    legado: ['A falha ensinou sobre a entrada na atmosfera de Marte.', 'Guardar a lição não exige tratar o módulo como se ainda operasse.'],
+    responsabilidade: ['Nomear o acidente evita dois erros: chamar tudo de lixo ou tudo de monumento.', 'O Schiaparelli é um impacto, não o lander InSight.'],
+  },
+  lua: {
+    taxon: 'Hardware legado e detrito',
+    arqueologia: ['Em 2011 a NASA publicou recomendações para proteger artefatos lunares dos EUA, como etapas de descida e experimentos Apollo.', 'Isso é arqueologia espacial: hardware deixado na exploração, não fragmento em órbita.'],
+    sustentabilidade: ['Na Lua, o cuidado é não apagar sítios históricos ao pousar por perto.', 'Na órbita da Terra, o cuidado é tirar o que já não tem função.'],
+    kessler: ['A Lua não é o cenário da cascata de Kessler.', 'Esse problema está nas órbitas terrestres lotadas.'],
+    legado: ['O que ficou na Lua marca os primeiros pousos e as primeiras órbitas de mapeamento.', 'O legado pede distância e registro, não remoção às pressas.'],
+    responsabilidade: ['As recomendações da NASA pedem que novas missões respeitem esses locais.', 'Chegar de novo à Lua inclui não passar por cima da história já deixada lá.'],
+  },
+  marte: {
+    taxon: 'Inativo, legado e impacto',
+    arqueologia: ['Em Marte ficaram sondas desligadas, um lander que já calou e um módulo que caiu.', 'Nenhum deles ainda opera. O que resta é hardware legado ou detrito.'],
+    sustentabilidade: ['Nenhum deles alimenta a órbita lotada da Terra.', 'A sustentabilidade, aqui, é não apagar o registro do que já encerrou.'],
+    kessler: ['Kessler não descreve a superfície de Marte.', 'A cascata é um problema de órbita terrestre.'],
+    legado: ['InSight, o Mars Global Surveyor e o acidente do Schiaparelli contam capítulos diferentes.', 'O legado muda conforme a missão já encerrou em órbita, no solo ou na queda.'],
+    responsabilidade: ['A primeira pergunta é a classe do objeto.', 'Sem isso, uma decisão de limpeza trata lander histórico e destroço como se fossem iguais.'],
+  },
+  terra: {
+    taxon: 'Detrito, estágio e satélite inativo',
+    arqueologia: ['Na órbita da Terra, fragmento, estágio vazio e satélite desligado não são sítios arqueológicos.', 'Arqueologia espacial cabe melhor no hardware deixado na Lua e em Marte.'],
+    sustentabilidade: ['O escritório de detritos da NASA, no Johnson Space Center, acompanha o que já não tem função.', 'Mitigar é evitar a explosão e tirar o objeto da órbita útil no fim da missão.'],
+    kessler: ['Kessler mostrou, em 1978, que colisões podem se alimentar sozinhas.', 'O risco é maior em algumas faixas da órbita baixa. Não significa que toda órbita já esteja perdida.'],
+    legado: ['Satélites históricos também ficam sem energia e viram risco de colisão.', 'O legado se guarda no registro da missão. O corpo em órbita pede um fim planejado.'],
+    responsabilidade: ['A prática atual dos EUA pede descarte da órbita baixa em até cinco anos após o fim da missão.', 'Antes, a referência mais citada era a regra de 25 anos do IADC.'],
+  },
+};
+let awareTheme = 'arqueologia';
+let awareOpen = false;
+let awareKey = '';
+const AWARE_FOLD_AT = 280;
+function awarenessFocus() {
+  if ($('voyagerModal') && !$('voyagerModal').hidden) return { key: 'voyager', title: 'Voyager 1' };
+  const o = selectedId && byId[selectedId];
+  if (o) {
+    const key = o.id === 'insight' ? 'insight' : o.id === 'S-06' ? 'lunar' : o.id === 'F-09' ? 'beresheet' : o.id === 'F-10' ? 'schiaparelli' : o.type === 'fragmento' ? 'detrito' : o.type === 'estagio' ? 'estagio' : o.type === 'satelite' ? 'inativo' : 'legado';
+    return { key, title: o.name };
+  }
+  if (curDest === 'lua') return { key: 'lua', title: 'Lua' };
+  if (curDest === 'marte') return { key: 'marte', title: 'Marte' };
+  return { key: 'terra', title: 'Órbita da Terra' };
+}
+function renderAwareness() {
+  const note = $('expertNote');
+  if (!note) return;
+  const focus = awarenessFocus();
+  if (focus.key !== awareKey) { awareKey = focus.key; awareOpen = false; }
+  const pack = AWARE[focus.key] || AWARE.terra;
+  const theme = AWARE_THEMES.some((t) => t.id === awareTheme) ? awareTheme : 'arqueologia';
+  const copy = pack[theme] || pack.arqueologia;
+  const current = AWARE_THEMES.find((t) => t.id === theme);
+  const full = copy[0] + ' ' + (copy[1] || '');
+  const fold = full.length >= AWARE_FOLD_AT;
+  if (!fold) awareOpen = false;
+  note.innerHTML =
+    '<div class="expert-head"><span class="expert-badge" aria-hidden="true">' + current.icon + '</span><div><span class="eyebrow">Consciência Espacial</span><h3>' + esc(focus.title) + '</h3></div></div>' +
+    '<span class="aware-taxon">' + esc(pack.taxon) + '</span>' +
+    '<div class="aware-themes" role="group" aria-label="Eixos da consciência espacial">' +
+      AWARE_THEMES.map((t) => '<button type="button" data-aware="' + t.id + '" aria-pressed="' + (t.id === theme) + '">' + t.icon + ' ' + t.label + '</button>').join('') +
+    '</div>' +
+    '<p>' + esc(copy[0]) + '</p>' +
+    ((!fold || awareOpen) && copy[1] ? '<p id="awareMore">' + esc(copy[1]) + '</p>' : '') +
+    (fold ? '<button type="button" id="awareMoreBtn" aria-expanded="' + awareOpen + '">' + (awareOpen ? 'Mostrar menos' : 'Saiba mais') + '</button>' : '');
+}
+
+
 function placeExpertNote() {
   const note = $('expertNote');
   const card = $('missionCard');
@@ -1422,7 +1548,12 @@ function placeExpertNote() {
     const el = document.querySelector(sel);
     if (el && el.getClientRects().length) limit = Math.min(limit, el.getBoundingClientRect().top - 12);
   });
-  const top = r.bottom + 12;
+  let top = r.bottom + 12;
+  const pin = $('voyagerPin');
+  if (pin && window.innerWidth <= 760) {
+    const pr = pin.getBoundingClientRect();
+    if (pr.height) top = Math.max(top, pr.bottom + 12);
+  }
   const room = limit - top;
   if (room < 72) { note.hidden = true; return; }
   note.hidden = false;
@@ -1444,7 +1575,7 @@ function placeVoyagerPin() {
     panel.style.top = Math.round(pin.getBoundingClientRect().bottom + 12) + 'px';
   }
 }
-function refresh() { document.querySelectorAll('.seg [data-dest]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.dest === curDest))); renderHUD(); renderMissionCard(); renderAtlas(); renderObjPanel(); updateMeshes(); save(); placeExpertNote(); placeVoyagerPin(); }
+function refresh() { document.querySelectorAll('.seg [data-dest]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.dest === curDest))); renderHUD(); renderMissionCard(); renderAtlas(); renderObjPanel(); updateMeshes(); save(); renderAwareness(); placeVoyagerPin(); placeExpertNote(); }
 
 /* =====================================================================
    4. MISSÕES (simulador de decisões)
@@ -1616,7 +1747,6 @@ function bindLeadSlider() {
     paintLead(true);
   });
 }
-
 function confirmDecision() {
   const m = MISSIONS.find((x) => x.id === viewMission);
   if (!m || !choice || S.done[m.id]) return;
@@ -1654,6 +1784,7 @@ function openModal(id) {
   if (id === 'diaryModal') renderDiary();
   if (id === 'kesslerModal') kOpen();
   syncDock();
+  renderAwareness();
   const f = $(id).querySelector('button'); if (f) f.focus({ preventScroll: true });
 }
 function closeModal(id) {
@@ -1664,6 +1795,7 @@ function closeModal(id) {
     $('voyagerPin').setAttribute('aria-pressed', 'false');
   }
   syncDock();
+  renderAwareness();
 }
 function syncDock() {
   $('dAtlas').setAttribute('aria-pressed', String(!$('atlasDrawer').hidden));
@@ -1747,6 +1879,8 @@ document.addEventListener('click', (e) => {
   if (t.dataset.mission) { viewMission = t.dataset.mission; choice = null; renderMissions(); return; }
   if (t.dataset.strategy) { choice = t.dataset.strategy; renderMissions(); return; }
   if (t.dataset.voyagerEvent) { voyagerEvent = t.dataset.voyagerEvent; renderVoyager(); return; }
+  if (t.dataset.aware) { awareTheme = t.dataset.aware; awareOpen = false; renderAwareness(); return; }
+  if (t.id === 'awareMoreBtn') { awareOpen = !awareOpen; renderAwareness(); return; }
   switch (t.id) {
     case 'closeObj': closeObject(); break;
     case 'concludeBtn': conclude(); break;
@@ -2521,7 +2655,7 @@ $('kReset').addEventListener('click', () => { kPause(); kReset(); $('kPlay').tex
 [['kLaunch', (v) => v], ['kRemove', (v) => v], ['kSpeed', (v) => v + '×']].forEach(([id, f]) => {
   $(id).addEventListener('input', () => { $(id + 'V').textContent = f($(id).value); });
 });
-window.addEventListener('resize', () => { placeExpertNote(); placeVoyagerPin(); if (!$('kesslerModal').hidden) kDraw(); });
+window.addEventListener('resize', () => { placeVoyagerPin(); placeExpertNote(); if (!$('kesslerModal').hidden) kDraw(); });
 
 /* =====================================================================
    8. INICIALIZAÇÃO
