@@ -410,7 +410,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
 
 
 /* ===================================================================
-   ROBOZINHO: assistente orbital (robô + seta + chat com IA)
+   ROBOZINHO: SojournBot (robô + seta + chat com IA)
    Usa as mesmas cores/fontes do resto do Atlas (variáveis :root).
    =================================================================== */
 #robotAssistant {
@@ -441,8 +441,9 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
 }
 
 #robotCharacter {
-  width: 80px;
-  height: 95px;
+  width: 118px;
+  height: 84px;
+  overflow: visible;
   padding: 0;
   border: 0;
   background: transparent;
@@ -516,12 +517,14 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
 .robot-id { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .robot-avatar {
   flex: none;
-  width: 38px;
-  height: 38px;
-  padding: 3px;
-  border-radius: 50%;
-  border: 1.5px solid var(--accent);
-  background: var(--raise);
+  width: 64px;
+  height: 46px;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  object-fit: contain;
+  overflow: visible;
 }
 .robot-id strong {
   display: block;
@@ -582,7 +585,6 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
   border-radius: 14px;
   font-size: 14px;
   line-height: 1.45;
-  white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 .robot-msg.bot {
@@ -592,12 +594,22 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
   border-bottom-left-radius: 4px;
   color: var(--fg);
 }
+.robot-msg.bot p { margin: 0 0 8px; }
+.robot-msg.bot p:last-child,
+.robot-msg.bot ul:last-child,
+.robot-msg.bot ol:last-child { margin-bottom: 0; }
+.robot-msg.bot ul,
+.robot-msg.bot ol { margin: 0 0 8px; padding-left: 1.15em; }
+.robot-msg.bot li { margin: 2px 0; }
+.robot-msg.bot strong { font-weight: 700; }
+.robot-msg.bot code { font-family: var(--mono); font-size: .92em; }
 .robot-msg.user {
   align-self: flex-end;
   background: var(--accent);
   color: var(--accent-ink);
   font-weight: 500;
   border-bottom-right-radius: 4px;
+  white-space: pre-wrap;
 }
 .robot-msg.error { border-color: rgba(255, 93, 108, .5); color: #ffb3ba; }
 
@@ -682,7 +694,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
 
 /* ---------- Celular: o chat vira uma folha na parte de baixo ---------- */
 @media (max-width: 760px) {
-  #robotCharacter { width: 64px; height: 76px; }
+  #robotCharacter { width: 96px; height: 68px; }
   #robotArrow { width: 26px; height: 50px; }
   #robotAssistant.robot-open .robot-launcher { display: none; }
   #robotAssistant.robot-open #robotBubble {
@@ -2533,20 +2545,28 @@ if (!S.started) { renderIntro(); $('introModal').hidden = false; }
 document.addEventListener('DOMContentLoaded', () => {
   /* ---- CONFIGURAÇÃO DA IA --------------------------------------------
      A chave fica em frontend/groq-local.js (window.GROQ_API_KEY), fora do Git.
-     Sem chave, o chat usa respostas locais. Com chave, chama a Groq e troca
-     de modelo se a rede cair, o modelo recusar ou o limite de taxa estourar. */
+     O chat chama a Groq e troca de modelo se a rede cair, o modelo recusar
+     ou o limite de taxa estourar. Se a cadeia falhar, tenta de novo uma vez. */
   const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
   const GROQ_MODELS = [
     'llama-3.3-70b-versatile',
     'llama-3.1-8b-instant',
+    'qwen/qwen3.8-27b',
   ];
   const GROQ_SYSTEM = [
-    'Você é o Assistente Orbital oficial do Atlas do Lixo Espacial, um guia amigável, inteligente e especialista em exploração espacial, ciência e sustentabilidade orbital. Seu objetivo é ajudar entusiastas em idade escolar e curiosos a descobrirem as máquinas históricas que a humanidade e a NASA deixaram na Lua, em Marte e no espaço profundo, além de explicar os riscos dos detritos orbitais e da Síndrome de Kessler.',
+    'Você é o SojournBot, um rover inteligente do Atlas do Lixo Espacial. Seu nome é SojournBot: apresente-se e reconheça-se sempre com esse nome. Você é especializado em orientação espacial e em dados de detritos orbitais. Ajude entusiastas em idade escolar e curiosos a descobrirem as máquinas históricas que a humanidade e a NASA deixaram na Lua, em Marte e no espaço profundo, e explique os riscos dos detritos orbitais e da Síndrome de Kessler.',
     'Diretrizes:',
     '1. Tom: Empolgante, acolhedor, curioso e educativo. Trate os artefatos históricos (como a Surveyor 1 ou a Voyager 1) como monumentos silenciosos e marcos da ciência.',
     '2. Clareza: Use analogias simples para explicar conceitos complexos, evitando jargões técnicos excessivos sem explicá-los.',
     '3. Precisão: Baseie suas respostas em dados científicos reais (como NSSDCA, LROC e missões JPL) sempre que aplicável.',
-    '4. Curteza e Dinâmica: Mantenha as respostas focadas em conversas de chat, preferindo parágrafos curtos e organizados.',
+    '4. Concisão: cada resposta tem no máximo 2 ou 3 frases curtas. Não escreva parágrafos longos, listas grandes nem blocos de texto.',
+    'Só passe desse limite se a pessoa pedir explicitamente mais detalhe, uma explicação aprofundada ou um passo a passo.',
+    'Tom de chat: fale como um rover amigo, direto e curioso. Entregue a ideia principal e deixe uma pergunta curta para a pessoa continuar, sem despejar o assunto inteiro de uma vez.',
+    'Diálogo:',
+    'Leia o histórico desta conversa antes de responder. Pronomes e continuações ("eles", "isso", "e como", "e aí") referem-se à mensagem anterior.',
+    'Responda à frase que acabou de chegar. Uma saudação recebe uma saudação curta. Uma pergunta curta, como "lixo espacial?", recebe duas ou três frases sobre esse tema. Um pedido de continuação retoma só o ponto anterior.',
+    'Não comece com "Exatamente!", "Isso mesmo!", "Com certeza!", "Ótima pergunta!" ou outra concordância vazia quando a pessoa não afirmou nada para você confirmar.',
+    'Não invente que a pessoa concordou com você. Não responda como se houvesse uma fala anterior que não está no histórico.',
     'Restrições de escopo e assuntos proibidos:',
     'Responda somente sobre exploração espacial, satélites, engenharia orbital, a história de artefatos e sondas (como Surveyor 1, Voyager, Luna e equivalentes), detritos espaciais e a Síndrome de Kessler.',
     'Não responda quando uma palavra do tema aparecer isolada em outro assunto. Exemplos fora de escopo: bolo ou receita "espacial", festa, horóscopo, astrologia, filmes de ficção científica genéricos, culinária e piadas sem relação com ciência espacial.',
@@ -2571,7 +2591,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const statusEl = $r('robotStatus');
   if (!root || !bubble || !form) return;
 
-  const history = [];
+  const greeting = (list.querySelector('.robot-msg.bot') || {}).textContent || '';
+  const history = greeting ? [{ role: 'assistant', content: greeting.trim() }] : [];
   let busy = false;
 
   /* Se o GIF do robô não carregar, mostra um emoji no lugar */
@@ -2593,7 +2614,7 @@ document.addEventListener('DOMContentLoaded', () => {
     robotBtn.setAttribute('aria-expanded', String(open));
     arrowBtn.setAttribute('aria-expanded', String(open));
     arrowBtn.setAttribute('aria-label', open ? 'Fechar chat' : 'Abrir chat');
-    robotBtn.setAttribute('aria-label', open ? 'Fechar assistente' : 'Abrir assistente');
+    robotBtn.setAttribute('aria-label', open ? 'Fechar SojournBot' : 'Abrir SojournBot');
     if (open) {
       scrollDown();
       if (window.matchMedia('(pointer: fine)').matches) input.focus();
@@ -2615,10 +2636,44 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ---------- Mensagens ---------- */
   function scrollDown() { list.scrollTop = list.scrollHeight; }
 
+  function chatHtml(raw) {
+    const escHtml = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const inline = (s) => escHtml(s)
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/__([^_]+)__/g, '<strong>$1</strong>')
+      .replace(/(^|[\s(])\*([^*\n]+)\*/g, '$1<em>$2</em>')
+      .replace(/(^|[\s(])_([^_\n]+)_/g, '$1<em>$2</em>');
+    const lines = String(raw || '').replace(/\r\n/g, '\n').split('\n');
+    const blocks = [];
+    let list = null;
+    const flush = () => {
+      if (!list) return;
+      const tag = list.ordered ? 'ol' : 'ul';
+      blocks.push('<' + tag + '>' + list.items.map((item) => '<li>' + inline(item) + '</li>').join('') + '</' + tag + '>');
+      list = null;
+    };
+    lines.forEach((line) => {
+      const ul = line.match(/^\s*[-*]\s+(.+)$/);
+      const ol = line.match(/^\s*\d+[.)]\s+(.+)$/);
+      if (ul || ol) {
+        const ordered = !!ol;
+        if (!list || list.ordered !== ordered) { flush(); list = { ordered, items: [] }; }
+        list.items.push((ul || ol)[1]);
+        return;
+      }
+      flush();
+      if (line.trim()) blocks.push('<p>' + inline(line) + '</p>');
+    });
+    flush();
+    return blocks.join('') || '<p></p>';
+  }
+
   function addMessage(role, text, extra) {
     const div = document.createElement('div');
     div.className = 'robot-msg ' + role + (extra ? ' ' + extra : '');
-    div.textContent = text; // textContent: nada digitado vira HTML
+    if (role === 'bot' && extra !== 'error') div.innerHTML = chatHtml(text);
+    else div.textContent = text;
     list.appendChild(div);
     const msgs = list.querySelectorAll('.robot-msg:not(.robot-typing)');
     const sobra = msgs.length - MAX_VISIBLE;
@@ -2630,7 +2685,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function addTyping() {
     const div = document.createElement('div');
     div.className = 'robot-msg bot robot-typing';
-    div.setAttribute('aria-label', 'Assistente está respondendo');
+    div.setAttribute('aria-label', 'SojournBot está respondendo');
     div.innerHTML = '<i></i><i></i><i></i>';
     list.appendChild(div);
     scrollDown();
@@ -2643,11 +2698,35 @@ document.addEventListener('DOMContentLoaded', () => {
     statusEl.textContent = STATUS[state] || STATUS.idle;
   }
   function updateSend() { sendBtn.disabled = busy || input.value.trim() === ''; }
+  const ROBOT_IDLE = 'frente.png';
+  const ROBOT_THINK = ['apontando_olhando_esquerda.png', 'frente.png', 'apontando_olhando_direita.png'];
+  const reduceRobotMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let thinkTimer = null;
+  let thinkFrame = 0;
+  function setRobotPose(src) {
+    root.querySelectorAll('.robot-img').forEach((img) => { if (img.getAttribute('src') !== src) img.src = src; });
+  }
+  function startThinking() {
+    stopThinking(false);
+    if (reduceRobotMotion) return;
+    thinkFrame = 0;
+    setRobotPose(ROBOT_THINK[0]);
+    thinkTimer = setInterval(() => {
+      thinkFrame = (thinkFrame + 1) % ROBOT_THINK.length;
+      setRobotPose(ROBOT_THINK[thinkFrame]);
+    }, 350);
+  }
+  function stopThinking(reset) {
+    if (thinkTimer) { clearInterval(thinkTimer); thinkTimer = null; }
+    if (reset !== false) setRobotPose(ROBOT_IDLE);
+  }
   function setBusy(b) {
     busy = b;
     micBtn.disabled = b;
     input.disabled = b;
     setState(b ? 'thinking' : 'idle');
+    if (b) startThinking();
+    else stopThinking(true);
     updateSend();
     const aberto = !bubble.classList.contains('hidden');
     if (!b && aberto && window.matchMedia('(pointer: fine)').matches) input.focus();
@@ -2655,14 +2734,7 @@ document.addEventListener('DOMContentLoaded', () => {
   input.addEventListener('input', updateSend);
 
   /* ---------- Falar com a IA ---------- */
-  function demoReply(q) {
-    const t = q.toLowerCase();
-    if (/(^|\s)(olá|ola|oi|bom dia|boa tarde|boa noite)(\s|!|,|$)/.test(t)) return 'Olá! Sou o assistente orbital. Pergunte sobre lixo espacial, órbitas ou as missões do Atlas.';
-    if (t.includes('kessler')) return 'A síndrome de Kessler é uma reação em cadeia: colisões geram fragmentos, que causam novas colisões e podem deixar certas órbitas inutilizáveis. Dá para simular isso no Atlas.';
-    if (t.includes('reduz') || t.includes('limpar') || t.includes('remov')) return 'Duas frentes principais: evitar criar lixo novo (desorbitar satélites no fim da vida) e remover os objetos mais perigosos que já estão lá em cima.';
-    if (t.includes('lixo') || t.includes('detrito') || t.includes('espacial')) return 'Lixo espacial são objetos sem uso em órbita, como satélites inativos, estágios de foguete e fragmentos. Eles viajam a milhares de km/h e ameaçam satélites ativos.';
-    return 'Ainda estou em modo de demonstração, sem IA conectada. Quando o servidor for configurado, vou responder qualquer dúvida sobre o Atlas.';
-  }
+  const MSG_INSTAVEL = 'Houve um pico de instabilidade orbital momentâneo. Tente perguntar de novo em alguns segundos.';
 
   function groqKey() {
     return String(window.GROQ_API_KEY || '').trim();
@@ -2694,16 +2766,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return String(text).trim();
   }
 
-  async function askAI(message) {
-    if (!groqKey()) {
-      await new Promise((r) => setTimeout(r, 700));
-      return demoReply(message);
-    }
-    const messages = [
-      { role: 'system', content: GROQ_SYSTEM },
-      ...history.slice(-MAX_HISTORY),
-      { role: 'user', content: message },
-    ];
+  async function pedirCadeia(messages) {
     let ultimo = null;
     for (const model of GROQ_MODELS) {
       const ctrl = new AbortController();
@@ -2712,12 +2775,27 @@ document.addEventListener('DOMContentLoaded', () => {
         return await pedirModelo(messages, model, ctrl.signal);
       } catch (err) {
         ultimo = err;
-        if (!trocaDeModelo(err)) break;
+        if (!trocaDeModelo(err)) throw err;
       } finally {
         clearTimeout(timer);
       }
     }
     throw ultimo || new Error('modelos indisponiveis');
+  }
+
+  async function askAI(message) {
+    if (!groqKey()) throw new Error('sem chave');
+    const messages = [
+      { role: 'system', content: GROQ_SYSTEM },
+      ...history.slice(-MAX_HISTORY),
+      { role: 'user', content: message },
+    ];
+    try {
+      return await pedirCadeia(messages);
+    } catch (err) {
+      if (!trocaDeModelo(err)) throw err;
+      return await pedirCadeia(messages);
+    }
   }
 
   async function send(raw) {
@@ -2737,7 +2815,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
       console.error(err);
       typing.remove();
-      addMessage('bot', 'Não consegui falar com a IA agora. Tente de novo em instantes.', 'error');
+      addMessage('bot', MSG_INSTAVEL, 'error');
     } finally {
       setBusy(false);
     }
@@ -2852,12 +2930,12 @@ document.addEventListener('DOMContentLoaded', () => {
 <div id="robotAssistant">
 
   <!-- Janela do chat (só aparece depois do clique no robô ou na seta) -->
-  <section id="robotBubble" class="hidden" role="dialog" aria-label="Chat com o Assistente Orbital">
+  <section id="robotBubble" class="hidden" role="dialog" aria-label="Chat com o SojournBot">
     <header class="robot-header">
       <div class="robot-id">
-        <img class="robot-img robot-avatar" src="robo-assistente.svg" alt="">
+        <img class="robot-img robot-avatar" src="frente.png" alt="">
         <div>
-          <strong>Assistente Orbital</strong>
+          <strong>SojournBot</strong>
           <span class="robot-status" id="robotStatus">Pronto para ajudar</span>
         </div>
       </div>
@@ -2868,7 +2946,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     <!-- Histórico de mensagens -->
     <div id="robotMessages" role="log" aria-live="polite">
-      <div class="robot-msg bot">Olá! Sou o assistente orbital. Pergunte sobre lixo espacial, órbitas e as missões do Atlas. Você pode digitar ou usar o microfone.</div>
+      <div class="robot-msg bot">Olá! Sou o SojournBot. Pergunte sobre lixo espacial, órbitas e as missões do Atlas. Você pode digitar ou usar o microfone.</div>
     </div>
 
     <!-- Perguntas prontas -->
@@ -2892,8 +2970,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   <!-- Robô animado + seta à direita: os dois abrem e fecham o chat -->
   <div class="robot-launcher">
-    <button type="button" id="robotCharacter" aria-label="Abrir assistente" aria-expanded="false" aria-controls="robotBubble">
-      <img class="robot-img" src="robo-assistente.svg" alt="">
+    <button type="button" id="robotCharacter" aria-label="Abrir SojournBot" aria-expanded="false" aria-controls="robotBubble">
+      <img class="robot-img" src="frente.png" alt="">
     </button>
     <button type="button" id="robotArrow" aria-label="Abrir chat" aria-expanded="false" aria-controls="robotBubble">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>
