@@ -118,7 +118,7 @@ function avisoDe(erro: unknown): string {
     return "O modelo demorou demais. A missão exibida foi montada a partir do catálogo.";
   }
   if (erro instanceof ErroDeProvedor) {
-    return "O modelo está indisponível. A missão exibida foi montada a partir do catálogo.";
+    return "A resposta automática não chegou. A missão abaixo foi escrita a partir do catálogo, para a atividade continuar.";
   }
   return "O modelo devolveu uma missão fora do formato. A missão exibida foi montada a partir do catálogo.";
 }

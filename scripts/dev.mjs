@@ -20,7 +20,7 @@ function forward(stream, chunk) {
   const match = chunk.toString().match(/https?:\/\/localhost:\d+/);
   if (!match) return;
   opened = true;
-  const url = `${match[0]}/`;
+  const url = `${match[0]}/frontend/atlas-lixo-espacial.html`;
   spawn("cmd", ["/c", "start", "", url], {
     cwd: root,
     detached: true,
