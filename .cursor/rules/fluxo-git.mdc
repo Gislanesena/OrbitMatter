@@ -1,0 +1,34 @@
+---
+description: Fluxo obrigatório de branches e commits antes de alterar o atlas
+alwaysApply: true
+---
+
+# Fluxo Git do Atlas
+
+Nunca altere código direto na `main`. Vale para `frontend/atlas-lixo-espacial.html` e para qualquer arquivo relacionado.
+
+Antes de iniciar uma tarefa:
+
+1. Guarde alterações locais que não pertençam a essa tarefa.
+2. Atualize a base e abra uma branch só para o pedido:
+
+```powershell
+git checkout main
+git pull origin main
+git checkout -b feature/nome-da-tarefa
+```
+
+Use `fix/` quando a tarefa for correção. Um pedido, uma branch.
+
+Ao terminar a alteração, feche o ciclo nesta branch, com mensagem no padrão `feat:`, `fix:` ou `docs:`:
+
+```powershell
+git status
+git add frontend/atlas-lixo-espacial.html
+git commit -m "feat: descricao clara da mudanca"
+git push -u origin HEAD
+```
+
+Inclua no `git add` só os arquivos da tarefa. Deixe de fora `.docx` de pesquisa, `frontend/groq-local.js` e qualquer segredo. Não use `git add .` enquanto esses arquivos estiverem soltos no diretório.
+
+Se o pedido não pedir o envio, oriente o ciclo e confirme antes de commitar e enviar. Não faça push da `main`.

@@ -84,6 +84,10 @@ p{margin:0}
   backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 20px 50px rgba(0,0,0,.45)}
 #missionCard{left:var(--gutter-l);top:calc(78px + env(safe-area-inset-top,0px));width:300px;padding:16px;display:grid;gap:12px}
 #missionCard h2{font-size:18px}
+#expertNote{left:var(--gutter-l);width:300px;padding:14px 16px;display:grid;gap:8px;align-content:start;overflow:auto;z-index:15}
+#expertNote p{font-size:13.5px;color:var(--muted)}
+#expertNote strong{color:var(--fg);font-weight:600}
+#expertNote em{color:var(--fg);font-style:italic}
 .mc-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .checklist{list-style:none;margin:0;padding:0;display:grid;gap:8px}
 .checklist li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--muted)}
@@ -94,6 +98,14 @@ p{margin:0}
 .checklist li.cur{color:var(--fg)}
 .checklist li.cur .tick{border-color:var(--accent)}
 
+#voyagerPin{position:fixed;right:var(--gutter-r);top:calc(78px + env(safe-area-inset-top,0px));z-index:17;
+  display:flex;align-items:center;gap:8px;padding:4px 12px 4px 4px;border-radius:12px;border:1px solid var(--line);
+  background:var(--panel);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 12px 32px rgba(0,0,0,.4);cursor:pointer}
+#voyagerPin img{width:46px;height:46px;border-radius:8px;object-fit:cover;flex:none;background:var(--deep)}
+#voyagerPin b{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:500}
+#voyagerPin small{display:block;margin-top:2px;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+#voyagerPin:hover{border-color:var(--accent)}
+#voyagerPin[aria-pressed="true"]{border-color:var(--accent)}
 #objPanel{right:var(--gutter-r);top:calc(78px + env(safe-area-inset-top,0px));width:360px;
   max-height:calc(100% - 78px - var(--dock-h) - var(--nav-h) - 44px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
   overflow:auto;padding:18px;display:grid;gap:16px;align-content:start}
@@ -123,6 +135,13 @@ p{margin:0}
 .step .xp{font-family:var(--mono);font-size:11.5px;color:var(--accent)}
 .step.done .xp{color:var(--good)}
 .reveal{font-size:13.5px;color:var(--muted);border-left:2px solid var(--accent);padding:4px 0 4px 12px}
+.step-block{display:grid;gap:8px}
+.quiz{display:grid;gap:8px}
+.quiz p{margin:0;font-size:13.5px}
+.quiz-opt{text-align:left;border:1px solid var(--line);border-radius:8px;background:var(--deep);padding:8px 10px;font-size:13px;line-height:1.4}
+.quiz-opt:hover{border-color:var(--faint)}
+.quiz-opt.bad{border-color:var(--bad);color:var(--bad)}
+.quiz-note{color:var(--bad);font-size:12.5px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:8px;padding:10px 16px;
   border:1px solid var(--line);background:var(--raise);font-weight:500;font-size:14px}
 .btn:hover{border-color:var(--faint)}
@@ -209,7 +228,43 @@ p{margin:0}
 .strategy span{font-size:12.5px;color:var(--muted)}
 .slider-row{display:grid;gap:6px}
 .slider-row label{display:flex;justify-content:space-between;font-size:13.5px}
-input[type=range]{width:100%;accent-color:var(--accent)}
+input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
+.lead-scale{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--faint)}
+.lead-row,
+.lead-row:hover,
+.lead-row:focus,
+.lead-row:focus-visible,
+.lead-row:focus-within,
+.lead-row:active,
+.lead-slider,
+.lead-slider:hover,
+.lead-slider:focus,
+.lead-slider:focus-visible,
+.lead-slider:focus-within,
+.lead-slider:active,
+.lead-track,
+.lead-track:hover,
+.lead-track:focus,
+.lead-track:active,
+.lead-thumb,
+.lead-thumb:hover,
+.lead-thumb:focus,
+.lead-thumb:active,
+.lead-range,
+.lead-range:hover,
+.lead-range:focus,
+.lead-range:focus-visible,
+.lead-range:active{
+  outline:none !important;
+  box-shadow:none !important;
+}
+.lead-slider{position:relative;height:36px;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+.lead-slider:active{cursor:grabbing}
+.lead-track{position:absolute;left:0;right:0;top:50%;height:10px;margin-top:-5px;border-radius:999px;background:var(--line);pointer-events:none}
+.lead-track::before{content:"";position:absolute;left:0;top:0;bottom:0;width:var(--fill,44%);border-radius:inherit;background:var(--accent)}
+.lead-thumb{position:absolute;top:50%;left:var(--fill,44%);width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;background:var(--accent);border:2px solid var(--accent-ink);pointer-events:none}
+.lead-range{position:absolute;width:1px;height:1px;margin:0;opacity:0;pointer-events:none}
+.meter-help{margin:0;font-size:12px;color:var(--muted)}
 .meters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 16px}
 .meter{display:grid;gap:4px}
 .meter .mt{display:flex;justify-content:space-between;font-size:13px}
@@ -289,8 +344,11 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .toast.level{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .toast.level b{color:var(--accent-ink)}
 @keyframes tin{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
-#hint{position:fixed;z-index:10;left:50%;transform:translateX(-50%);bottom:calc(var(--dock-h) + var(--nav-h) + 26px + env(safe-area-inset-bottom,0px));
-  font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.04em;text-align:center;pointer-events:none;transition:opacity .6s;width:max-content;max-width:calc(100% - 32px)}
+#hint{position:fixed;z-index:18;left:50%;transform:translateX(-50%);bottom:calc(var(--dock-h) + var(--nav-h) + 26px + env(safe-area-inset-bottom,0px));
+  font-family:var(--mono);font-size:13px;color:var(--fg);letter-spacing:.04em;text-align:center;pointer-events:none;transition:opacity .6s;width:max-content;max-width:calc(100% - 32px);
+  padding:8px 14px;border:1px solid var(--accent);border-radius:999px;background:var(--panel-solid);
+  animation:hintPulse 1.8s ease-in-out 3}
+@keyframes hintPulse{50%{box-shadow:0 0 0 6px rgba(255,179,71,.2)}}
 #loading{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:var(--void);font-family:var(--mono);color:var(--muted);font-size:13px;letter-spacing:.1em;text-transform:uppercase}
 
 @media (max-width:1100px){
@@ -317,6 +375,9 @@ input[type=range]{width:100%;accent-color:var(--accent)}
   #missionCard .mc-head{grid-column:1/-1}
   #missionCard .mc-next{font-size:12.5px;color:var(--muted)}
   #missionCard .btn{padding:7px 12px;font-size:13px}
+  #voyagerPin{max-width:calc(100vw - var(--gutter-l) - var(--gutter-r) - 32px)}
+  #voyagerPin img{width:36px;height:36px}
+  #expertNote{width:min(300px, calc(100vw - var(--gutter-l) - var(--gutter-r) - 32px));padding:12px}
   #objPanel,#atlasDrawer{left:0;right:0;width:auto;bottom:calc(var(--dock-h) + env(safe-area-inset-bottom,0px));top:auto;z-index:16;
     max-height:58%;border-radius:14px 14px 0 0;border-bottom:0;
     padding-left:var(--gutter-l);padding-right:var(--gutter-r)}
@@ -349,30 +410,40 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 
 
 /* ===================================================================
-   ROBOZINHO: assistente orbital (robô + seta + chat com IA)
+   ROBOZINHO: SojournBot (robô + seta + chat com IA)
    Usa as mesmas cores/fontes do resto do Atlas (variáveis :root).
    =================================================================== */
 #robotAssistant {
-  --robot-bottom: 16px; /* o JS sobe o robô sozinho se ele encostar na barra de baixo */
   position: fixed;
   right: var(--gutter-r);
-  bottom: calc(var(--robot-bottom) + env(safe-area-inset-bottom, 0px));
-  z-index: 25;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  z-index: 9999;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 10px;
   max-width: calc(100vw - var(--gutter-l) - var(--gutter-r));
   font-family: var(--body);
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
   transition: bottom .25s ease;
 }
 
 /* ---------- Robô + seta (sempre visíveis) ---------- */
-.robot-launcher { display: flex; align-items: center; gap: 4px; }
+.robot-launcher {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  visibility: visible;
+  opacity: 1;
+  flex: none;
+}
 
 #robotCharacter {
-  width: 80px;
-  height: 95px;
+  width: 118px;
+  height: 84px;
+  overflow: visible;
   padding: 0;
   border: 0;
   background: transparent;
@@ -446,12 +517,14 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .robot-id { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .robot-avatar {
   flex: none;
-  width: 38px;
-  height: 38px;
-  padding: 3px;
-  border-radius: 50%;
-  border: 1.5px solid var(--accent);
-  background: var(--raise);
+  width: 64px;
+  height: 46px;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  object-fit: contain;
+  overflow: visible;
 }
 .robot-id strong {
   display: block;
@@ -512,7 +585,6 @@ input[type=range]{width:100%;accent-color:var(--accent)}
   border-radius: 14px;
   font-size: 14px;
   line-height: 1.45;
-  white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 .robot-msg.bot {
@@ -522,12 +594,22 @@ input[type=range]{width:100%;accent-color:var(--accent)}
   border-bottom-left-radius: 4px;
   color: var(--fg);
 }
+.robot-msg.bot p { margin: 0 0 8px; }
+.robot-msg.bot p:last-child,
+.robot-msg.bot ul:last-child,
+.robot-msg.bot ol:last-child { margin-bottom: 0; }
+.robot-msg.bot ul,
+.robot-msg.bot ol { margin: 0 0 8px; padding-left: 1.15em; }
+.robot-msg.bot li { margin: 2px 0; }
+.robot-msg.bot strong { font-weight: 700; }
+.robot-msg.bot code { font-family: var(--mono); font-size: .92em; }
 .robot-msg.user {
   align-self: flex-end;
   background: var(--accent);
   color: var(--accent-ink);
   font-weight: 500;
   border-bottom-right-radius: 4px;
+  white-space: pre-wrap;
 }
 .robot-msg.error { border-color: rgba(255, 93, 108, .5); color: #ffb3ba; }
 
@@ -612,7 +694,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 
 /* ---------- Celular: o chat vira uma folha na parte de baixo ---------- */
 @media (max-width: 760px) {
-  #robotCharacter { width: 64px; height: 76px; }
+  #robotCharacter { width: 96px; height: 68px; }
   #robotArrow { width: 26px; height: 50px; }
   #robotAssistant.robot-open .robot-launcher { display: none; }
   #robotAssistant.robot-open #robotBubble {
@@ -653,6 +735,14 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 </header>
 
 <aside class="panel" id="missionCard" aria-label="Missão atual"></aside>
+<button type="button" id="voyagerPin" aria-label="Abrir a Voyager 1 no espaço profundo" aria-pressed="false">
+  <img alt="" src="https://images-assets.nasa.gov/image/PIA14111/PIA14111~small.jpg">
+  <span><b>Voyager 1</b><small>Espaço profundo</small></span>
+</button>
+<aside class="panel" id="expertNote" aria-label="Nota do especialista">
+  <span class="eyebrow">Nota do especialista</span>
+  <p><strong>Arqueologia Espacial vs. Detritos:</strong> <em>“Diferenciar detritos gerados por explosões de naves históricas (como sondas e landers) é o primeiro passo para a sustentabilidade espacial. Enquanto o lixo comum (fragmentos e estágios vazios) exige remoção urgente para travar a Síndrome de Kessler, o hardware legado (como o que a NASA deixou na Lua e em Marte) representa os nossos primeiros passos e deve ser tratado como arqueologia espacial: monumentos que ensinaram a humanidade a olhar para as estrelas.”</em></p>
+</aside>
 
 <aside class="panel" id="objPanel" hidden aria-label="Ficha do objeto"></aside>
 
@@ -680,7 +770,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 <div class="navbar" id="navbar">
   <div class="seg" role="group" aria-label="Destino">
     <span class="seg-label">Destino</span>
-    <button data-dest="terra">Terra</button><button data-dest="lua">Lua</button><button data-dest="marte">Marte</button>
+    <button data-dest="terra">Terra</button><button data-dest="lua">Lua</button><button data-dest="marte">Marte</button><button type="button" id="navVoyager">Voyager</button>
   </div>
   <div class="clock"><b class="mono" id="clockText">--/-- --:--</b><span class="daynight" id="dayText">Dia em Brasília</span></div>
   <div class="seg" role="group" aria-label="Velocidade do tempo">
@@ -690,7 +780,17 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 
 <div id="tip" hidden></div>
 <div id="toasts" aria-live="polite"></div>
-<div id="hint">Arraste para girar · role para aproximar · clique em um objeto para investigar</div>
+<div id="hint">Arraste o planeta com o mouse para girar a cena</div>
+
+<div class="overlay" id="voyagerModal" hidden>
+  <div class="modal narrow" role="dialog" aria-modal="true" aria-labelledby="voyagerTitle">
+    <div class="modal-head">
+      <div><span class="eyebrow">Espaço profundo</span><h2 id="voyagerTitle">Voyager 1</h2></div>
+      <button class="icon-btn" data-close aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <div class="modal-body" id="voyagerBody"></div>
+  </div>
+</div>
 
 <!-- Intro (Descoberta) -->
 <div class="overlay" id="introModal" hidden>
@@ -773,7 +873,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
             <button class="btn" id="kTrigger">Provocar colisão</button>
             <button class="btn ghost" id="kReset">Reiniciar</button>
           </div>
-          <p class="k-note">Modelo simplificado e fictício, feito para mostrar a relação de causa e consequência. Os números ainda serão calibrados com dados reais.</p>
+          <p class="k-note">Simulação simplificada e fictícia, feita para mostrar a relação de causa e consequência. Os números ainda serão calibrados com dados reais.</p>
         </div>
       </div>
     </div>
@@ -795,6 +895,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="groq-local.js"></script>
+<script src="dados-objetos.js"></script>
 <script>
 (function () {
 'use strict';
@@ -812,15 +913,16 @@ const TYPES = {
   fragmento: { label: 'Fragmento', plural: 'Fragmentos', hex: 0xff7a59, css: '#ff7a59', prefix: 'F' },
   satelite:  { label: 'Satélite inativo', plural: 'Satélites', hex: 0x6fd3ff, css: '#6fd3ff', prefix: 'S' },
   estagio:   { label: 'Estágio de foguete', plural: 'Estágios', hex: 0xb9a4ff, css: '#b9a4ff', prefix: 'E' },
+  artefato:  { label: 'Artefato histórico', plural: 'Artefatos', hex: 0xffb347, css: '#ffb347', prefix: 'A' },
 };
 const FIELDS = [
   ['origem', 'Origem'], ['altitude', 'Altitude'], ['velocidade', 'Velocidade'],
   ['permanencia', 'Tempo em órbita'], ['riscos', 'Riscos'], ['destinos', 'Possíveis destinos'],
 ];
 const ANALYSIS = [
-  { id: 'origem', label: 'Como surgiu', text: 'Espaço reservado para a história do objeto: quem o lançou, quando, com qual objetivo e como ele contribuiu para a exploração espacial.' },
-  { id: 'permanencia', label: 'Quanto tempo fica em órbita', text: 'Espaço reservado para a estimativa de permanência em órbita, considerando altitude e arrasto atmosférico.' },
-  { id: 'riscos', label: 'Quais riscos apresenta', text: 'Espaço reservado para a análise do risco de colisão e do impacto em satélites ativos e missões futuras.' },
+  { id: 'origem', label: 'Como surgiu', text: 'Quem lançou este objeto, em que ano e para qual objetivo. Essa origem diz se ele é um fragmento sem uso ou um marco da exploração.' },
+  { id: 'permanencia', label: 'Quanto tempo permanece', text: 'Por quanto tempo o objeto continua no caminho de outras missões. Em órbita, altitude e arrasto mudam esse prazo. Na superfície, ele fica onde pousou.' },
+  { id: 'riscos', label: 'Quais riscos apresenta', text: 'O que pode acontecer se ninguém agir: colisão em órbita, ou perda de um marco científico na superfície.' },
 ];
 
 let seed = 20261004;
@@ -832,26 +934,84 @@ const DEST = {
   lua:   { label: 'Lua', article: 'a Lua', band: 'Órbita lunar', view: 2.1, min: 0.6, max: 9 },
   marte: { label: 'Marte', article: 'Marte', band: 'Órbita marciana', view: 3.6, min: 1.1, max: 12 },
 };
+function catalogEntry(id) {
+  const cat = (window.DADOS_OBJETOS || {})[id];
+  if (!cat) return null;
+  return {
+    name: cat.nome,
+    data: {
+      origem: cat.origem || '',
+      altitude: cat.altitude || '',
+      velocidade: cat.velocidade || '',
+      permanencia: cat.permanencia || '',
+      riscos: cat.riscos || '',
+      destinos: cat.destinos || '',
+    },
+    analysis: {
+      origem: cat.analise_origem || '',
+      permanencia: cat.analise_permanencia || '',
+      riscos: cat.analise_riscos || '',
+    },
+  };
+}
 const OBJECTS = [];
-const counters = { fragmento: 0, satelite: 0, estagio: 0 };
+const counters = { fragmento: 0, satelite: 0, estagio: 0, artefato: 0 };
 [['terra', 'fragmento', 8], ['terra', 'satelite', 5], ['terra', 'estagio', 5],
  ['lua', 'satelite', 1], ['lua', 'estagio', 1], ['lua', 'fragmento', 1],
- ['marte', 'satelite', 2], ['marte', 'estagio', 1], ['marte', 'fragmento', 1]].forEach(([body, type, n]) => {
+ ['marte', 'estagio', 1], ['marte', 'fragmento', 1]].forEach(([body, type, n]) => {
   for (let i = 0; i < n; i++) {
     const R = BODY_R[body];
     let r;
     if (body === 'terra') { const b = rnd(); r = b < 0.55 ? 1.35 + rnd() * 0.35 : b < 0.85 ? 1.9 + rnd() * 0.4 : 2.75 + rnd() * 0.35; }
     else r = R * (1.7 + rnd() * 1.1);
     const code = TYPES[type].prefix + '-' + String(++counters[type]).padStart(2, '0');
+    const cat = catalogEntry(code);
     OBJECTS.push({
-      id: code, type, body, name: TYPES[type].label + ' ' + code,
+      id: code, type, body, name: (cat && cat.name) || (TYPES[type].label + ' ' + code),
       r, incl: (rnd() - 0.5) * 1.7, node: rnd() * Math.PI * 2, phase: rnd() * Math.PI * 2,
-      data: {}, // ex.: { origem: '...', altitude: '... km', velocidade: '... km/s' }
+      data: (cat && cat.data) || {},
+      analysis: (cat && cat.analysis) || null,
     });
   }
 });
+[
+  {
+    id: 'curiosity', type: 'artefato', body: 'marte', name: 'Curiosity',
+    r: BODY_R.marte * 1.35, incl: 0.2, node: 0.4, phase: 0.6, surface: true,
+    data: {
+      origem: 'NASA / JPL · Mars Science Laboratory. Pouso em 6 de agosto de 2012 na cratera Gale.',
+      altitude: 'Superfície, cratera Gale (cerca de 4,6° S, 137,4° E). A posição no mapa é ilustrativa.',
+      velocidade: 'No solo. Não está em órbita.',
+      permanencia: 'Em operação desde 2012. Em 2026 ainda envia dados científicos.',
+      riscos: 'Ainda faz ciência. Tratar o rover como lixo apagaria um instrumento ativo.',
+      destinos: 'Seguir como arquivo vivo da geologia de Marte.',
+    },
+    analysis: {
+      origem: 'O rover Curiosity foi lançado em 26 de novembro de 2011 e pousou na cratera Gale em 6 de agosto de 2012. O JPL, laboratório da NASA, o enviou para ler as rochas e procurar sinais de que Marte já teve condições para a vida.',
+      permanencia: 'Curiosity não orbita Marte. Trabalha na superfície desde 2012 e, em 2026, continua ativo. Por isso não entra na conta de detrito a remover.',
+      riscos: 'O risco não é uma colisão em órbita. É interromper um instrumento que ainda produz ciência na cratera Gale.',
+    },
+  },
+  {
+    id: 'insight', type: 'artefato', body: 'marte', name: 'InSight',
+    r: BODY_R.marte * 1.48, incl: -0.25, node: 2.1, phase: 2.4, surface: true,
+    data: {
+      origem: 'NASA / JPL · InSight. Pouso em 26 de novembro de 2018 em Elysium Planitia.',
+      altitude: 'Superfície, Elysium Planitia (cerca de 4,5° N, 135,6° E). A posição no mapa é ilustrativa.',
+      velocidade: 'No solo, imóvel desde o fim da missão.',
+      permanencia: 'Contato encerrado em dezembro de 2022, quando a poeira cobriu os painéis solares.',
+      riscos: 'Já não se move. Removê-lo sem estudo apaga um monumento da sismologia de Marte.',
+      destinos: 'Permanecer como hardware legado na superfície.',
+    },
+    analysis: {
+      origem: 'O lander InSight foi lançado em 5 de maio de 2018 e pousou em Elysium Planitia em 26 de novembro de 2018. O JPL, laboratório da NASA, o usou para ouvir os martemotos.',
+      permanencia: 'O contato terminou em dezembro de 2022. O veículo permanece inteiro no solo, fora de qualquer órbita.',
+      riscos: 'InSight já não opera. Tratá-lo como fragmento sem história apaga o registro de uma missão que mediu o interior de Marte.',
+    },
+  },
+].forEach((o) => OBJECTS.push(o));
 const byId = Object.fromEntries(OBJECTS.map((o) => [o.id, o]));
-const bandOf = (o) => DEST[o.body].band || (o.r < 1.8 ? 'Órbita baixa' : o.r < 2.6 ? 'Órbita média' : 'Órbita alta');
+const bandOf = (o) => o.surface ? 'Superfície de ' + DEST[o.body].label : (DEST[o.body].band || (o.r < 1.8 ? 'Órbita baixa' : o.r < 2.6 ? 'Órbita média' : 'Órbita alta'));
 
 const STRATEGIES = [
   { id: 'desvio', name: 'Manobra de desvio', desc: 'Mover a nave ou o satélite ativo para fora da rota do objeto.', base: { seg: 68, comb: 48, orc: 76, ciencia: 50 } },
@@ -860,8 +1020,12 @@ const STRATEGIES = [
   { id: 'monitorar', name: 'Monitorar e aguardar', desc: 'Acompanhar o objeto com radares e agir só se o risco subir.', base: { seg: 42, comb: 94, orc: 90, ciencia: 38 } },
 ];
 const METERS = [
-  ['seg', 'Segurança'], ['comb', 'Combustível restante'], ['orc', 'Orçamento restante'], ['ciencia', 'Impacto científico'],
+  ['seg', 'Segurança'], ['comb', 'Combustível restante'], ['orc', 'Equilíbrio de custo'], ['ciencia', 'Impacto científico'],
 ];
+const METER_HELP = {
+  orc: 'Quanto da verba da missão ainda sobra depois da ação. Um número alto significa uma escolha mais barata.',
+  ciencia: 'Impacto científico é o quanto a decisão ainda permite estudar o objeto, em vez de só afastá-lo do caminho.',
+};
 
 // 3 missões por planeta (campo body: 'terra' | 'lua' | 'marte').
 // Em cada missão: briefing, explain (explicação geral) e comentarios (um por estratégia escolhida).
@@ -869,12 +1033,12 @@ const ALL_MISSIONS = [
   /* ==================== TERRA ==================== */
   { id: 'm1', body: 'terra', chapter: 1, title: 'Estágio à deriva', target: 'estagio',
     briefing: 'Na órbita da Terra, estágios de foguete abandonados podem explodir sozinhos. O terceiro estágio do foguete do CBERS 1, por exemplo, se fragmentou cinco meses depois do lançamento e virou centenas de pedaços. Agora um estágio assim, abandonado, cruza a rota de uma missão planejada. O que você faz?',
-    explain: 'Estágios de foguete podem guardar combustível que sobrou ou pressão nos tanques. Com o tempo, isso pode causar uma explosão e espalhar centenas de fragmentos, como aconteceu com o TES 1 e o STEP 2. Por isso, remover o estágio ou fazê-lo voltar à atmosfera antes que ele exploda funciona melhor do que só desviar a nave.',
+    explain: 'Estágios de foguete podem guardar combustível que sobrou ou pressão nos tanques. Com o tempo, isso pode causar uma explosão e espalhar centenas de fragmentos, como aconteceu com o terceiro estágio do CBERS-1. Por isso, remover o estágio ou fazê-lo voltar à atmosfera antes que ele exploda funciona melhor do que só desviar a nave.',
     comentarios: {
       desvio: 'Desviar a nave resolve só dessa vez. O estágio continua lá, com combustível sobrando, e pode explodir mais tarde e atingir outras missões.',
       remocao: 'Capturar o estágio antes que ele exploda elimina o problema na raiz e evita centenas de fragmentos. É a opção mais segura, mas é cara e difícil.',
       desorbitar: 'Na Terra a atmosfera ajuda: ao descer, o estágio queima na reentrada. Funciona bem, desde que seja feito antes de ele explodir.',
-      monitorar: 'Ficar só observando é arriscado. Estágios com combustível sobrando, como o do TES 1, podem explodir sem aviso e virar centenas de pedaços.'
+      monitorar: 'Ficar só observando é arriscado. Estágios com combustível sobrando, como o do CBERS-1, podem explodir sem aviso e virar centenas de pedaços.'
     },
     bonus: { remocao: { seg: 6, ciencia: 6 }, monitorar: { seg: -8 } } },
   { id: 'm2', body: 'terra', chapter: 2, title: 'Satélite silencioso', target: 'satelite',
@@ -941,14 +1105,14 @@ const ALL_MISSIONS = [
       monitorar: 'Ficar só observando é arriscado, porque o estágio é grande, pesado e sem controle.'
     },
     bonus: { remocao: { seg: 6, ciencia: 6 }, monitorar: { seg: -8 } } },
-  { id: 'marte2', body: 'marte', chapter: 2, title: 'Satélite silencioso', target: 'satelite',
-    briefing: 'Em Marte já existem sondas desligadas. A plataforma de pouso da Tianwen-1, de 1.285 kg, e o rover Zhurong terminaram suas missões e estão extintos. Agora uma sonda inativa, sem controle, ameaça atrapalhar uma sonda ativa. Como você lida com isso?',
-    explain: 'Uma sonda que termina a missão não pode mais ser controlada nem se mover. Ela fica onde está, como a Tianwen-1 e o Zhurong, e vira lixo permanente. Por isso o fim da missão precisa ser planejado antes. Só observar não resolve o risco, apenas adia.',
+  { id: 'marte2', body: 'marte', chapter: 2, title: 'Hardware legado', target: 'artefato',
+    briefing: 'Na superfície de Marte há máquinas da NASA com histórias diferentes. O rover Curiosity, operado pelo JPL, ainda trabalha na cratera Gale. O lander InSight, também do JPL, encerrou o contato em dezembro de 2022 e permanece em Elysium Planitia. Uma missão nova precisa passar perto desse hardware. O que você faz?',
+    explain: 'JPL é o Jet Propulsion Laboratory, o laboratório da NASA que opera essas missões. Curiosity ainda envia ciência, então deve ser tratado como instrumento ativo, não como lixo. InSight já está inativo: é um monumento da exploração, e removê-lo sem estudo apaga o registro.',
     comentarios: {
-      desvio: 'Desviar protege a sonda ativa agora, mas a sonda inativa continua lá e segue sendo um problema para as próximas missões.',
-      remocao: 'Retirar a sonda resolve o problema de vez. Em compensação, é uma operação muito cara, ainda mais a tanta distância da Terra.',
-      desorbitar: 'A atmosfera fina de Marte ajuda só um pouco. Objetos grandes e pesados, como a plataforma da Tianwen-1, podem não queimar por completo e cair na superfície.',
-      monitorar: 'Só observar não muda nada, porque uma sonda desligada não sai do lugar sozinha. Você apenas adia a decisão.'
+      desvio: 'Desviar protege a missão nova agora. Curiosity continua trabalhando e InSight continua no solo, então o cuidado precisa se repetir na próxima passagem.',
+      remocao: 'Retirar o hardware apaga o registro. Curiosity ainda faz ciência, e InSight é um monumento inativo. Levar os dois embora, tão longe da Terra, também é caro.',
+      desorbitar: 'Não se aplica: os dois já estão na superfície. A atmosfera fina de Marte não remove um rover nem um lander que já pousaram.',
+      monitorar: 'Observar Curiosity faz sentido enquanto ele opera. Para InSight, só observar adia a decisão de preservá-lo como marco.'
     },
     bonus: { desvio: { comb: 8 }, desorbitar: { seg: 6, orc: 6 } } },
   { id: 'marte3', body: 'marte', chapter: 3, title: 'Nuvem de fragmentos', target: 'fragmento',
@@ -1120,12 +1284,12 @@ function renderObjPanel() {
   const m = currentMission();
   const isTarget = m && m.target === o.type;
   const facts = FIELDS.map(([k, label]) =>
-    '<div class="fact"><dt>' + label + '</dt><dd>' + (o.data[k] ? esc(o.data[k]) : 'Aguardando dados') + '</dd></div>').join('');
+    '<div class="fact"><dt>' + label + '</dt><dd>' + (o.data[k] ? esc(o.data[k]) : 'Ainda sem medida nesta ficha') + '</dd></div>').join('');
   const stepsHtml = ANALYSIS.map((a, i) => {
     const done = steps.includes(a.id);
-    return '<button class="step' + (done ? ' done' : '') + '" data-step="' + a.id + '" aria-expanded="' + (openStep === a.id) + '">' +
+    return '<div class="step-block"><button type="button" class="step' + (done ? ' done' : '') + '" data-step="' + a.id + '" aria-expanded="' + (openStep === a.id) + '">' +
       '<span class="s-l"><span class="num">' + (done ? '✓' : '0' + (i + 1)) + '</span>' + a.label + '</span><span class="xp">' + (done ? 'Feito' : '+10 XP') + '</span></button>' +
-      (openStep === a.id ? '<p class="reveal">' + esc(a.text) + '</p>' : '');
+      quizBlock(o, a, done) + '</div>';
   }).join('');
   let action;
   if (analyzed) {
@@ -1133,7 +1297,7 @@ function renderObjPanel() {
       (isTarget && m ? '<button class="btn primary block" data-open="missions">Ir para a decisão</button>' : '');
   } else {
     action = '<button class="btn primary block" id="concludeBtn"' + (steps.length < ANALYSIS.length ? ' disabled' : '') + '>Concluir análise · +20 XP</button>' +
-      (steps.length < ANALYSIS.length ? '<p class="muted" style="font-size:12.5px">Abra as três etapas da análise para concluir.</p>' : '');
+      (steps.length < ANALYSIS.length ? '<p class="muted" style="font-size:12.5px">Acerte as três perguntas para concluir.</p>' : '');
   }
   el.innerHTML =
     '<div class="op-head"><div style="display:grid;gap:8px;min-width:0">' +
@@ -1141,7 +1305,7 @@ function renderObjPanel() {
       (isTarget && !analyzed ? '<span class="chip target">Alvo da missão</span>' : '') + '</div>' +
       '<h2>' + esc(o.name) + '</h2><span class="eyebrow">' + bandOf(o) + ' · posição ilustrativa</span></div>' +
       '<button class="icon-btn" id="closeObj" aria-label="Fechar ficha"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>' +
-    '<div><div class="section-title" style="margin-bottom:8px"><h3>Ficha do objeto</h3><span class="eyebrow">Dados reais em breve</span></div><dl class="facts" style="margin:0">' + facts + '</dl></div>' +
+    '<div><div class="section-title" style="margin-bottom:8px"><h3>Ficha do objeto</h3><span class="eyebrow">' + (Object.keys(o.data).length ? 'Dados da missão' : 'Ficha ilustrativa') + '</span></div><dl class="facts" style="margin:0">' + facts + '</dl></div>' +
     '<div class="steps"><div class="section-title"><h3>Análise</h3><span class="eyebrow mono">' + steps.length + '/' + ANALYSIS.length + '</span></div>' + stepsHtml + '</div>' +
     '<div style="display:grid;gap:8px">' + action + '</div>';
   el.hidden = false;
@@ -1164,11 +1328,78 @@ function selectObject(id) {
 }
 function closeObject() { selectedId = null; openStep = null; refresh(); }
 
-function doStep(stepId) {
+const QUIZ_ASK = {
+  origem: 'Segundo a ficha deste objeto, como ele surgiu?',
+  permanencia: 'Segundo a ficha deste objeto, por quanto tempo ele permanece?',
+  riscos: 'Segundo a ficha deste objeto, qual risco ele apresenta?',
+};
+let quizMiss = null;
+function quizClip(text) {
+  const clean = String(text || '').replace(/\s+/g, ' ').trim();
+  if (!clean) return '';
+  const end = clean.search(/[.!?](\s|$)/);
+  const line = end >= 40 ? clean.slice(0, end + 1) : clean;
+  return line.length > 170 ? line.slice(0, 167).trim() + '…' : line;
+}
+function quizKey(s) {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619);
+  return h >>> 0;
+}
+function quizShuffle(items, key) {
+  const a = items.slice();
+  let h = quizKey(key);
+  for (let i = a.length - 1; i > 0; i--) {
+    h = (Math.imul(h, 1664525) + 1013904223) >>> 0;
+    const j = h % (i + 1);
+    const t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+function quizFor(o, stepId) {
+  const source = (o.data && o.data[stepId]) || '';
+  const correct = quizClip(source);
+  const seen = new Set();
+  const pool = [];
+  OBJECTS.forEach((other) => {
+    if (other.id === o.id) return;
+    const line = quizClip(other.data && other.data[stepId]);
+    if (!line || line === correct || seen.has(line)) return;
+    seen.add(line);
+    pool.push(line);
+  });
+  const bad = quizShuffle(pool, o.id + ':' + stepId).slice(0, 3);
+  return {
+    ask: QUIZ_ASK[stepId],
+    options: quizShuffle([{ text: correct, ok: true }].concat(bad.map((text) => ({ text, ok: false }))), o.id + ':' + stepId + ':opts'),
+  };
+}
+function quizBlock(o, a, done) {
+  if (openStep !== a.id) return '';
+  if (done) return '<p class="reveal">' + esc((o.analysis && o.analysis[a.id]) || a.text) + '</p>';
+  const q = quizFor(o, a.id);
+  const miss = quizMiss && quizMiss.id === o.id && quizMiss.step === a.id ? quizMiss.index : -1;
+  return '<div class="quiz" role="group" aria-label="' + esc(a.label) + '"><p>' + esc(q.ask) + '</p>' +
+    q.options.map((opt, i) => '<button type="button" class="quiz-opt' + (miss === i ? ' bad' : '') + '" data-quiz="' + i + '" data-quiz-step="' + a.id + '">' + esc(opt.text) + '</button>').join('') +
+    (miss >= 0 ? '<p class="quiz-note">Não é essa. Leia de novo e tente outra alternativa.</p>' : '') + '</div>';
+}
+function toggleStep(stepId) {
   const o = byId[selectedId]; if (!o) return;
   openStep = openStep === stepId ? null : stepId;
+  quizMiss = null;
+  refresh();
+}
+function answerQuiz(stepId, index) {
+  const o = byId[selectedId]; if (!o) return;
   const steps = S.steps[o.id] || (S.steps[o.id] = []);
-  if (!steps.includes(stepId)) { steps.push(stepId); gainXP(10, 'Etapa da análise'); }
+  if (steps.includes(stepId)) return;
+  const q = quizFor(o, stepId);
+  openStep = stepId;
+  if (q.options[index] && q.options[index].ok) {
+    steps.push(stepId);
+    quizMiss = null;
+    gainXP(10, 'Etapa da análise');
+  } else quizMiss = { id: o.id, step: stepId, index };
   refresh();
 }
 function conclude() {
@@ -1180,7 +1411,40 @@ function conclude() {
   refresh();
 }
 
-function refresh() { document.querySelectorAll('.seg [data-dest]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.dest === curDest))); renderHUD(); renderMissionCard(); renderAtlas(); renderObjPanel(); updateMeshes(); save(); }
+function placeExpertNote() {
+  const note = $('expertNote');
+  const card = $('missionCard');
+  if (!note || !card) return;
+  if (card.hidden) { note.hidden = true; return; }
+  const r = card.getBoundingClientRect();
+  let limit = window.innerHeight - 12;
+  ['.navbar', '.dock'].forEach((sel) => {
+    const el = document.querySelector(sel);
+    if (el && el.getClientRects().length) limit = Math.min(limit, el.getBoundingClientRect().top - 12);
+  });
+  const top = r.bottom + 12;
+  const room = limit - top;
+  if (room < 72) { note.hidden = true; return; }
+  note.hidden = false;
+  note.style.top = Math.round(top) + 'px';
+  note.style.maxHeight = Math.round(room) + 'px';
+}
+function placeVoyagerPin() {
+  const pin = $('voyagerPin');
+  const panel = $('objPanel');
+  const card = $('missionCard');
+  if (!pin) return;
+  pin.style.top = '';
+  if (panel) panel.style.top = '';
+  const narrow = window.innerWidth <= 760;
+  if (narrow && card && !card.hidden) {
+    pin.style.top = Math.round(card.getBoundingClientRect().bottom + 12) + 'px';
+  }
+  if (panel && !panel.hidden && !narrow) {
+    panel.style.top = Math.round(pin.getBoundingClientRect().bottom + 12) + 'px';
+  }
+}
+function refresh() { document.querySelectorAll('.seg [data-dest]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.dest === curDest))); renderHUD(); renderMissionCard(); renderAtlas(); renderObjPanel(); updateMeshes(); save(); placeExpertNote(); placeVoyagerPin(); }
 
 /* =====================================================================
    4. MISSÕES (simulador de decisões)
@@ -1201,6 +1465,11 @@ function computeMeters(m, sid, L) {
 }
 const gradeOf = (s) => (s >= 80 ? ['Excelente', 'var(--good)'] : s >= 65 ? ['Boa', 'var(--data)'] : s >= 50 ? ['Arriscada', 'var(--warn)'] : ['Crítica', 'var(--bad)']);
 const meterColor = (v) => (v >= 65 ? 'var(--good)' : v >= 40 ? 'var(--warn)' : 'var(--bad)');
+function metersHtml(values) {
+  return '<div class="meters">' + METERS.map(([k, label]) =>
+    '<div class="meter"><div class="mt"><span>' + label + '</span><b>' + values[k] + '</b></div><div class="bar"><i style="width:' + values[k] + '%;background:' + meterColor(values[k]) + '"></i></div>' +
+    (METER_HELP[k] ? '<p class="meter-help">' + METER_HELP[k] + '</p>' : '') + '</div>').join('') + '</div>';
+}
 
 function renderMissions() {
   const cur = currentMission();
@@ -1230,12 +1499,14 @@ function renderMissions() {
   } else {
     html += '<div style="display:grid;gap:8px"><div class="section-title"><h3 style="font-size:15px">Escolha uma estratégia</h3></div><div class="strategies" role="radiogroup" aria-label="Estratégias">' +
       STRATEGIES.map((s) => '<button class="strategy" role="radio" aria-checked="' + (choice === s.id) + '" data-strategy="' + s.id + '"><strong>' + s.name + '</strong><span>' + s.desc + '</span></button>').join('') + '</div></div>' +
-      '<div class="slider-row"><label for="leadRange">Antecedência da ação <b class="mono">' + lead + '/10</b></label><input type="range" id="leadRange" min="1" max="10" value="' + lead + '"><span class="muted" style="font-size:12.5px">Agir cedo gasta menos combustível, mas deixa menos tempo para estudar o objeto.</span></div>';
+      '<div class="slider-row lead-row"><label id="leadLabel">Antecedência da ação <b class="mono" id="leadValue">' + leadText(lead) + '</b></label>' +
+      '<div class="lead-slider" id="leadSlider" role="slider" tabindex="0" aria-valuemin="1" aria-valuemax="10" aria-valuenow="' + lead + '" aria-labelledby="leadLabel" aria-describedby="leadHelp" style="--fill:' + leadFill(lead) + '%"><div class="lead-track"></div><div class="lead-thumb"></div></div>' +
+      '<input type="range" id="leadRange" class="lead-range" min="1" max="10" step="0.1" value="' + lead + '" tabindex="-1" aria-hidden="true">' +
+      '<div class="lead-scale"><span>1 · agir agora</span><span>10 · agir com folga</span></div><span class="muted" id="leadHelp">Segure e arraste. O valor vai de 1 a 10, de 0,1 em 0,1. Agir cedo gasta menos combustível, mas deixa menos tempo para estudar o objeto.</span></div>';
     if (choice) {
       const r = computeMeters(m, choice, lead);
       const [g, c] = gradeOf(r.score);
-      html += '<div class="meters">' + METERS.map(([k, label]) =>
-        '<div class="meter"><div class="mt"><span>' + label + '</span><b>' + r.m[k] + '</b></div><div class="bar"><i style="width:' + r.m[k] + '%;background:' + meterColor(r.m[k]) + '"></i></div></div>').join('') + '</div>' +
+      html += metersHtml(r.m) +
         '<div class="score-line"><div><span class="eyebrow">Previsão</span><div class="sc" style="color:' + c + '">' + r.score + ' · ' + g + '</div></div>' +
         '<button class="btn primary" id="confirmDecision">Confirmar decisão</button></div>';
     } else {
@@ -1245,6 +1516,105 @@ function renderMissions() {
   
   
   $('mDetail').innerHTML = html;
+  paintLead(false);
+  bindLeadSlider();
+}
+function leadStep(v) {
+  return Math.round(Math.min(10, Math.max(1, v)) * 10) / 10;
+}
+function leadFill(v) {
+  return ((leadStep(v) - 1) / 9) * 100;
+}
+function leadText(v) {
+  return leadStep(v).toFixed(1).replace('.', ',') + '/10';
+}
+function paintLead(live) {
+  const slider = $('leadSlider');
+  if (!slider) return;
+  const v = leadStep(lead);
+  lead = v;
+  slider.style.setProperty('--fill', leadFill(v) + '%');
+  slider.setAttribute('aria-valuenow', String(v));
+  slider.setAttribute('aria-valuetext', leadText(v).replace('/10', ' de 10'));
+  const range = $('leadRange');
+  const label = $('leadValue');
+  if (range) range.value = String(v);
+  if (label) label.textContent = leadText(v);
+  if (!live || !choice) return;
+  const m = MISSIONS.find((x) => x.id === viewMission);
+  if (!m || S.done[m.id]) return;
+  const r = computeMeters(m, choice, v);
+  const meters = $('mDetail').querySelector('.meters');
+  if (meters) {
+    METERS.forEach(([k], i) => {
+      const meter = meters.children[i];
+      if (!meter) return;
+      const b = meter.querySelector('.mt b');
+      const bar = meter.querySelector('.bar i');
+      if (b) b.textContent = r.m[k];
+      if (bar) { bar.style.width = r.m[k] + '%'; bar.style.background = meterColor(r.m[k]); }
+    });
+  }
+  const sc = $('mDetail').querySelector('.score-line .sc');
+  if (sc) {
+    const [g, c] = gradeOf(r.score);
+    sc.style.color = c;
+    sc.textContent = r.score + ' · ' + g;
+  }
+}
+function leadFromClientX(clientX) {
+  const rect = $('leadSlider').getBoundingClientRect();
+  const pad = 14;
+  const span = Math.max(1, rect.width - pad * 2);
+  const x = Math.min(rect.right - pad, Math.max(rect.left + pad, clientX));
+  return leadStep(1 + ((x - rect.left - pad) / span) * 9);
+}
+let leadDrag = false;
+function bindLeadSlider() {
+  const slider = $('leadSlider');
+  if (!slider || slider.dataset.bound) return;
+  slider.dataset.bound = '1';
+  const move = (e) => {
+    if (!leadDrag) return;
+    e.preventDefault();
+    lead = leadFromClientX(e.clientX);
+    paintLead(true);
+  };
+  const end = () => {
+    if (!leadDrag) return;
+    leadDrag = false;
+    window.removeEventListener('pointermove', move);
+    window.removeEventListener('pointerup', end);
+    window.removeEventListener('pointercancel', end);
+  };
+  slider.addEventListener('pointerdown', (e) => {
+    if (e.button != null && e.button !== 0) return;
+    e.preventDefault();
+    leadDrag = true;
+    slider.focus({ preventScroll: true });
+    lead = leadFromClientX(e.clientX);
+    paintLead(true);
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', end);
+    window.addEventListener('pointercancel', end);
+  });
+  slider.addEventListener('keydown', (e) => {
+    const step = e.shiftKey ? 1 : 0.1;
+    let next = null;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowUp') next = lead + step;
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') next = lead - step;
+    else if (e.key === 'Home') next = 1;
+    else if (e.key === 'End') next = 10;
+    if (next == null) return;
+    e.preventDefault();
+    lead = leadStep(next);
+    paintLead(true);
+  });
+  const range = $('leadRange');
+  if (range) range.addEventListener('input', () => {
+    lead = leadStep(+range.value);
+    paintLead(true);
+  });
 }
 
 function confirmDecision() {
@@ -1262,8 +1632,7 @@ function confirmDecision() {
   const next = currentMission();
   $('rBody').innerHTML =
     '<div class="result-top"><div class="grade" style="color:' + c + '">' + r.score + '</div><div><strong style="font-family:var(--display);font-size:20px">' + g + '</strong><p class="muted">Capítulo ' + m.chapter + ' · ' + esc(m.title) + '</p></div></div>' +
-    '<div class="meters">' + METERS.map(([k, label]) =>
-      '<div class="meter"><div class="mt"><span>' + label + '</span><b>' + r.m[k] + '</b></div><div class="bar"><i style="width:' + r.m[k] + '%;background:' + meterColor(r.m[k]) + '"></i></div></div>').join('') + '</div>' +
+    metersHtml(r.m) +
     comentarioHtml(m, choice) +
     '<div style="display:grid;gap:6px"><span class="eyebrow">Explicação científica</span><p class="placeholder">' + esc(m.explain) + '</p></div>' +
     '<div class="gained"><span class="chip target">+' + xp + ' XP</span>' +
@@ -1279,7 +1648,7 @@ function confirmDecision() {
    5. MODAIS E NAVEGAÇÃO
    ===================================================================== */
 function openModal(id) {
-  ['missionsModal', 'kesslerModal', 'diaryModal', 'resultModal', 'introModal'].forEach((m) => { if (m !== id) $(m).hidden = true; });
+  ['missionsModal', 'kesslerModal', 'diaryModal', 'resultModal', 'introModal', 'voyagerModal'].forEach((m) => { if (m !== id) $(m).hidden = true; });
   $(id).hidden = false;
   if (id === 'missionsModal') renderMissions();
   if (id === 'diaryModal') renderDiary();
@@ -1290,7 +1659,10 @@ function openModal(id) {
 function closeModal(id) {
   $(id).hidden = true;
   if (id === 'kesslerModal') kPause();
-  if (id === 'resultModal') { showLearning = false; refresh(); }
+  if (id === 'voyagerModal') {
+    $('navVoyager').setAttribute('aria-pressed', 'false');
+    $('voyagerPin').setAttribute('aria-pressed', 'false');
+  }
   syncDock();
 }
 function syncDock() {
@@ -1304,6 +1676,7 @@ function toggleAtlas(force, f) {
   if (f) { filter = f; renderFilters(); }
   $('atlasDrawer').hidden = !show;
   $('missionCard').hidden = show;
+  placeExpertNote();
   if (show && window.innerWidth <= 760) { selectedId = null; renderObjPanel(); }
   renderAtlas(); updateMeshes(); syncDock();
 }
@@ -1334,6 +1707,23 @@ function renderIntro() {
 }
 
 /* Eventos globais por delegação */
+const VOYAGER_EVENTS = [
+  { id: 'jupiter', title: 'Sobrevoo de Júpiter', text: 'Em 5 de março de 1979 a Voyager 1 passou a 280 mil km de Júpiter, encontrou um anel fino e as luas Tebe e Métis.' },
+  { id: 'saturn', title: 'Sobrevoo de Saturno', text: 'Em 12 de novembro de 1980 passou a cerca de 126 mil km de Saturno, encontrou cinco luas e o anel G, e mediu a atmosfera de Titã.' },
+  { id: 'interstellar', title: 'Espaço interestelar', text: 'Em 25 de agosto de 2012 cruzou a heliopausa e passou a medir o espaço interestelar. Continua a ser o objeto humano mais distante.' },
+];
+let voyagerEvent = 'jupiter';
+function renderVoyager() {
+  const event = VOYAGER_EVENTS.find((e) => e.id === voyagerEvent) || VOYAGER_EVENTS[0];
+  $('voyagerBody').innerHTML =
+    '<p>Estes botões revelam os marcos históricos da Voyager 1. Escolha um para ler o que a sonda fez.</p>' +
+    '<div class="strategies" role="list">' + VOYAGER_EVENTS.map((e) =>
+      '<button type="button" class="strategy" data-voyager-event="' + e.id + '" aria-pressed="' + (e.id === event.id) + '"><strong>' + e.title + '</strong></button>').join('') + '</div>' +
+    '<p class="reveal">' + esc(event.text) + '</p>' +
+    '<p class="muted">JPL é o Jet Propulsion Laboratory, o laboratório da NASA, na Califórnia, que opera a Voyager 1 e outras sondas planetárias.</p>';
+  $('navVoyager').setAttribute('aria-pressed', 'true');
+  $('voyagerPin').setAttribute('aria-pressed', 'true');
+}
 document.addEventListener('click', (e) => {
   const t = e.target.closest('button'); if (!t) {
     const ov = e.target.closest('.overlay');
@@ -1352,15 +1742,18 @@ document.addEventListener('click', (e) => {
   if (t.dataset.speed) { setSpeed(t.dataset.speed); return; }
   if (t.dataset.obj) { selectObject(t.dataset.obj); return; }
   if (t.dataset.f) { filter = t.dataset.f; renderFilters(); renderAtlas(); updateMeshes(); return; }
-  if (t.dataset.step) { doStep(t.dataset.step); return; }
+  if (t.dataset.quiz != null) { answerQuiz(t.dataset.quizStep, +t.dataset.quiz); return; }
+  if (t.dataset.step) { toggleStep(t.dataset.step); return; }
   if (t.dataset.mission) { viewMission = t.dataset.mission; choice = null; renderMissions(); return; }
   if (t.dataset.strategy) { choice = t.dataset.strategy; renderMissions(); return; }
+  if (t.dataset.voyagerEvent) { voyagerEvent = t.dataset.voyagerEvent; renderVoyager(); return; }
   switch (t.id) {
     case 'closeObj': closeObject(); break;
     case 'concludeBtn': conclude(); break;
     case 'confirmDecision': confirmDecision(); break;
     case 'continueBtn': closeModal('resultModal'); break;
     case 'startBtn': S.started = true; save(); $('introModal').hidden = true; refresh(); toast('<b>Missão recebida</b>Capítulo 1'); break;
+    case 'navVoyager': case 'voyagerPin': openModal('voyagerModal'); renderVoyager(); break;
     case 'dAtlas': toggleAtlas(); break;
     case 'dMissions': $('missionsModal').hidden ? openModal('missionsModal') : closeModal('missionsModal'); break;
     case 'dKessler': $('kesslerModal').hidden ? openModal('kesslerModal') : closeModal('kesslerModal'); break;
@@ -1372,12 +1765,9 @@ document.addEventListener('click', (e) => {
       renderIntro(); $('introModal').hidden = false; refresh(); break;
   }
 });
-document.addEventListener('input', (e) => {
-  if (e.target.id === 'leadRange') { lead = +e.target.value; renderMissions(); const r = $('leadRange'); if (r) r.focus(); }
-});
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
-  const open = ['kesslerModal', 'missionsModal', 'diaryModal'].find((m) => !$(m).hidden);
+  const open = ['kesslerModal', 'missionsModal', 'diaryModal', 'voyagerModal'].find((m) => !$(m).hidden);
   if (open) closeModal(open);
   else if (!$('atlasDrawer').hidden) toggleAtlas(false);
   else if (selectedId) closeObject();
@@ -1527,7 +1917,7 @@ function makeBody(o) {
   if (o.type === 'fragmento') {
     body = new THREE.Mesh(new THREE.DodecahedronGeometry(0.04, 0), mat);
     body.scale.set(1.3, 0.6, 0.9);
-  } else if (o.type === 'satelite') {
+  } else if (o.type === 'satelite' || o.type === 'artefato') {
     body = new THREE.Group();
     body.add(new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.05, 0.05), mat));
     const pm = new THREE.MeshStandardMaterial({ color: 0x1d3f7a, emissive: 0x2a5bb0, emissiveIntensity: 0.4, metalness: 0.6, roughness: 0.4 });
@@ -1732,7 +2122,13 @@ function sunViewDir() {
 let fly = null;
 const lastBP = hasGL ? new THREE.Vector3() : null;
 const tmpBP = hasGL ? new THREE.Vector3() : null;
-function flyTo(id) {
+const journeyA = hasGL ? new THREE.Vector3() : null;
+const journeyB = hasGL ? new THREE.Vector3() : null;
+const DEST_ORDER = ['terra', 'lua', 'marte'];
+let journey = Math.max(0, DEST_ORDER.indexOf(curDest));
+let journeyGoal = journey;
+let journeyMove = false;
+function adoptDest(id) {
   if (!DEST[id] || id === curDest) return;
   curDest = id; S.dest = id;
   MISSIONS = ALL_MISSIONS.filter((m) => m.body === id); viewMission = null; choice = null;
@@ -1743,13 +2139,77 @@ function flyTo(id) {
   }
   selectedId = null; openStep = null;
   toast('<b>Destino</b>' + DEST[id].label);
-  if (hasGL && renderer) {
-    fly = { start: performance.now(), dur: reduceMotion ? 1 : 2600, c0: camera.position.clone(), t0: controls.target.clone() };
-    fly.dir = sunViewDir();
-    controls.enabled = false;
-  }
   save(); refresh();
 }
+function beginJourney(index) {
+  journeyGoal = Math.max(0, Math.min(DEST_ORDER.length - 1, index));
+  if (Math.abs(journey - journeyGoal) < 0.001) return;
+  journeyMove = true;
+  fly = null;
+  if (hasGL && controls) controls.enabled = false;
+}
+function flyTo(id) {
+  const idx = DEST_ORDER.indexOf(id);
+  if (idx < 0) return;
+  if (id === curDest && Math.abs(journey - idx) < 0.02 && !journeyMove) return;
+  beginJourney(idx);
+}
+function placeJourneyCamera() {
+  const span = DEST_ORDER.length - 1;
+  const t = Math.max(0, Math.min(span, journey));
+  const i0 = Math.min(span - 1, Math.floor(t));
+  const f = ease(t - i0);
+  const id0 = DEST_ORDER[i0];
+  const id1 = DEST_ORDER[i0 + 1];
+  BODIES[id0].getWorldPosition(journeyA);
+  BODIES[id1].getWorldPosition(journeyB);
+  tmpBP.copy(journeyA).lerp(journeyB, f);
+  const dist = DEST[id0].view + (DEST[id1].view - DEST[id0].view) * f;
+  controls.target.copy(tmpBP);
+  camera.position.copy(tmpBP).add(sunViewDir().multiplyScalar(dist));
+  camera.lookAt(controls.target);
+}
+function syncJourneyFocus() {
+  const id = DEST_ORDER[Math.min(DEST_ORDER.length - 1, Math.max(0, Math.round(journey)))];
+  document.querySelectorAll('.seg [data-dest]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.dest === id)));
+  if (id !== curDest) adoptDest(id);
+}
+function stepJourney(dt) {
+  const dur = reduceMotion ? 0.05 : 2.6;
+  const maxStep = dt / dur;
+  const diff = journeyGoal - journey;
+  if (Math.abs(diff) <= maxStep) journey = journeyGoal;
+  else journey += Math.sign(diff) * maxStep;
+  placeJourneyCamera();
+  syncJourneyFocus();
+  if (journey === journeyGoal) {
+    journeyMove = false;
+    controls.enabled = true;
+    controls.minDistance = DEST[curDest].min;
+    controls.maxDistance = DEST[curDest].max;
+    BODIES[curDest].getWorldPosition(lastBP);
+    controls.target.copy(lastBP);
+  }
+}
+function wheelLocked(target) {
+  if (target && target.closest && target.closest('.panel, .overlay, #robotAssistant, .navbar, .dock, .hud')) return true;
+  return ['introModal', 'missionsModal', 'kesslerModal', 'diaryModal', 'voyagerModal', 'resultModal'].some((id) => {
+    const n = $(id);
+    return n && !n.hidden;
+  });
+}
+let wheelBank = 0;
+window.addEventListener('wheel', (e) => {
+  if (!hasGL || !renderer || wheelLocked(e.target)) return;
+  e.preventDefault();
+  hideHint();
+  wheelBank += e.deltaY;
+  const step = 90;
+  let moved = false;
+  while (wheelBank >= step) { journeyGoal = Math.min(DEST_ORDER.length - 1, journeyGoal + 1); wheelBank -= step; moved = true; }
+  while (wheelBank <= -step) { journeyGoal = Math.max(0, journeyGoal - 1); wheelBank += step; moved = true; }
+  if (moved) beginJourney(journeyGoal);
+}, { passive: false });
 
 /* ---------- rótulos dos destinos na tela ---------- */
 const labels = {};
@@ -1848,7 +2308,9 @@ function animate() {
     me.body.userData.inner.rotation.y += dt * me.spin * slow;
   });
   BODIES[curDest].getWorldPosition(tmpBP);
-  if (fly) {
+  if (journeyMove) {
+    stepJourney(dt);
+  } else if (fly) {
     const t = Math.min(1, (performance.now() - fly.start) / fly.dur);
     const e = ease(t);
     const endC = tmpBP.clone().add(fly.dir.clone().multiplyScalar(DEST[curDest].view));
@@ -2059,7 +2521,7 @@ $('kReset').addEventListener('click', () => { kPause(); kReset(); $('kPlay').tex
 [['kLaunch', (v) => v], ['kRemove', (v) => v], ['kSpeed', (v) => v + '×']].forEach(([id, f]) => {
   $(id).addEventListener('input', () => { $(id + 'V').textContent = f($(id).value); });
 });
-window.addEventListener('resize', () => { if (!$('kesslerModal').hidden) kDraw(); });
+window.addEventListener('resize', () => { placeExpertNote(); placeVoyagerPin(); if (!$('kesslerModal').hidden) kDraw(); });
 
 /* =====================================================================
    8. INICIALIZAÇÃO
@@ -2083,20 +2545,28 @@ if (!S.started) { renderIntro(); $('introModal').hidden = false; }
 document.addEventListener('DOMContentLoaded', () => {
   /* ---- CONFIGURAÇÃO DA IA --------------------------------------------
      A chave fica em frontend/groq-local.js (window.GROQ_API_KEY), fora do Git.
-     Sem chave, o chat usa respostas locais. Com chave, chama a Groq e troca
-     de modelo se a rede cair, o modelo recusar ou o limite de taxa estourar. */
+     O chat chama a Groq e troca de modelo se a rede cair, o modelo recusar
+     ou o limite de taxa estourar. Se a cadeia falhar, tenta de novo uma vez. */
   const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
   const GROQ_MODELS = [
     'llama-3.3-70b-versatile',
     'llama-3.1-8b-instant',
+    'qwen/qwen3.8-27b',
   ];
   const GROQ_SYSTEM = [
-    'Você é o Assistente Orbital oficial do Atlas do Lixo Espacial, um guia amigável, inteligente e especialista em exploração espacial, ciência e sustentabilidade orbital. Seu objetivo é ajudar entusiastas em idade escolar e curiosos a descobrirem as máquinas históricas que a humanidade e a NASA deixaram na Lua, em Marte e no espaço profundo, além de explicar os riscos dos detritos orbitais e da Síndrome de Kessler.',
+    'Você é o SojournBot, um rover inteligente do Atlas do Lixo Espacial. Seu nome é SojournBot: apresente-se e reconheça-se sempre com esse nome. Você é especializado em orientação espacial e em dados de detritos orbitais. Ajude entusiastas em idade escolar e curiosos a descobrirem as máquinas históricas que a humanidade e a NASA deixaram na Lua, em Marte e no espaço profundo, e explique os riscos dos detritos orbitais e da Síndrome de Kessler.',
     'Diretrizes:',
     '1. Tom: Empolgante, acolhedor, curioso e educativo. Trate os artefatos históricos (como a Surveyor 1 ou a Voyager 1) como monumentos silenciosos e marcos da ciência.',
     '2. Clareza: Use analogias simples para explicar conceitos complexos, evitando jargões técnicos excessivos sem explicá-los.',
     '3. Precisão: Baseie suas respostas em dados científicos reais (como NSSDCA, LROC e missões JPL) sempre que aplicável.',
-    '4. Curteza e Dinâmica: Mantenha as respostas focadas em conversas de chat, preferindo parágrafos curtos e organizados.',
+    '4. Concisão: cada resposta tem no máximo 2 ou 3 frases curtas. Não escreva parágrafos longos, listas grandes nem blocos de texto.',
+    'Só passe desse limite se a pessoa pedir explicitamente mais detalhe, uma explicação aprofundada ou um passo a passo.',
+    'Tom de chat: fale como um rover amigo, direto e curioso. Entregue a ideia principal e deixe uma pergunta curta para a pessoa continuar, sem despejar o assunto inteiro de uma vez.',
+    'Diálogo:',
+    'Leia o histórico desta conversa antes de responder. Pronomes e continuações ("eles", "isso", "e como", "e aí") referem-se à mensagem anterior.',
+    'Responda à frase que acabou de chegar. Uma saudação recebe uma saudação curta. Uma pergunta curta, como "lixo espacial?", recebe duas ou três frases sobre esse tema. Um pedido de continuação retoma só o ponto anterior.',
+    'Não comece com "Exatamente!", "Isso mesmo!", "Com certeza!", "Ótima pergunta!" ou outra concordância vazia quando a pessoa não afirmou nada para você confirmar.',
+    'Não invente que a pessoa concordou com você. Não responda como se houvesse uma fala anterior que não está no histórico.',
     'Restrições de escopo e assuntos proibidos:',
     'Responda somente sobre exploração espacial, satélites, engenharia orbital, a história de artefatos e sondas (como Surveyor 1, Voyager, Luna e equivalentes), detritos espaciais e a Síndrome de Kessler.',
     'Não responda quando uma palavra do tema aparecer isolada em outro assunto. Exemplos fora de escopo: bolo ou receita "espacial", festa, horóscopo, astrologia, filmes de ficção científica genéricos, culinária e piadas sem relação com ciência espacial.',
@@ -2121,7 +2591,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const statusEl = $r('robotStatus');
   if (!root || !bubble || !form) return;
 
-  const history = [];
+  const greeting = (list.querySelector('.robot-msg.bot') || {}).textContent || '';
+  const history = greeting ? [{ role: 'assistant', content: greeting.trim() }] : [];
   let busy = false;
 
   /* Se o GIF do robô não carregar, mostra um emoji no lugar */
@@ -2143,7 +2614,7 @@ document.addEventListener('DOMContentLoaded', () => {
     robotBtn.setAttribute('aria-expanded', String(open));
     arrowBtn.setAttribute('aria-expanded', String(open));
     arrowBtn.setAttribute('aria-label', open ? 'Fechar chat' : 'Abrir chat');
-    robotBtn.setAttribute('aria-label', open ? 'Fechar assistente' : 'Abrir assistente');
+    robotBtn.setAttribute('aria-label', open ? 'Fechar SojournBot' : 'Abrir SojournBot');
     if (open) {
       scrollDown();
       if (window.matchMedia('(pointer: fine)').matches) input.focus();
@@ -2165,14 +2636,48 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ---------- Mensagens ---------- */
   function scrollDown() { list.scrollTop = list.scrollHeight; }
 
+  function chatHtml(raw) {
+    const escHtml = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const inline = (s) => escHtml(s)
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/__([^_]+)__/g, '<strong>$1</strong>')
+      .replace(/(^|[\s(])\*([^*\n]+)\*/g, '$1<em>$2</em>')
+      .replace(/(^|[\s(])_([^_\n]+)_/g, '$1<em>$2</em>');
+    const lines = String(raw || '').replace(/\r\n/g, '\n').split('\n');
+    const blocks = [];
+    let list = null;
+    const flush = () => {
+      if (!list) return;
+      const tag = list.ordered ? 'ol' : 'ul';
+      blocks.push('<' + tag + '>' + list.items.map((item) => '<li>' + inline(item) + '</li>').join('') + '</' + tag + '>');
+      list = null;
+    };
+    lines.forEach((line) => {
+      const ul = line.match(/^\s*[-*]\s+(.+)$/);
+      const ol = line.match(/^\s*\d+[.)]\s+(.+)$/);
+      if (ul || ol) {
+        const ordered = !!ol;
+        if (!list || list.ordered !== ordered) { flush(); list = { ordered, items: [] }; }
+        list.items.push((ul || ol)[1]);
+        return;
+      }
+      flush();
+      if (line.trim()) blocks.push('<p>' + inline(line) + '</p>');
+    });
+    flush();
+    return blocks.join('') || '<p></p>';
+  }
+
   function addMessage(role, text, extra) {
     const div = document.createElement('div');
     div.className = 'robot-msg ' + role + (extra ? ' ' + extra : '');
-    div.textContent = text; // textContent: nada digitado vira HTML
+    if (role === 'bot' && extra !== 'error') div.innerHTML = chatHtml(text);
+    else div.textContent = text;
     list.appendChild(div);
     const msgs = list.querySelectorAll('.robot-msg:not(.robot-typing)');
-    const extra = msgs.length - MAX_VISIBLE;
-    for (let i = 0; i < extra; i++) msgs[i].remove();
+    const sobra = msgs.length - MAX_VISIBLE;
+    for (let i = 0; i < sobra; i++) msgs[i].remove();
     scrollDown();
     return div;
   }
@@ -2180,7 +2685,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function addTyping() {
     const div = document.createElement('div');
     div.className = 'robot-msg bot robot-typing';
-    div.setAttribute('aria-label', 'Assistente está respondendo');
+    div.setAttribute('aria-label', 'SojournBot está respondendo');
     div.innerHTML = '<i></i><i></i><i></i>';
     list.appendChild(div);
     scrollDown();
@@ -2193,11 +2698,35 @@ document.addEventListener('DOMContentLoaded', () => {
     statusEl.textContent = STATUS[state] || STATUS.idle;
   }
   function updateSend() { sendBtn.disabled = busy || input.value.trim() === ''; }
+  const ROBOT_IDLE = 'frente.png';
+  const ROBOT_THINK = ['apontando_olhando_esquerda.png', 'frente.png', 'apontando_olhando_direita.png'];
+  const reduceRobotMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let thinkTimer = null;
+  let thinkFrame = 0;
+  function setRobotPose(src) {
+    root.querySelectorAll('.robot-img').forEach((img) => { if (img.getAttribute('src') !== src) img.src = src; });
+  }
+  function startThinking() {
+    stopThinking(false);
+    if (reduceRobotMotion) return;
+    thinkFrame = 0;
+    setRobotPose(ROBOT_THINK[0]);
+    thinkTimer = setInterval(() => {
+      thinkFrame = (thinkFrame + 1) % ROBOT_THINK.length;
+      setRobotPose(ROBOT_THINK[thinkFrame]);
+    }, 350);
+  }
+  function stopThinking(reset) {
+    if (thinkTimer) { clearInterval(thinkTimer); thinkTimer = null; }
+    if (reset !== false) setRobotPose(ROBOT_IDLE);
+  }
   function setBusy(b) {
     busy = b;
     micBtn.disabled = b;
     input.disabled = b;
     setState(b ? 'thinking' : 'idle');
+    if (b) startThinking();
+    else stopThinking(true);
     updateSend();
     const aberto = !bubble.classList.contains('hidden');
     if (!b && aberto && window.matchMedia('(pointer: fine)').matches) input.focus();
@@ -2205,14 +2734,7 @@ document.addEventListener('DOMContentLoaded', () => {
   input.addEventListener('input', updateSend);
 
   /* ---------- Falar com a IA ---------- */
-  function demoReply(q) {
-    const t = q.toLowerCase();
-    if (/(^|\s)(olá|ola|oi|bom dia|boa tarde|boa noite)(\s|!|,|$)/.test(t)) return 'Olá! Sou o assistente orbital. Pergunte sobre lixo espacial, órbitas ou as missões do Atlas.';
-    if (t.includes('kessler')) return 'A síndrome de Kessler é uma reação em cadeia: colisões geram fragmentos, que causam novas colisões e podem deixar certas órbitas inutilizáveis. Dá para simular isso no Atlas.';
-    if (t.includes('reduz') || t.includes('limpar') || t.includes('remov')) return 'Duas frentes principais: evitar criar lixo novo (desorbitar satélites no fim da vida) e remover os objetos mais perigosos que já estão lá em cima.';
-    if (t.includes('lixo') || t.includes('detrito') || t.includes('espacial')) return 'Lixo espacial são objetos sem uso em órbita, como satélites inativos, estágios de foguete e fragmentos. Eles viajam a milhares de km/h e ameaçam satélites ativos.';
-    return 'Ainda estou em modo de demonstração, sem IA conectada. Quando o servidor for configurado, vou responder qualquer dúvida sobre o Atlas.';
-  }
+  const MSG_INSTAVEL = 'Houve um pico de instabilidade orbital momentâneo. Tente perguntar de novo em alguns segundos.';
 
   function groqKey() {
     return String(window.GROQ_API_KEY || '').trim();
@@ -2244,16 +2766,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return String(text).trim();
   }
 
-  async function askAI(message) {
-    if (!groqKey()) {
-      await new Promise((r) => setTimeout(r, 700));
-      return demoReply(message);
-    }
-    const messages = [
-      { role: 'system', content: GROQ_SYSTEM },
-      ...history.slice(-MAX_HISTORY),
-      { role: 'user', content: message },
-    ];
+  async function pedirCadeia(messages) {
     let ultimo = null;
     for (const model of GROQ_MODELS) {
       const ctrl = new AbortController();
@@ -2262,12 +2775,27 @@ document.addEventListener('DOMContentLoaded', () => {
         return await pedirModelo(messages, model, ctrl.signal);
       } catch (err) {
         ultimo = err;
-        if (!trocaDeModelo(err)) break;
+        if (!trocaDeModelo(err)) throw err;
       } finally {
         clearTimeout(timer);
       }
     }
     throw ultimo || new Error('modelos indisponiveis');
+  }
+
+  async function askAI(message) {
+    if (!groqKey()) throw new Error('sem chave');
+    const messages = [
+      { role: 'system', content: GROQ_SYSTEM },
+      ...history.slice(-MAX_HISTORY),
+      { role: 'user', content: message },
+    ];
+    try {
+      return await pedirCadeia(messages);
+    } catch (err) {
+      if (!trocaDeModelo(err)) throw err;
+      return await pedirCadeia(messages);
+    }
   }
 
   async function send(raw) {
@@ -2287,7 +2815,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
       console.error(err);
       typing.remove();
-      addMessage('bot', 'Não consegui falar com a IA agora. Tente de novo em instantes.', 'error');
+      addMessage('bot', MSG_INSTAVEL, 'error');
     } finally {
       setBusy(false);
     }
@@ -2363,21 +2891,30 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   micBtn.addEventListener('click', () => (recognition ? stopListening() : startListening()));
 
-  /* ---------- Posição: o robô sobe sozinho se encostar na barra de baixo ---------- */
+  /* ---------- Posição: sobe só o bastante para não cobrir a barra, sem sair da tela ---------- */
   function placeRobot() {
-    const zoneLeft = window.innerWidth - 16 - 130; // área ocupada por robô + seta
+    root.style.bottom = '';
+    const launcher = root.querySelector('.robot-launcher');
+    if (!launcher) return;
+    const launcherH = launcher.offsetHeight || 95;
+    const zoneLeft = window.innerWidth - 16 - launcher.offsetWidth;
     let bottom = 16;
     ['.navbar', '.dock-inner'].forEach((sel) => {
       const el = document.querySelector(sel);
       if (!el || !el.getClientRects().length) return;
       const r = el.getBoundingClientRect();
-      if (r.width && r.right > zoneLeft && r.left < window.innerWidth) {
+      if (r.width && r.bottom > 0 && r.right > zoneLeft && r.left < window.innerWidth) {
         bottom = Math.max(bottom, window.innerHeight - r.top + 10);
       }
     });
-    root.style.setProperty('--robot-bottom', Math.round(bottom) + 'px');
+    const maxBottom = Math.max(16, window.innerHeight - launcherH - 16);
+    bottom = Math.min(bottom, maxBottom);
+    if (bottom > 16) {
+      root.style.bottom = 'calc(' + Math.round(bottom) + 'px + env(safe-area-inset-bottom, 0px))';
+    }
   }
   placeRobot();
+  setOpen(false);
   window.addEventListener('resize', placeRobot);
   window.addEventListener('load', placeRobot);
   if (window.ResizeObserver) {
@@ -2392,13 +2929,13 @@ document.addEventListener('DOMContentLoaded', () => {
 <!-- HTML do robozinho: robô + seta (abrem o chat) e a janela do chat -->
 <div id="robotAssistant">
 
-  <!-- Janela do chat (começa escondida) -->
-  <section id="robotBubble" class="hidden" role="dialog" aria-label="Chat com o Assistente Orbital">
+  <!-- Janela do chat (só aparece depois do clique no robô ou na seta) -->
+  <section id="robotBubble" class="hidden" role="dialog" aria-label="Chat com o SojournBot">
     <header class="robot-header">
       <div class="robot-id">
-        <img class="robot-img robot-avatar" src="robo-assistente.svg" alt="">
+        <img class="robot-img robot-avatar" src="frente.png" alt="">
         <div>
-          <strong>Assistente Orbital</strong>
+          <strong>SojournBot</strong>
           <span class="robot-status" id="robotStatus">Pronto para ajudar</span>
         </div>
       </div>
@@ -2409,7 +2946,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     <!-- Histórico de mensagens -->
     <div id="robotMessages" role="log" aria-live="polite">
-      <div class="robot-msg bot">Olá! Sou o assistente orbital. Pergunte sobre lixo espacial, órbitas e as missões do Atlas. Você pode digitar ou usar o microfone.</div>
+      <div class="robot-msg bot">Olá! Sou o SojournBot. Pergunte sobre lixo espacial, órbitas e as missões do Atlas. Você pode digitar ou usar o microfone.</div>
     </div>
 
     <!-- Perguntas prontas -->
@@ -2433,8 +2970,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   <!-- Robô animado + seta à direita: os dois abrem e fecham o chat -->
   <div class="robot-launcher">
-    <button type="button" id="robotCharacter" aria-label="Abrir assistente" aria-expanded="false" aria-controls="robotBubble">
-      <img class="robot-img" src="robo-assistente.svg" alt="">
+    <button type="button" id="robotCharacter" aria-label="Abrir SojournBot" aria-expanded="false" aria-controls="robotBubble">
+      <img class="robot-img" src="frente.png" alt="">
     </button>
     <button type="button" id="robotArrow" aria-label="Abrir chat" aria-expanded="false" aria-controls="robotBubble">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>

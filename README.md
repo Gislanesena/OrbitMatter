@@ -1,6 +1,6 @@
 # OrbitMatter
 
-Atlas do lixo espacial. O protótipo visual continua na raiz (`Atlas do Lixo Espacial.html`, `atlas.css`, `dados-objetos.js`). A cópia para deploy fica em `frontend/`. A lógica tipada que a interface consome fica nas pastas abaixo.
+Atlas do lixo espacial. A página que o servidor abre é `frontend/atlas-lixo-espacial.html`, com o SojournBot. `index.html` redireciona para ela. `Atlas do Lixo Espacial.html` na raiz é a versão anterior, sem o chat. A lógica tipada que a interface consome fica nas pastas abaixo.
 
 ## Estrutura
 
