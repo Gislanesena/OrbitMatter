@@ -13,6 +13,8 @@ Atlas do lixo espacial. O protótipo visual continua na raiz (`Atlas do Lixo Esp
 
 A tela importa só `app/atlas.ts`. Catálogo, missão e órbita passam por esse módulo.
 
+A Voyager 1 não entra nesse catálogo: ele só aceita equipamento que ficou na Lua. O rastreador dela fica em `deep-space/` e abre pelo botão Voyager do protótipo visual. Guia: `deep-space/etapa-deep-space.md`.
+
 ## Como importar a fachada
 
 Na raiz do repositório:

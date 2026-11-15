@@ -25,8 +25,8 @@ window.I18n = (() => {
     'loading':                     { pt: 'Carregando órbita…',                     en: 'Loading orbit…' },
 
     /* ---- hint ---- */
-    'hint':                        { pt: 'Arraste para girar · role para aproximar · clique em um objeto para investigar',
-                                     en: 'Drag to rotate · scroll to zoom · click an object to investigate' },
+    'hint':                        { pt: 'Arraste para olhar · role para passar pelos planetas até a Voyager · clique em um objeto para investigar',
+                                     en: 'Drag to look · scroll past the planets to Voyager · click an object to investigate' },
 
     /* ---- navbar ---- */
     'navbar.destination':          { pt: 'Destino',                                en: 'Destination' },
@@ -44,6 +44,9 @@ window.I18n = (() => {
     'dock.missions':               { pt: 'Missões',                                en: 'Missions' },
     'dock.simulation':             { pt: 'Simulação',                              en: 'Simulation' },
     'dock.diary':                  { pt: 'Diário',                                 en: 'Log' },
+    'dock.voyager':                { pt: 'Voyager',                                en: 'Voyager' },
+    'voyager.pin':                 { pt: 'Voyager 1',                              en: 'Voyager 1' },
+    'voyager.pin.sub':             { pt: 'Muito além dos planetas',                en: 'Far beyond the planets' },
 
     /* ---- atlas drawer ---- */
     'atlas.title':                 { pt: 'Atlas orbital',                          en: 'Orbital atlas' },
