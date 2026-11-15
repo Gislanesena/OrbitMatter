@@ -1886,7 +1886,13 @@ function sunViewDir() {
 let fly = null;
 const lastBP = hasGL ? new THREE.Vector3() : null;
 const tmpBP = hasGL ? new THREE.Vector3() : null;
-function flyTo(id) {
+const journeyA = hasGL ? new THREE.Vector3() : null;
+const journeyB = hasGL ? new THREE.Vector3() : null;
+const DEST_ORDER = ['terra', 'lua', 'marte'];
+let journey = Math.max(0, DEST_ORDER.indexOf(curDest));
+let journeyGoal = journey;
+let journeyMove = false;
+function adoptDest(id) {
   if (!DEST[id] || id === curDest) return;
   curDest = id; S.dest = id;
   MISSIONS = ALL_MISSIONS.filter((m) => m.body === id); viewMission = null; choice = null;
@@ -1897,13 +1903,77 @@ function flyTo(id) {
   }
   selectedId = null; openStep = null;
   toast('<b>Destino</b>' + DEST[id].label);
-  if (hasGL && renderer) {
-    fly = { start: performance.now(), dur: reduceMotion ? 1 : 2600, c0: camera.position.clone(), t0: controls.target.clone() };
-    fly.dir = sunViewDir();
-    controls.enabled = false;
-  }
   save(); refresh();
 }
+function beginJourney(index) {
+  journeyGoal = Math.max(0, Math.min(DEST_ORDER.length - 1, index));
+  if (Math.abs(journey - journeyGoal) < 0.001) return;
+  journeyMove = true;
+  fly = null;
+  if (hasGL && controls) controls.enabled = false;
+}
+function flyTo(id) {
+  const idx = DEST_ORDER.indexOf(id);
+  if (idx < 0) return;
+  if (id === curDest && Math.abs(journey - idx) < 0.02 && !journeyMove) return;
+  beginJourney(idx);
+}
+function placeJourneyCamera() {
+  const span = DEST_ORDER.length - 1;
+  const t = Math.max(0, Math.min(span, journey));
+  const i0 = Math.min(span - 1, Math.floor(t));
+  const f = ease(t - i0);
+  const id0 = DEST_ORDER[i0];
+  const id1 = DEST_ORDER[i0 + 1];
+  BODIES[id0].getWorldPosition(journeyA);
+  BODIES[id1].getWorldPosition(journeyB);
+  tmpBP.copy(journeyA).lerp(journeyB, f);
+  const dist = DEST[id0].view + (DEST[id1].view - DEST[id0].view) * f;
+  controls.target.copy(tmpBP);
+  camera.position.copy(tmpBP).add(sunViewDir().multiplyScalar(dist));
+  camera.lookAt(controls.target);
+}
+function syncJourneyFocus() {
+  const id = DEST_ORDER[Math.min(DEST_ORDER.length - 1, Math.max(0, Math.round(journey)))];
+  document.querySelectorAll('.seg [data-dest]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.dest === id)));
+  if (id !== curDest) adoptDest(id);
+}
+function stepJourney(dt) {
+  const dur = reduceMotion ? 0.05 : 2.6;
+  const maxStep = dt / dur;
+  const diff = journeyGoal - journey;
+  if (Math.abs(diff) <= maxStep) journey = journeyGoal;
+  else journey += Math.sign(diff) * maxStep;
+  placeJourneyCamera();
+  syncJourneyFocus();
+  if (journey === journeyGoal) {
+    journeyMove = false;
+    controls.enabled = true;
+    controls.minDistance = DEST[curDest].min;
+    controls.maxDistance = DEST[curDest].max;
+    BODIES[curDest].getWorldPosition(lastBP);
+    controls.target.copy(lastBP);
+  }
+}
+function wheelLocked(target) {
+  if (target && target.closest && target.closest('.panel, .overlay, #robotAssistant, .navbar, .dock, .hud')) return true;
+  return ['introModal', 'missionsModal', 'kesslerModal', 'diaryModal', 'voyagerModal', 'resultModal'].some((id) => {
+    const n = $(id);
+    return n && !n.hidden;
+  });
+}
+let wheelBank = 0;
+window.addEventListener('wheel', (e) => {
+  if (!hasGL || !renderer || wheelLocked(e.target)) return;
+  e.preventDefault();
+  hideHint();
+  wheelBank += e.deltaY;
+  const step = 90;
+  let moved = false;
+  while (wheelBank >= step) { journeyGoal = Math.min(DEST_ORDER.length - 1, journeyGoal + 1); wheelBank -= step; moved = true; }
+  while (wheelBank <= -step) { journeyGoal = Math.max(0, journeyGoal - 1); wheelBank += step; moved = true; }
+  if (moved) beginJourney(journeyGoal);
+}, { passive: false });
 
 /* ---------- rótulos dos destinos na tela ---------- */
 const labels = {};
@@ -2002,7 +2072,9 @@ function animate() {
     me.body.userData.inner.rotation.y += dt * me.spin * slow;
   });
   BODIES[curDest].getWorldPosition(tmpBP);
-  if (fly) {
+  if (journeyMove) {
+    stepJourney(dt);
+  } else if (fly) {
     const t = Math.min(1, (performance.now() - fly.start) / fly.dur);
     const e = ease(t);
     const endC = tmpBP.clone().add(fly.dir.clone().multiplyScalar(DEST[curDest].view));
