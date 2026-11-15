@@ -555,7 +555,6 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
   border-radius: 14px;
   font-size: 14px;
   line-height: 1.45;
-  white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 .robot-msg.bot {
@@ -565,12 +564,22 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
   border-bottom-left-radius: 4px;
   color: var(--fg);
 }
+.robot-msg.bot p { margin: 0 0 8px; }
+.robot-msg.bot p:last-child,
+.robot-msg.bot ul:last-child,
+.robot-msg.bot ol:last-child { margin-bottom: 0; }
+.robot-msg.bot ul,
+.robot-msg.bot ol { margin: 0 0 8px; padding-left: 1.15em; }
+.robot-msg.bot li { margin: 2px 0; }
+.robot-msg.bot strong { font-weight: 700; }
+.robot-msg.bot code { font-family: var(--mono); font-size: .92em; }
 .robot-msg.user {
   align-self: flex-end;
   background: var(--accent);
   color: var(--accent-ink);
   font-weight: 500;
   border-bottom-right-radius: 4px;
+  white-space: pre-wrap;
 }
 .robot-msg.error { border-color: rgba(255, 93, 108, .5); color: #ffb3ba; }
 
@@ -2422,6 +2431,11 @@ document.addEventListener('DOMContentLoaded', () => {
     '2. Clareza: Use analogias simples para explicar conceitos complexos, evitando jargões técnicos excessivos sem explicá-los.',
     '3. Precisão: Baseie suas respostas em dados científicos reais (como NSSDCA, LROC e missões JPL) sempre que aplicável.',
     '4. Curteza e Dinâmica: Mantenha as respostas focadas em conversas de chat, preferindo parágrafos curtos e organizados.',
+    'Diálogo:',
+    'Leia o histórico desta conversa antes de responder. Pronomes e continuações ("eles", "isso", "e como", "e aí") referem-se à mensagem anterior.',
+    'Responda à frase que acabou de chegar. Uma saudação recebe uma saudação. Uma pergunta curta, como "lixo espacial?", recebe a explicação desse tema. Um pedido de continuação retoma o assunto anterior.',
+    'Não comece com "Exatamente!", "Isso mesmo!", "Com certeza!", "Ótima pergunta!" ou outra concordância vazia quando a pessoa não afirmou nada para você confirmar.',
+    'Não invente que a pessoa concordou com você. Não responda como se houvesse uma fala anterior que não está no histórico.',
     'Restrições de escopo e assuntos proibidos:',
     'Responda somente sobre exploração espacial, satélites, engenharia orbital, a história de artefatos e sondas (como Surveyor 1, Voyager, Luna e equivalentes), detritos espaciais e a Síndrome de Kessler.',
     'Não responda quando uma palavra do tema aparecer isolada em outro assunto. Exemplos fora de escopo: bolo ou receita "espacial", festa, horóscopo, astrologia, filmes de ficção científica genéricos, culinária e piadas sem relação com ciência espacial.',
@@ -2446,7 +2460,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const statusEl = $r('robotStatus');
   if (!root || !bubble || !form) return;
 
-  const history = [];
+  const greeting = (list.querySelector('.robot-msg.bot') || {}).textContent || '';
+  const history = greeting ? [{ role: 'assistant', content: greeting.trim() }] : [];
   let busy = false;
 
   /* Se o GIF do robô não carregar, mostra um emoji no lugar */
@@ -2490,10 +2505,44 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ---------- Mensagens ---------- */
   function scrollDown() { list.scrollTop = list.scrollHeight; }
 
+  function chatHtml(raw) {
+    const escHtml = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const inline = (s) => escHtml(s)
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/__([^_]+)__/g, '<strong>$1</strong>')
+      .replace(/(^|[\s(])\*([^*\n]+)\*/g, '$1<em>$2</em>')
+      .replace(/(^|[\s(])_([^_\n]+)_/g, '$1<em>$2</em>');
+    const lines = String(raw || '').replace(/\r\n/g, '\n').split('\n');
+    const blocks = [];
+    let list = null;
+    const flush = () => {
+      if (!list) return;
+      const tag = list.ordered ? 'ol' : 'ul';
+      blocks.push('<' + tag + '>' + list.items.map((item) => '<li>' + inline(item) + '</li>').join('') + '</' + tag + '>');
+      list = null;
+    };
+    lines.forEach((line) => {
+      const ul = line.match(/^\s*[-*]\s+(.+)$/);
+      const ol = line.match(/^\s*\d+[.)]\s+(.+)$/);
+      if (ul || ol) {
+        const ordered = !!ol;
+        if (!list || list.ordered !== ordered) { flush(); list = { ordered, items: [] }; }
+        list.items.push((ul || ol)[1]);
+        return;
+      }
+      flush();
+      if (line.trim()) blocks.push('<p>' + inline(line) + '</p>');
+    });
+    flush();
+    return blocks.join('') || '<p></p>';
+  }
+
   function addMessage(role, text, extra) {
     const div = document.createElement('div');
     div.className = 'robot-msg ' + role + (extra ? ' ' + extra : '');
-    div.textContent = text; // textContent: nada digitado vira HTML
+    if (role === 'bot' && extra !== 'error') div.innerHTML = chatHtml(text);
+    else div.textContent = text;
     list.appendChild(div);
     const msgs = list.querySelectorAll('.robot-msg:not(.robot-typing)');
     const sobra = msgs.length - MAX_VISIBLE;
