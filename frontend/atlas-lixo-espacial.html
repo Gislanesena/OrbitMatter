@@ -135,6 +135,13 @@ p{margin:0}
 .step .xp{font-family:var(--mono);font-size:11.5px;color:var(--accent)}
 .step.done .xp{color:var(--good)}
 .reveal{font-size:13.5px;color:var(--muted);border-left:2px solid var(--accent);padding:4px 0 4px 12px}
+.step-block{display:grid;gap:8px}
+.quiz{display:grid;gap:8px}
+.quiz p{margin:0;font-size:13.5px}
+.quiz-opt{text-align:left;border:1px solid var(--line);border-radius:8px;background:var(--deep);padding:8px 10px;font-size:13px;line-height:1.4}
+.quiz-opt:hover{border-color:var(--faint)}
+.quiz-opt.bad{border-color:var(--bad);color:var(--bad)}
+.quiz-note{color:var(--bad);font-size:12.5px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:8px;padding:10px 16px;
   border:1px solid var(--line);background:var(--raise);font-weight:500;font-size:14px}
 .btn:hover{border-color:var(--faint)}
@@ -1241,9 +1248,9 @@ function renderObjPanel() {
     '<div class="fact"><dt>' + label + '</dt><dd>' + (o.data[k] ? esc(o.data[k]) : 'Ainda sem medida nesta ficha') + '</dd></div>').join('');
   const stepsHtml = ANALYSIS.map((a, i) => {
     const done = steps.includes(a.id);
-    return '<button class="step' + (done ? ' done' : '') + '" data-step="' + a.id + '" aria-expanded="' + (openStep === a.id) + '">' +
+    return '<div class="step-block"><button type="button" class="step' + (done ? ' done' : '') + '" data-step="' + a.id + '" aria-expanded="' + (openStep === a.id) + '">' +
       '<span class="s-l"><span class="num">' + (done ? '✓' : '0' + (i + 1)) + '</span>' + a.label + '</span><span class="xp">' + (done ? 'Feito' : '+10 XP') + '</span></button>' +
-      (openStep === a.id ? '<p class="reveal">' + esc((o.analysis && o.analysis[a.id]) || a.text) + '</p>' : '');
+      quizBlock(o, a, done) + '</div>';
   }).join('');
   let action;
   if (analyzed) {
@@ -1251,7 +1258,7 @@ function renderObjPanel() {
       (isTarget && m ? '<button class="btn primary block" data-open="missions">Ir para a decisão</button>' : '');
   } else {
     action = '<button class="btn primary block" id="concludeBtn"' + (steps.length < ANALYSIS.length ? ' disabled' : '') + '>Concluir análise · +20 XP</button>' +
-      (steps.length < ANALYSIS.length ? '<p class="muted" style="font-size:12.5px">Abra as três etapas da análise para concluir.</p>' : '');
+      (steps.length < ANALYSIS.length ? '<p class="muted" style="font-size:12.5px">Acerte as três perguntas para concluir.</p>' : '');
   }
   el.innerHTML =
     '<div class="op-head"><div style="display:grid;gap:8px;min-width:0">' +
@@ -1282,11 +1289,78 @@ function selectObject(id) {
 }
 function closeObject() { selectedId = null; openStep = null; refresh(); }
 
-function doStep(stepId) {
+const QUIZ_ASK = {
+  origem: 'Segundo a ficha deste objeto, como ele surgiu?',
+  permanencia: 'Segundo a ficha deste objeto, por quanto tempo ele permanece?',
+  riscos: 'Segundo a ficha deste objeto, qual risco ele apresenta?',
+};
+let quizMiss = null;
+function quizClip(text) {
+  const clean = String(text || '').replace(/\s+/g, ' ').trim();
+  if (!clean) return '';
+  const end = clean.search(/[.!?](\s|$)/);
+  const line = end >= 40 ? clean.slice(0, end + 1) : clean;
+  return line.length > 170 ? line.slice(0, 167).trim() + '…' : line;
+}
+function quizKey(s) {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619);
+  return h >>> 0;
+}
+function quizShuffle(items, key) {
+  const a = items.slice();
+  let h = quizKey(key);
+  for (let i = a.length - 1; i > 0; i--) {
+    h = (Math.imul(h, 1664525) + 1013904223) >>> 0;
+    const j = h % (i + 1);
+    const t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+function quizFor(o, stepId) {
+  const source = (o.data && o.data[stepId]) || '';
+  const correct = quizClip(source);
+  const seen = new Set();
+  const pool = [];
+  OBJECTS.forEach((other) => {
+    if (other.id === o.id) return;
+    const line = quizClip(other.data && other.data[stepId]);
+    if (!line || line === correct || seen.has(line)) return;
+    seen.add(line);
+    pool.push(line);
+  });
+  const bad = quizShuffle(pool, o.id + ':' + stepId).slice(0, 3);
+  return {
+    ask: QUIZ_ASK[stepId],
+    options: quizShuffle([{ text: correct, ok: true }].concat(bad.map((text) => ({ text, ok: false }))), o.id + ':' + stepId + ':opts'),
+  };
+}
+function quizBlock(o, a, done) {
+  if (openStep !== a.id) return '';
+  if (done) return '<p class="reveal">' + esc((o.analysis && o.analysis[a.id]) || a.text) + '</p>';
+  const q = quizFor(o, a.id);
+  const miss = quizMiss && quizMiss.id === o.id && quizMiss.step === a.id ? quizMiss.index : -1;
+  return '<div class="quiz" role="group" aria-label="' + esc(a.label) + '"><p>' + esc(q.ask) + '</p>' +
+    q.options.map((opt, i) => '<button type="button" class="quiz-opt' + (miss === i ? ' bad' : '') + '" data-quiz="' + i + '" data-quiz-step="' + a.id + '">' + esc(opt.text) + '</button>').join('') +
+    (miss >= 0 ? '<p class="quiz-note">Não é essa. Leia de novo e tente outra alternativa.</p>' : '') + '</div>';
+}
+function toggleStep(stepId) {
   const o = byId[selectedId]; if (!o) return;
   openStep = openStep === stepId ? null : stepId;
+  quizMiss = null;
+  refresh();
+}
+function answerQuiz(stepId, index) {
+  const o = byId[selectedId]; if (!o) return;
   const steps = S.steps[o.id] || (S.steps[o.id] = []);
-  if (!steps.includes(stepId)) { steps.push(stepId); gainXP(10, 'Etapa da análise'); }
+  if (steps.includes(stepId)) return;
+  const q = quizFor(o, stepId);
+  openStep = stepId;
+  if (q.options[index] && q.options[index].ok) {
+    steps.push(stepId);
+    quizMiss = null;
+    gainXP(10, 'Etapa da análise');
+  } else quizMiss = { id: o.id, step: stepId, index };
   refresh();
 }
 function conclude() {
@@ -1527,7 +1601,8 @@ document.addEventListener('click', (e) => {
   if (t.dataset.speed) { setSpeed(t.dataset.speed); return; }
   if (t.dataset.obj) { selectObject(t.dataset.obj); return; }
   if (t.dataset.f) { filter = t.dataset.f; renderFilters(); renderAtlas(); updateMeshes(); return; }
-  if (t.dataset.step) { doStep(t.dataset.step); return; }
+  if (t.dataset.quiz != null) { answerQuiz(t.dataset.quizStep, +t.dataset.quiz); return; }
+  if (t.dataset.step) { toggleStep(t.dataset.step); return; }
   if (t.dataset.mission) { viewMission = t.dataset.mission; choice = null; renderMissions(); return; }
   if (t.dataset.strategy) { choice = t.dataset.strategy; renderMissions(); return; }
   if (t.dataset.voyagerEvent) { voyagerEvent = t.dataset.voyagerEvent; renderVoyager(); return; }
