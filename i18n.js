@@ -25,8 +25,8 @@ window.I18n = (() => {
     'loading':                     { pt: 'Carregando órbita…',                     en: 'Loading orbit…' },
 
     /* ---- hint ---- */
-    'hint':                        { pt: 'Arraste para girar · role para aproximar · clique em um objeto para investigar',
-                                     en: 'Drag to rotate · scroll to zoom · click an object to investigate' },
+    'hint':                        { pt: 'Arraste para olhar · role para passar pelos planetas até a Voyager · clique em um objeto para investigar',
+                                     en: 'Drag to look · scroll past the planets to Voyager · click an object to investigate' },
 
     /* ---- navbar ---- */
     'navbar.destination':          { pt: 'Destino',                                en: 'Destination' },
@@ -44,6 +44,9 @@ window.I18n = (() => {
     'dock.missions':               { pt: 'Missões',                                en: 'Missions' },
     'dock.simulation':             { pt: 'Simulação',                              en: 'Simulation' },
     'dock.diary':                  { pt: 'Diário',                                 en: 'Log' },
+    'dock.voyager':                { pt: 'Voyager',                                en: 'Voyager' },
+    'voyager.pin':                 { pt: 'Voyager 1',                              en: 'Voyager 1' },
+    'voyager.pin.sub':             { pt: 'Muito além dos planetas',                en: 'Far beyond the planets' },
 
     /* ---- atlas drawer ---- */
     'atlas.title':                 { pt: 'Atlas orbital',                          en: 'Orbital atlas' },
@@ -347,14 +350,8 @@ window.I18n = (() => {
   };
 
   /* ── estado ─────────────────────────────────────────────────────── */
-  let _lang = (() => {
-    try {
-      const saved = localStorage.getItem('atlas:lang');
-      const chosen = localStorage.getItem('atlas:lang-chosen') === '1';
-      if (chosen && (saved === 'en' || saved === 'pt')) return saved;
-      return 'en';
-    } catch { return 'en'; }
-  })();
+  // A página abre sempre em inglês. PT só entra se a pessoa clicar no botão.
+  let _lang = 'en';
 
   /* ── API ────────────────────────────────────────────────────────── */
   function t(key) {
@@ -366,10 +363,7 @@ window.I18n = (() => {
   function setLang(lang) {
     if (lang !== 'pt' && lang !== 'en') return;
     _lang = lang;
-    try {
-      localStorage.setItem('atlas:lang', lang);
-      localStorage.setItem('atlas:lang-chosen', '1');
-    } catch { /* ignora */ }
+    try { localStorage.removeItem('atlas:lang'); localStorage.removeItem('atlas:lang-chosen'); } catch { /* ignora */ }
     _apply();
     // Notifica o jogo para re-renderizar
     if (window._onLangChange) window._onLangChange(lang);
@@ -393,8 +387,8 @@ window.I18n = (() => {
     // Atualiza lang no <html>
     document.documentElement.lang = _lang === 'pt' ? 'pt-BR' : 'en';
     // Atualiza botão e garante o clique
-    const label = _lang === 'pt' ? 'EN' : 'PT';
-    const aria = _lang === 'pt' ? 'Switch to English' : 'Mudar para português';
+    const label = _lang === 'pt' ? 'PT' : 'EN';
+    const aria = _lang === 'pt' ? 'Idioma português. Clique para inglês.' : 'English. Click to switch to Portuguese.';
     document.querySelectorAll('[data-lang-toggle]').forEach((btn) => {
       btn.type = 'button';
       btn.textContent = label;
