@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oxanium:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans:wght@400;600&display=swap">
-  <link rel="stylesheet" href="atlas.css?v=14">
+  <link rel="stylesheet" href="atlas.css?v=21">
 </head>
 <body>
 <div id="loading" data-i18n="loading">Loading orbit…</div>
@@ -191,6 +191,7 @@
       <button class="icon-btn" data-close aria-label="Fechar" data-i18n="missions.close" data-i18n-attr="aria-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
     </div>
     <div class="modal-body">
+      <div id="campanhaFim" hidden></div>
       <div class="mission-grid">
         <ul class="chapters" id="chapterList"></ul>
         <div class="m-detail" id="mDetail"></div>
@@ -237,6 +238,41 @@
           </div>
           <button class="btn primary" id="mjConfirm" type="button" data-i18n="moon.confirm" hidden>Confirmar rota</button>
           <button class="btn ghost" id="mjSound" type="button" aria-pressed="false">Som desligado</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="minijogoFragModal" hidden>
+  <div class="modal mj-modal" role="dialog" aria-modal="true" aria-labelledby="fragTitle">
+    <div class="modal-head">
+      <div><span class="eyebrow" data-i18n="frag.eyebrow">Etapa 4 · Decisão</span><h2 id="fragTitle" data-i18n="frag.title">Contenha a cascata</h2></div>
+      <button class="icon-btn" data-close aria-label="Fechar" data-i18n="missions.close" data-i18n-attr="aria-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <div class="modal-body mj-body">
+      <p class="k-note" data-i18n="frag.scale">Modelo didático: mostra o efeito das escolhas do jogador, não uma previsão de órbitas reais.</p>
+      <p class="muted" id="fragTurno" style="margin:0"></p>
+      <div class="mj-layout">
+        <div>
+          <div id="fragChart"></div>
+          <p class="muted" style="font-size:12.5px;margin:6px 0 0" data-i18n="frag.bands">Faixas do modelo: 4.000 e 8.000 objetos (didático).</p>
+          <div class="frag-readout"><span class="chip" id="fragRisco"></span><span id="fragCols"></span><span id="fragFrags"></span></div>
+        </div>
+        <div class="mj-side">
+          <div class="frag-sliders">
+            <label for="fragLanc"><span data-i18n="frag.launch">Lançamentos por ciclo</span> <b class="mono" id="fragLancVal">5</b></label>
+            <input id="fragLanc" type="range" min="0" max="60" step="1" value="5">
+            <label for="fragRem"><span data-i18n="frag.remove">Remoção ativa por ciclo</span> <b class="mono" id="fragRemVal">0</b></label>
+            <input id="fragRem" type="range" min="0" max="60" step="1" value="0">
+          </div>
+          <p class="muted" id="fragCap" style="font-size:12.5px;margin:0"></p>
+          <div class="k-buttons">
+            <button class="btn primary" id="fragRun" type="button" data-i18n="frag.run">Executar</button>
+            <button class="btn" id="fragRedo" type="button" data-i18n="frag.redo" hidden>Refazer</button>
+          </div>
+          <div id="fragResult" hidden></div>
+          <button class="btn primary" id="fragConfirm" type="button" data-i18n="frag.confirm" hidden>Confirmar decisão</button>
         </div>
       </div>
     </div>
@@ -320,7 +356,7 @@
   </div>
 </div>
 
-<script src="i18n.js?v=13"></script>
+<script src="i18n.js?v=21"></script>
 <script src="firebase-config.js?v=4"></script>
 <script type="module" src="firebase-app.js?v=4"></script>
 <script src="auth-progresso.js?v=4"></script>
@@ -332,6 +368,8 @@
 <script src="js/jornada.js?v=3"></script>
 <script src="js/minijogo-lua-nucleo.js?v=1"></script>
 <script src="js/minijogo-lua.js?v=1"></script>
+<script src="js/minijogo-fragmentos-nucleo.js?v=1"></script>
+<script src="js/minijogo-fragmentos.js?v=1"></script>
 <script src="js/artefatos-reserva.js?v=1"></script>
 <script src="dist/atlas-ia.js?v=2" defer></script>
 <script src="js/atlas-adapter.js?v=2" defer></script>
@@ -479,7 +517,7 @@ const XP_PER_LEVEL = 150;
    ===================================================================== */
 // KEY legado (mantido para não quebrar saves antigos sem login)
 const KEY = 'atlas-lixo-espacial-v1';
-const blank = () => ({ started: false, xp: 0, seen: [], analyzed: [], steps: {}, done: {}, badges: [], path: [], kesslerMax: 0, visited: ['terra'], dest: 'terra', voyagerSeen: false, descoberta: [], foco: {}, jogada: {} });
+const blank = () => ({ started: false, xp: 0, seen: [], analyzed: [], steps: {}, done: {}, badges: [], path: [], kesslerMax: 0, visited: ['terra'], dest: 'terra', voyagerSeen: false, descoberta: [], foco: {}, jogada: {}, achadosM1: [], achadosM3: [] });
 let S = blank();
 
 // Carrega progresso: se há sessão ativa usa AP, senão tenta legado
@@ -614,15 +652,24 @@ function fatosDoObjeto(o) {
   });
   return saida;
 }
+let cartaoFechado = false;
+function botaoFecharCartao() {
+  return '<button type="button" class="icon-btn mc-close" id="mcClose" aria-label="' + tt('missions.close') + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>';
+}
+function fecharCartaoMissao() {
+  cartaoFechado = true;
+  $('missionCard').hidden = true;
+}
 function renderMissionCard() {
   anunciarCapitulo();
   const m = currentMission();
   const el = $('missionCard');
   if (!m) {
-    el.innerHTML = '<div class="mc-head"><span class="eyebrow">' + tt('mc.done') + '</span></div>' +
+    el.innerHTML = '<div class="mc-head"><span class="eyebrow">' + tt('mc.done') + '</span>' + botaoFecharCartao() + '</div>' +
       '<h2>' + tt('mc.done.title') + '</h2><p class="muted mc-brief">' + tt('mc.done.sub') + '</p>' +
       '<button class="btn primary" id="openReport">' + tt('result.report') + '</button>' +
       '<button class="btn" data-open="diary">' + tt('mc.done.diary') + '</button>';
+    if (cartaoFechado) el.hidden = true;
     return;
   }
   const t = TYPES[m.target];
@@ -630,16 +677,61 @@ function renderMissionCard() {
   const s1 = hasSeenType(m.target), s2 = hasAnalyzedType(m.target);
   const next = !s1 ? tt('mc.investigate') + ' ' + label.toLowerCase() : !s2 ? tt('mc.conclude') : tt('mc.decide');
   el.innerHTML =
-    '<div class="mc-head"><span class="eyebrow">' + tt('mc.chapter') + ' ' + m.chapter + ' ' + tt('mc.of') + ' ' + MISSIONS.length + '</span><span class="chip target"><span class="dot" style="background:' + t.css + '"></span>' + tt('mc.target') + '</span></div>' +
+    '<div class="mc-head"><span class="eyebrow">' + tt('mc.chapter') + ' ' + m.chapter + ' ' + tt('mc.of') + ' ' + MISSIONS.length + '</span><span class="mc-tools"><span class="chip target"><span class="dot" style="background:' + t.css + '"></span>' + tt('mc.target') + '</span>' + botaoFecharCartao() + '</span></div>' +
     '<div><h2>' + esc(missionText(m, 'title')) + '</h2><span class="mc-next">' + next + '</span></div>' +
-    '<p class="muted mc-brief" style="font-size:13.5px">' + esc(missionText(m, 'briefing')) + '</p>' +
+    '<p class="muted mc-brief" style="font-size:13.5px">' + esc(MINIJOGO_FRAGMENTOS && m.id === 'm3' && s2 ? textoCasca(m) : missionText(m, 'briefing')) + '</p>' +
+    (m.id === 'm1' && !S.done.m1 ? htmlAlvosM1() : '') +
+    (m.id === 'm2' && !S.done.m2 ? htmlAlvosM2() : '') +
     '<div class="checklist">' +
       '<button type="button" class="check ' + (s1 ? 'ok' : 'cur') + '" data-mc="1"><span class="tick"></span><span>' + tt('mc.check1pre') + ' ' + nounArticle(label) + ' ' + label.toLowerCase() + '</span></button>' +
       '<button type="button" class="check ' + (s2 ? 'ok' : s1 ? 'cur' : '') + '" data-mc="2"><span class="tick"></span><span>' + tt('mc.check2') + '</span></button>' +
       '<button type="button" class="check ' + (s2 ? 'cur' : '') + '" data-mc="3"><span class="tick"></span><span>' + tt('mc.check3') + '</span></button>' +
     '</div>' +
     (s2 ? '<button class="btn primary" data-open="missions">' + tt('mc.decide.btn') + '</button>'
-        : '<button class="btn" data-open="atlas" data-filter="' + m.target + '">' + tt('mc.atlas.btn') + '</button>');
+        : MINIJOGO_FRAGMENTOS && m.id === 'm3'
+          ? '<button class="btn primary" data-open="missions">' + tt('frag.hunt.open') + '</button>'
+          : m.id === 'm1' || m.id === 'm2'
+            ? ''
+            : '<button class="btn" data-open="atlas" data-filter="' + m.target + '">' + tt('mc.atlas.btn') + '</button>');
+  if (cartaoFechado) el.hidden = true;
+}
+function estagiosDaMissao() {
+  return OBJECTS.filter((o) => o.body === 'terra' && o.type === 'estagio');
+}
+function nomeEstagio(o) {
+  const nome = objectName(o);
+  const meio = nome.match(/\(([^)]+)\)/);
+  return meio ? meio[1] : nome;
+}
+function htmlAlvosM1() {
+  const marcados = listaAchadosM1();
+  return htmlBusca('m1-caca', 'm1.hunt.title', 'm1.hunt.hint', estagiosDaMissao(), nomeEstagio, (o) => marcados.includes(o.id));
+}
+function artefatosDaMissao() {
+  return OBJECTS.filter((o) => o.body === 'lua' && o.type === 'artefato');
+}
+function nomeArtefato(o) {
+  return objectName(o);
+}
+function htmlAlvosM2() {
+  return htmlBusca('m2-caca', 'm2.hunt.title', 'm2.hunt.hint', artefatosDaMissao(), nomeArtefato, (o) => S.seen.includes(o.id));
+}
+function htmlBusca(classe, titulo, dica, alvos, nome, marcado) {
+  const n = alvos.filter(marcado).length;
+  const itens = alvos.map((o) => {
+    const ok = marcado(o);
+    return '<div class="check' + (ok ? ' ok' : '') + '"><span class="tick"></span><span>' + esc(nome(o)) + '</span></div>';
+  }).join('');
+  return '<div class="' + classe + '"><div class="section-title"><h3 style="font-size:15px">' + tt(titulo) + '</h3><span class="eyebrow">' +
+    tt('m1.hunt.count').split('{n}').join(String(n)).split('{total}').join(String(alvos.length)) + '</span></div>' +
+    '<p class="muted" style="font-size:13px;margin:0">' + tt(dica) + '</p>' +
+    '<div class="checklist">' + itens + '</div></div>';
+}
+function buscaNoMapa(missao, o) {
+  if (!missao || !o || S.seen.includes(o.id)) return '';
+  if (missao.id === 'm1' && o.type === 'estagio' && o.body === 'terra') return 'm1.hunt.map';
+  if (missao.id === 'm2' && o.type === 'artefato' && o.body === 'lua') return 'm2.hunt.map';
+  return '';
 }
 
 let filter = 'todos';
@@ -659,7 +751,8 @@ function renderAtlas() {
     const an = S.analyzed.includes(o.id), seen = S.seen.includes(o.id);
     const tg = m && m.target === o.type && !an;
     const st = an ? '<span class="status an">' + tt('atlas.status.analyzed') + '</span>' : seen ? '<span class="status seen">' + tt('atlas.status.investigated') + '</span>' : tg ? '<span class="status tg">' + tt('atlas.status.target') + '</span>' : '<span class="status">' + tt('atlas.status.new') + '</span>';
-    return '<li><button data-obj="' + o.id + '" class="' + (selectedId === o.id ? 'sel' : '') + '"><span class="dot" style="background:' + TYPES[o.type].css + '"></span>' +
+    const real = destaqueEventos && o.type === 'fragmento' && o.body === 'terra' && eventoReal(o);
+    return '<li><button data-obj="' + o.id + '" class="' + (selectedId === o.id ? 'sel' : '') + (real ? ' evento-real' : '') + '"><span class="dot" style="background:' + TYPES[o.type].css + '"></span>' +
       '<span class="nm">' + esc(objectName(o)) + '<small>' + bandOf(o) + '</small></span>' + st + '</button></li>';
   }).join('');
 }
@@ -713,19 +806,22 @@ function renderObjPanel() {
 }
 let openStep = null;
 
-function selectObject(id) {
+function selectObject(id, pelaExploracao) {
   selectedId = id;
   openStep = null;
   const o = byId[id];
+  const novoFragmento = pelaExploracao ? registrarFragmentoEncontrado(o) : false;
+  const novoEstagio = pelaExploracao ? registrarEstagioEncontrado(o) : false;
   if (!S.seen.includes(id)) {
     S.seen.push(id);
     addPath('obj', id, 'Investigou ' + o.name);
     gainXP(10, 'Objeto investigado');
     checkBadges();
   }
-  if (window.innerWidth <= 760) { $('atlasDrawer').hidden = true; $('missionCard').hidden = false; }
+  if (window.innerWidth <= 760) { $('atlasDrawer').hidden = true; if (!cartaoFechado) $('missionCard').hidden = false; }
   syncDock();
   refresh();
+  if ((novoFragmento || novoEstagio) && !$('missionsModal').hidden) renderMissions();
 }
 function closeObject() { selectedId = null; openStep = null; refresh(); }
 
@@ -741,6 +837,7 @@ function onMissionCheck(which) {
   const m = currentMission();
   if (!m) return;
   if (which === '1') {
+    if (m.id === 'm1' || m.id === 'm2') return;
     const pending = missionObjects(m.target, (o) => !S.seen.includes(o.id));
     showMissionObject((pending.length ? pending : missionObjects(m.target, () => true))[0]);
     return;
@@ -752,6 +849,10 @@ function onMissionCheck(which) {
       || missionObjects(m.target, (item) => S.seen.includes(item.id) && !S.analyzed.includes(item.id))[0]
       || missionObjects(m.target, (item) => !S.analyzed.includes(item.id))[0];
     if (!o) return;
+    if (m.id === 'm2' && !S.seen.includes(o.id)) {
+      toast('<b>' + esc(nomeArtefato(o)) + '</b>' + esc(tt('m2.hunt.map')));
+      return;
+    }
     showMissionObject(o);
     const steps = S.steps[o.id] || (S.steps[o.id] = []);
     let added = 0;
@@ -797,6 +898,10 @@ function conclude() {
 }
 
 function refresh() {
+  migrarCaca();
+  migrarBuscaM1();
+  tentarConcluirBuscaM1();
+  tentarConcluirCaca();
   document.querySelectorAll('.seg [data-dest]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.dest === curDest)));
   const leg = $('moonLegend');
   if (leg) { leg.hidden = curDest !== 'lua'; if (!leg.hidden) leg.textContent = tt('obj.moon.legend'); }
@@ -808,7 +913,12 @@ function refresh() {
    ===================================================================== */
 let viewMission = null, choice = null, lead = 5;
 const MINIJOGO_LUA = true;
+const MINIJOGO_FRAGMENTOS = true;
+const MINIJOGO_FRAGMENTOS_TURNOS = true;
+window.MINIJOGO_FRAGMENTOS_TURNOS = MINIJOGO_FRAGMENTOS_TURNOS;
 let rotaLuaPendente = null;
+let jogoFragPendente = null;
+let destaqueEventos = false;
 function scoreFromMeters(b) {
   const vals = [b.seg, b.comb, b.orc, b.ciencia];
   const avg = vals.reduce((a, v) => a + v, 0) / vals.length;
@@ -916,6 +1026,37 @@ function trilhaSvg(amostras, cena) {
     '<circle cx="0" cy="0" r="' + banda.toFixed(3) + '" fill="none" stroke="#7fd8ff" stroke-width="0.045"/>' +
     '<circle cx="0" cy="0" r="1" fill="none" stroke="#ff5d6c" stroke-width="0.04"/>' +
     linhas + '</g></svg>';
+}
+function blocoFragmentos(done) {
+  if (!done || !done.jogo || !done.jogo.politica || !window.MinijogoFragmentosNucleo || !window.AtlasJogo) return '';
+  try {
+    const jogo = done.jogo;
+    const r = MinijogoFragmentosNucleo.avaliar(AtlasJogo.simular, {
+      estrategia: done.strategy,
+      fragmentos: jogo.fragmentos,
+      lancamentos: jogo.politica.lancamentos,
+      remocao: jogo.politica.remocao,
+      turnos: jogo.turnos || undefined,
+    });
+    const graf = window.MinijogoFragmentos ? MinijogoFragmentos.grafico(r.serie, r.semAcao.serie, r.serie.length - 1, true) : '';
+    const barras = window.MinijogoFragmentos ? MinijogoFragmentos.barras(r.exec) : '';
+    const comp = tt('frag.compare')
+      .split('{cj}').join(String(r.colisoes)).split('{fj}').join(String(r.fragmentos))
+      .split('{cs}').join(String(r.semAcao.colisoes)).split('{fs}').join(String(r.semAcao.fragmentos));
+    return '<div class="mj-result">' + graf +
+      '<p class="muted" style="font-size:12.5px">' + esc(tt('frag.bands')) + '</p>' + barras +
+      '<p class="muted" style="font-size:13px">' + esc(comp) + '</p>' +
+      '<p class="k-note">' + esc(tt('frag.model')) + '</p>' +
+      '<div style="display:grid;gap:6px"><span class="eyebrow">' + tt('result.why') + '</span><p class="placeholder">' + esc(done.porque || '') + '</p></div></div>';
+  } catch (erro) {
+    console.warn(erro);
+    return '';
+  }
+}
+function blocoJogo(done, dados) {
+  if (!done || !done.jogo) return '';
+  if (done.jogo.politica) return blocoFragmentos(done);
+  return blocoMinijogo(done, dados);
 }
 function blocoMinijogo(done, dados) {
   if (!done || !done.jogo) return '';
@@ -1032,13 +1173,43 @@ function textoNota(detalhe) {
 const gradeOf = (s) => (s >= 80 ? [tt('grade.excellent'), 'var(--good)'] : s >= 65 ? [tt('grade.good'), 'var(--data)'] : s >= 50 ? [tt('grade.risky'), 'var(--warn)'] : [tt('grade.critical'), 'var(--bad)']);
 const meterColor = (v) => (v >= 65 ? 'var(--good)' : v >= 40 ? 'var(--warn)' : 'var(--bad)');
 
+function htmlFimCampanha() {
+  const estrela = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.2 14.1 8h6.1l-4.9 3.6 1.9 5.8L12 13.8 6.8 17.4 8.7 11.6 3.8 8h6.1z"/></svg>';
+  const trofeu = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 3h8v2.2a4 4 0 0 1-3 3.9V12h2.2v2H8.8v-2H11V9.1A4 4 0 0 1 8 5.2V3zm8.2 2.2V4H18a2.2 2.2 0 0 1-2.2 2.2 4 4 0 0 0 .4-1zM7.8 5.2A4 4 0 0 0 8.2 6.2 2.2 2.2 0 0 1 6 4h2.2v1.2zM9 16h6v1.6H9z"/></svg>';
+  const visto = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M5 12.5 9.5 17 19 7"/></svg>';
+  return '<div class="fim-campanha" role="status">' +
+    '<span class="fim-peca estrela a">' + estrela + '</span>' +
+    '<span class="fim-peca estrela b">' + estrela + '</span>' +
+    '<span class="fim-peca estrela c">' + estrela + '</span>' +
+    '<span class="fim-peca estrela d">' + estrela + '</span>' +
+    '<span class="fim-peca trofeu ouro">' + trofeu + '</span>' +
+    '<span class="fim-peca trofeu verde">' + trofeu + '</span>' +
+    '<span class="fim-peca trofeu azul">' + trofeu + '</span>' +
+    '<span class="fim-peca trofeu coral">' + trofeu + '</span>' +
+    '<div class="fim-miolo"><p class="fim-titulo"><span>' + esc(tt('missions.complete.line1')) + '</span><span>' + esc(tt('missions.complete.line2')) + '</span></p>' +
+    '<span class="fim-visto">' + visto + '</span>' +
+    '<p class="fim-sub">' + esc(tt('missions.complete.sub')) + '</p></div></div>';
+}
+function renderFimCampanha() {
+  const el = $('campanhaFim');
+  if (!el) return;
+  const pronta = MISSIONS.every((m) => S.done[m.id]);
+  el.hidden = !pronta;
+  el.innerHTML = pronta ? htmlFimCampanha() : '';
+}
 function renderMissions() {
+  renderFimCampanha();
   const cur = currentMission();
   if (!viewMission || (!S.done[viewMission] && cur && viewMission !== cur.id)) viewMission = cur ? cur.id : MISSIONS[MISSIONS.length - 1].id;
   $('chapterList').innerHTML = MISSIONS.map((m) => {
     const done = !!S.done[m.id];
     const unlocked = done || (cur && cur.id === m.id);
-    const st = done ? '<span class="st done">' + tt('missions.status.done') + ' · ' + S.done[m.id].score + ' ' + tt('missions.status.pts') + '</span>' : unlocked ? '<span class="st cur">' + tt('missions.status.ongoing') + '</span>' : '<span class="st lock">' + tt('missions.status.locked') + '</span>';
+    const caca = MINIJOGO_FRAGMENTOS && m.id === 'm3' && !done ? progressoCaca() : null;
+    const busca = m.id === 'm1' && !done ? progressoBuscaM1() : null;
+    const contagem = (caca && caca.total ? caca : busca && busca.total ? busca : null);
+    const st = done
+      ? '<span class="st done">' + (S.done[m.id].caca || S.done[m.id].busca ? tt(S.done[m.id].caca ? 'frag.hunt.status' : 'm1.hunt.status') : tt('missions.status.done') + ' · ' + S.done[m.id].score + ' ' + tt('missions.status.pts')) + '</span>'
+      : unlocked ? '<span class="st cur">' + tt('missions.status.ongoing') + (contagem ? ' · ' + contagem.n + '/' + contagem.total : '') + '</span>' : '<span class="st lock">' + tt('missions.status.locked') + '</span>';
     return '<li><button data-mission="' + m.id + '"' + (unlocked ? '' : ' disabled') + ' aria-current="' + (viewMission === m.id) + '">' +
       '<span class="eyebrow">' + tt('missions.chapter') + ' ' + m.chapter + '</span><strong>' + esc(missionText(m, 'title')) + '</strong>' + st + '</button></li>';
   }).join('');
@@ -1049,30 +1220,40 @@ function renderMissions() {
   const alvo = objetoDoCapitulo(m);
   const fatos = fatosDoObjeto(alvo);
   const luaNova = MINIJOGO_LUA && m.target === 'artefato' && !done && alvo && alvo.dados && window.Jornada;
+  const fragNova = MINIJOGO_FRAGMENTOS && m.id === 'm3' && !done && hasAnalyzedType(m.target);
   let html = '<div style="display:grid;gap:8px"><span class="eyebrow">' + tt('missions.eyebrow2') + '</span><h3>' + esc(missionText(m, 'title')) + '</h3>';
   if (luaNova) {
     html += '<div class="client-note"><span class="eyebrow">' + tt('moon.client') + '</span><p>' + esc(Jornada.preencher(Jornada.mensagemCliente(alvo.dados))) + '</p></div>' +
       '<details class="catalog-brief"><summary>' + tt('moon.briefing') + '</summary><p>' + esc(briefingLua(m)) + '</p></details>';
-  } else {
+  } else if (fragNova) {
+    html += '<div class="client-note"><span class="eyebrow">' + tt('frag.client') + '</span><p>' + esc(textoCasca(m)) + '</p></div>';
+  } else if (!(done && (done.caca || done.busca))) {
     html += '<p class="placeholder">' + esc(m.target === 'artefato' && !done ? briefingLua(m) : missionText(m, 'briefing')) + '</p>';
   }
   html += '</div>';
-  if (fatos.length) {
+  if (m.id === 'm1' && (!done || done.busca)) html += htmlAlvosM1();
+  if (m.id === 'm2' && !done) html += htmlAlvosM2();
+  if (MINIJOGO_FRAGMENTOS && m.id === 'm3' && (!done || done.caca)) html += htmlCaca();
+  if (fatos.length && !(MINIJOGO_FRAGMENTOS && m.id === 'm3' && (!done || done.caca))) {
     html += '<div><div class="section-title"><h3 style="font-size:15px">' + tt('missions.facts') + '</h3></div><dl class="facts">' +
       fatos.map((fato) => '<div class="fact"><dt>' + esc(fato.rotulo) + '</dt><dd>' + esc(fato.valor) + '</dd></div>').join('') + '</dl></div>';
   }
-  if (done) {
+  if (done && done.caca) {
+    html += '<div class="placeholder" style="border-style:solid">' + esc(tt('frag.hunt.success')) + '</div>';
+  } else if (done && done.busca) {
+    html += '<div class="placeholder" style="border-style:solid">' + esc(tt('m1.hunt.success')) + '</div>';
+  } else if (done) {
     const [g, c] = gradeOf(done.score);
     html += '<div class="placeholder" style="border-style:solid">' + tt('missions.youChose') + ' <b>' + esc(nomeEscolha(done)) + '</b> ' + tt('missions.andScored') + ' <b style="color:' + c + '">' + done.score + ' ' + tt('missions.points') + ' (' + g + ')</b>.</div>' +
       '<div class="placeholder">' + esc(done.aprendizado || missionText(m, 'explain')) + '</div>' +
-      (blocoMinijogo(done, alvo && alvo.dados) || (done.porque ? '<div class="placeholder">' + esc(done.porque) + '</div>' : ''));
-    if (m.target !== 'artefato' && window.AtlasJogo) {
+      (blocoJogo(done, alvo && alvo.dados) || (done.porque ? '<div class="placeholder">' + esc(done.porque) + '</div>' : ''));
+    if (m.target !== 'artefato' && window.AtlasJogo && !(done.jogo && done.jogo.politica)) {
       html += blocoSeries(AtlasJogo.decidirOrbita(m.id, done.strategy)) +
         '<button class="btn" id="seeSim" data-capitulo="' + m.id + '" data-estrategia="' + done.strategy + '">' + tt('result.seeSim') + '</button>';
     }
   } else if (!hasAnalyzedType(m.target)) {
     html += '<div class="locked-note"><span>' + tt('missions.locked.msg') + ' <b style="color:' + t.css + '">' + typeLabel(m.target).toLowerCase() + '</b>.</span>' +
-      '<button class="btn" data-open="atlas" data-filter="' + m.target + '">' + tt('missions.locked.btn') + '</button></div>';
+      (m.id === 'm1' || m.id === 'm2' || (MINIJOGO_FRAGMENTOS && m.id === 'm3') ? '' : '<button class="btn" data-open="atlas" data-filter="' + m.target + '">' + tt('missions.locked.btn') + '</button>') + '</div>';
   } else if (m.target === 'artefato') {
     let jog = alvo && S.jogada && S.jogada[chaveJogada(alvo)];
     if (!jog && alvo && !window.AtlasJogo && window.Jornada) {
@@ -1111,8 +1292,20 @@ function renderMissions() {
         }
       } else html += '<p class="muted" style="font-size:13.5px">' + tt(MINIJOGO_LUA ? 'moon.hint' : 'missions.hint.choose') + '</p>';
     }
+  } else if (m.id === 'm3' && MINIJOGO_FRAGMENTOS && window.MinijogoFragmentosNucleo && window.AtlasJogo) {
+    try { html += htmlFragmentos(m); }
+    catch (erro) {
+      console.warn(erro);
+      html += htmlDecisaoClassica(m);
+    }
   } else {
-    html += '<div style="display:grid;gap:8px"><div class="section-title"><h3 style="font-size:15px">' + tt('missions.strategy.title') + '</h3></div><div class="strategies" role="radiogroup" aria-label="' + tt('missions.strategy.title') + '">' +
+    html += htmlDecisaoClassica(m);
+  }
+  $('mDetail').innerHTML = html;
+}
+
+function htmlDecisaoClassica(m) {
+  let html = '<div style="display:grid;gap:8px"><div class="section-title"><h3 style="font-size:15px">' + tt('missions.strategy.title') + '</h3></div><div class="strategies" role="radiogroup" aria-label="' + tt('missions.strategy.title') + '">' +
       STRATEGIES.map((s) => '<button class="strategy" role="radio" aria-checked="' + (choice === s.id) + '" data-strategy="' + s.id + '"><strong>' + tt('strat.' + s.id) + '</strong><span>' + tt('strat.' + s.id + '.desc') + '</span></button>').join('') + '</div></div>' +
       '<div class="slider-row"><label for="leadRange">' + tt('missions.lead.label') + ' <b class="mono">' + lead + '/10</b></label><input type="range" id="leadRange" min="1" max="10" value="' + lead + '"><span class="muted" style="font-size:12.5px">' + tt('missions.lead.hint') + '</span></div>';
     if (choice) {
@@ -1126,10 +1319,192 @@ function renderMissions() {
     } else {
       html += '<p class="muted" style="font-size:13.5px">' + tt('missions.hint.choose') + '</p>';
     }
-  }
-  $('mDetail').innerHTML = html;
+  return html;
 }
 
+function fragmentosDeEvento() {
+  return OBJECTS.filter((o) => o.body === 'terra' && o.type === 'fragmento' && eventoReal(o));
+}
+function listaAchadosM3() {
+  if (!Array.isArray(S.achadosM3)) S.achadosM3 = [];
+  return S.achadosM3;
+}
+function progressoCaca() {
+  const alvos = fragmentosDeEvento();
+  const marcados = listaAchadosM3();
+  return { n: alvos.filter((o) => marcados.includes(o.id)).length, total: alvos.length };
+}
+function registrarFragmentoEncontrado(o) {
+  if (!MINIJOGO_FRAGMENTOS || !eventoReal(o)) return false;
+  const marcados = listaAchadosM3();
+  if (marcados.includes(o.id)) return false;
+  marcados.push(o.id);
+  const ficha = fichaFragmento(o);
+  const nome = ficha && ficha.nome ? ficha.nome : objectName(o);
+  toast('<b>' + esc(nome) + '</b>' + esc(tt('frag.hunt.found')));
+  return true;
+}
+function listaAchadosM1() {
+  if (!Array.isArray(S.achadosM1)) S.achadosM1 = [];
+  return S.achadosM1;
+}
+function progressoBuscaM1() {
+  const alvos = estagiosDaMissao();
+  const marcados = listaAchadosM1();
+  return { n: alvos.filter((o) => marcados.includes(o.id)).length, total: alvos.length };
+}
+function registrarEstagioEncontrado(o) {
+  if (!o || o.type !== 'estagio' || o.body !== 'terra' || (S.done && S.done.m1)) return false;
+  const marcados = listaAchadosM1();
+  if (marcados.includes(o.id)) return false;
+  marcados.push(o.id);
+  toast('<b>' + esc(nomeEstagio(o)) + '</b>' + esc(tt('m1.hunt.found')));
+  return true;
+}
+function migrarBuscaM1() {
+  if (S.buscaM1 === 1) return;
+  S.achadosM1 = [];
+  S.buscaM1 = 1;
+}
+function tentarConcluirBuscaM1() {
+  if (S.done && S.done.m1) return;
+  const prog = progressoBuscaM1();
+  if (!prog.total || prog.n < prog.total) return;
+  S.done.m1 = { busca: true, strategy: null, score: null, lead: null, rotulo: null, meters: null };
+  addPath('missao', 'm1', 'Encontrou todos os estágios à deriva');
+  checkBadges();
+  const seguinte = currentMission();
+  if (seguinte) viewMission = seguinte.id;
+  toast('<b>' + tt('m1.hunt.status') + '</b>' + esc(tt('m1.hunt.success')));
+  if (!$('missionsModal').hidden) renderMissions();
+}
+function migrarCaca() {
+  if (S.cacaRegra === 2) return;
+  const falsa = !!(S.done && S.done.m3 && S.done.m3.caca);
+  if (falsa) {
+    delete S.done.m3;
+    if (Array.isArray(S.badges)) S.badges = S.badges.filter((id) => id !== 'comandante');
+    if (typeof S.xp === 'number') S.xp = Math.max(0, S.xp - 50);
+  }
+  if (Array.isArray(S.path)) S.path = S.path.filter((p) => p.label !== 'Encontrou todos os fragmentos da nuvem');
+  S.achadosM3 = [];
+  S.cacaRegra = 2;
+}
+function tentarConcluirCaca() {
+  if (!MINIJOGO_FRAGMENTOS || (S.done && S.done.m3)) return;
+  if (!S.done.m1 || !S.done.m2) return;
+  const prog = progressoCaca();
+  if (!prog.total || prog.n < prog.total) return;
+  S.done.m3 = { caca: true, strategy: null, score: null, lead: null, rotulo: null, meters: null };
+  addPath('missao', 'm3', 'Encontrou todos os fragmentos da nuvem');
+  checkBadges();
+  gainXP(50, tt('frag.hunt.success'));
+  if (!$('missionsModal').hidden) renderMissions();
+}
+function htmlCaca() {
+  const alvos = fragmentosDeEvento();
+  const marcados = listaAchadosM3();
+  const prog = progressoCaca();
+  const concluida = !!(S.done.m3 && S.done.m3.caca);
+  const itens = alvos.map((o) => {
+    const ficha = fichaFragmento(o);
+    const nome = ficha && ficha.nome ? ficha.nome : objectName(o);
+    const ok = marcados.includes(o.id);
+    return '<div class="check' + (ok ? ' ok' : '') + '"><span class="tick"></span><span>' + esc(nome) + '</span></div>';
+  }).join('');
+  return '<div class="frag-caca"><div class="section-title"><h3 style="font-size:15px">' + tt('frag.hunt.title') + '</h3><span class="eyebrow">' +
+    tt('frag.hunt.count').split('{n}').join(String(prog.n)).split('{total}').join(String(prog.total)) + '</span></div>' +
+    (concluida ? '' : '<p class="muted" style="font-size:13px;margin:0">' + tt('frag.hunt.hint') + '</p>') +
+    '<div class="checklist">' + itens + '</div></div>';
+}
+function fichaFragmento(o) {
+  if (!o || !window.MinijogoFragmentosNucleo) return null;
+  const d = o.data || {};
+  return MinijogoFragmentosNucleo.lerFicha({ nome: o.name, origem: d.origem, riscos: d.riscos, permanencia: d.permanencia });
+}
+function eventoReal(o) {
+  if (!o || o.type !== 'fragmento' || o.body !== 'terra') return false;
+  const ficha = fichaFragmento(o);
+  return !!(ficha && (ficha.nome || ficha.ano || ficha.fragmentos != null));
+}
+function textoCasca(m) {
+  try {
+    const ficha = fichaFragmento(objetoDoCapitulo(m));
+    const faltou = tt('frag.missing');
+    const nota = S.done.m2 && S.done.m2.score != null ? String(S.done.m2.score) : faltou;
+    const modelo = tt('frag.client.msg')
+      .split('{cliente}').join(tt('frag.client'))
+      .split('{evento}').join(ficha && ficha.nome ? ficha.nome : tt('frag.unknown'))
+      .split('{ano}').join(ficha && ficha.ano ? ficha.ano : faltou)
+      .split('{contagem}').join(ficha && ficha.fragmentos != null ? String(ficha.fragmentos) : faltou)
+      .split('{nota}').join(nota);
+    return window.Jornada ? Jornada.preencher(modelo) : modelo.split('{jogador}').join('');
+  } catch (erro) {
+    console.warn(erro);
+    return missionText(m, 'briefing');
+  }
+}
+function htmlFragmentos(m) {
+  const ficha = fichaFragmento(objetoDoCapitulo(m));
+  const N = MinijogoFragmentosNucleo;
+  const objetos = N.objetosDe(ficha && ficha.fragmentos != null ? ficha.fragmentos : null);
+  const previa = AtlasJogo.simular(N.parametros(objetos, 0, 0, 1));
+  if (!previa || previa.ok !== true || !previa.dados || !previa.dados.length) throw new Error('sim');
+  const risco = previa.dados[0].risco;
+  const faltou = tt('frag.missing');
+  const linha = (rotulo, valor) => '<div class="fact"><dt>' + esc(rotulo) + '</dt><dd>' + esc(valor) + '</dd></div>';
+  let html = '<dl class="facts">' +
+    linha(tt('frag.field.name'), ficha && ficha.nome ? ficha.nome : faltou) +
+    linha(tt('frag.field.date'), ficha && (ficha.data || ficha.ano) ? (ficha.data || ficha.ano) : faltou) +
+    linha(tt('frag.field.origin'), ficha && ficha.origem ? ficha.origem : faltou) +
+    linha(tt('frag.field.count'), ficha && ficha.fragmentos != null ? String(ficha.fragmentos) : faltou) +
+    linha(tt('frag.field.source'), ficha && ficha.fonte ? ficha.fonte : faltou) +
+    '</dl>';
+  if (!ficha || ficha.fragmentos == null) html += '<p class="k-note">' + tt('frag.didactic.count') + '</p>';
+  html += '<span class="chip">' + esc(tt('frag.didactic.risk')) + ': ' + esc(window.Jornada ? Jornada.rotuloRisco(risco) : risco) + '</span>';
+  html += '<div class="strategies" role="radiogroup" aria-label="' + tt('missions.strategy.title') + '">' +
+    STRATEGIES.map((s) => '<button class="strategy" role="radio" aria-checked="' + (choice === s.id) + '" data-strategy="' + s.id + '"><strong>' + tt('strat.' + s.id) + '</strong><span>' + tt('strat.' + s.id + '.desc') + '</span><span>' + tt('frag.fx.' + s.id) + '</span></button>').join('') +
+    '</div>';
+  if (choice) {
+    html += '<div class="score-line"><button class="btn primary" id="gerenciarCasca" type="button">' + tt('frag.manage') + '</button>' +
+      '<button class="btn" id="fragAutomatico" type="button">' + tt('frag.auto') + '</button></div>';
+  } else html += '<p class="muted" style="font-size:13.5px">' + tt('missions.hint.choose') + '</p>';
+  return html;
+}
+function pacoteJogo(r, ficha) {
+  return {
+    seg: r.exec.seg, comb: r.exec.comb, orc: r.exec.orc, ciencia: r.exec.ciencia,
+    politica: r.aplicadas ? r.aplicadas[r.aplicadas.length - 1] : r.politica,
+    riscoFinal: r.riscoFinal, riscoInicial: r.riscoInicial,
+    fragmentos: ficha && ficha.fragmentos != null ? ficha.fragmentos : null,
+    turnos: r.aplicadas || null,
+  };
+}
+function abrirCasca() {
+  const m = MISSIONS.find((x) => x.id === viewMission);
+  const ficha = fichaFragmento(objetoDoCapitulo(m));
+  $('missionsModal').hidden = true;
+  MinijogoFragmentos.abrir({
+    estrategia: choice,
+    fragmentos: ficha && ficha.fragmentos != null ? ficha.fragmentos : null,
+  }, (resultado) => {
+    jogoFragPendente = pacoteJogo(resultado, ficha);
+    confirmDecision();
+  });
+}
+function cascaAutomatica() {
+  const m = MISSIONS.find((x) => x.id === viewMission);
+  const ficha = fichaFragmento(objetoDoCapitulo(m));
+  const pol = MinijogoFragmentosNucleo.politicaEquilibrada(choice);
+  const r = MinijogoFragmentosNucleo.avaliar(AtlasJogo.simular, {
+    estrategia: choice,
+    fragmentos: ficha && ficha.fragmentos != null ? ficha.fragmentos : null,
+    lancamentos: pol.lancamentos,
+    remocao: pol.remocao,
+  });
+  jogoFragPendente = pacoteJogo(r, ficha);
+  confirmDecision();
+}
 function briefingLua(m) {
   const o = objetoDoCapitulo(m);
   const jog = o && S.jogada && S.jogada[chaveJogada(o)];
@@ -1140,6 +1515,8 @@ function briefingLua(m) {
 function confirmDecision() {
   const pendente = MINIJOGO_LUA ? rotaLuaPendente : null;
   rotaLuaPendente = null;
+  const pendenteFrag = MINIJOGO_FRAGMENTOS ? jogoFragPendente : null;
+  jogoFragPendente = null;
   const m = MISSIONS.find((x) => x.id === viewMission);
   if (!m || !choice || S.done[m.id]) return;
   const alvo = objetoDoCapitulo(m);
@@ -1170,14 +1547,43 @@ function confirmDecision() {
   } else {
     if (!STRATEGIES.some((s) => s.id === choice)) return;
     r = previaOrbital(m, choice, lead);
+    if (m.id === 'm3' && pendenteFrag) {
+      try {
+        const base = computeMeters(m, choice, 5.5).m;
+        r.m = {
+          seg: Math.round(0.5 * base.seg + 0.5 * pendenteFrag.seg),
+          comb: Math.round(0.5 * base.comb + 0.5 * pendenteFrag.comb),
+          orc: Math.round(0.5 * base.orc + 0.5 * pendenteFrag.orc),
+          ciencia: Math.round(0.5 * base.ciencia + 0.5 * pendenteFrag.ciencia),
+        };
+        r.score = scoreFromMeters(r.m);
+        r.antes = pendenteFrag.riscoInicial || r.antes;
+        r.depois = pendenteFrag.riscoFinal;
+        r.ajuste = 0;
+        r.jogo = {
+          seg: pendenteFrag.seg, comb: pendenteFrag.comb, orc: pendenteFrag.orc, ciencia: pendenteFrag.ciencia,
+          politica: pendenteFrag.politica, riscoFinal: pendenteFrag.riscoFinal,
+          fragmentos: pendenteFrag.fragmentos, turnos: pendenteFrag.turnos || null,
+        };
+      } catch (erro) {
+        console.warn(erro);
+        r = previaOrbital(m, choice, lead);
+      }
+    }
     rotulo = tt('strat.' + choice);
   }
   const detalhe = { antes: r.antes, depois: r.depois, ajuste: r.ajuste, feedback: feedback, template: template };
   const aprendizado = textoAprendizado(m, detalhe, alvo);
   const motivoRota = r.jogo && alvo && alvo.dados ? porqueRota(alvo.dados) : '';
-  const porque = motivoRota ? motivoRota + ' ' + tt('moon.lesson') : textoNota(detalhe);
+  let porque = motivoRota ? motivoRota + ' ' + tt('moon.lesson') : textoNota(detalhe);
+  if (r.jogo && r.jogo.politica) {
+    porque = tt('frag.why')
+      .split('{seg}').join(String(r.jogo.seg)).split('{comb}').join(String(r.jogo.comb))
+      .split('{orc}').join(String(r.jogo.orc)).split('{ciencia}').join(String(r.jogo.ciencia))
+      .split('{nota}').join(String(r.score)) + ' ' + tt('frag.model');
+  }
   S.done[m.id] = {
-    strategy: choice, score: r.score, lead: m.target === 'artefato' ? null : lead, rotulo: rotulo,
+    strategy: choice, score: r.score, lead: m.target === 'artefato' || (r.jogo && r.jogo.politica) ? null : lead, rotulo: rotulo,
     meters: r.m, riscoAntes: r.antes, riscoDepois: r.depois, ajuste: r.ajuste || 0,
     origem: origem, aviso: aviso, feedback: feedback, template: template,
     aprendizado: aprendizado, porque: porque,
@@ -1196,8 +1602,8 @@ function confirmDecision() {
     '<div class="meters">' + METERS.map(([k]) =>
       '<div class="meter"><div class="mt"><span>' + tt(METER_KEY[k]) + '</span><b>' + r.m[k] + '</b></div><div class="bar"><i style="width:' + r.m[k] + '%;background:' + meterColor(r.m[k]) + '"></i></div></div>').join('') + '</div>' +
     '<div style="display:grid;gap:6px"><span class="eyebrow">' + tt('result.science.eyebrow') + '</span><p class="placeholder">' + esc(aprendizado) + '</p></div>' +
-    (r.jogo ? (blocoMinijogo(S.done[m.id], alvo && alvo.dados) || '<div style="display:grid;gap:6px"><span class="eyebrow">' + tt('result.why') + '</span><p class="placeholder">' + esc(porque) + '</p></div>') : '<div style="display:grid;gap:6px"><span class="eyebrow">' + tt('result.why') + '</span><p class="placeholder">' + esc(porque) + '</p></div>') +
-    (m.target !== 'artefato' ? blocoSeries(r) + '<button class="btn" id="seeSim" data-capitulo="' + m.id + '" data-estrategia="' + choice + '">' + tt('result.seeSim') + '</button>' : '') +
+    (r.jogo ? (blocoJogo(S.done[m.id], alvo && alvo.dados) || '<div style="display:grid;gap:6px"><span class="eyebrow">' + tt('result.why') + '</span><p class="placeholder">' + esc(porque) + '</p></div>') : '<div style="display:grid;gap:6px"><span class="eyebrow">' + tt('result.why') + '</span><p class="placeholder">' + esc(porque) + '</p></div>') +
+    (m.target !== 'artefato' && !(r.jogo && r.jogo.politica) ? blocoSeries(r) + '<button class="btn" id="seeSim" data-capitulo="' + m.id + '" data-estrategia="' + choice + '">' + tt('result.seeSim') + '</button>' : '') +
     (aviso ? '<p class="muted" style="font-size:12.5px">' + esc(aviso) + '</p>' : '') +
     '<div class="gained"><span class="chip target">+' + xp + ' XP</span>' +
       gained.map((id) => '<span class="chip ok">' + esc(tt('badge.' + id)) + '</span>').join('') +
@@ -1212,18 +1618,20 @@ function abrirRelatorio() {
   const linhas = MISSIONS.map((m) => {
     const d = S.done[m.id];
     if (!d) return '';
+    if (d.caca) return '<li><strong>' + esc(missionText(m, 'title')) + '</strong> — ' + esc(tt('frag.hunt.success')) + '</li>';
+    if (d.busca) return '<li><strong>' + esc(missionText(m, 'title')) + '</strong> — ' + esc(tt('m1.hunt.success')) + '</li>';
     const risco = d.riscoAntes ? ' · ' + tt('missions.risk.before') + ' ' + (window.Jornada ? Jornada.rotuloRisco(d.riscoAntes) : d.riscoAntes) + ' → ' + (window.Jornada ? Jornada.rotuloRisco(d.riscoDepois) : d.riscoDepois) : '';
     const origem = d.origem === 'modelo' ? ' · ' + tt('missions.origin.ai') : d.origem ? ' · ' + tt('missions.origin.standard') : '';
-    const jogo = d.jogo ? ' · ' + tt(d.jogo.violacao === 'automatica' ? 'moon.auto.short' : 'moon.report.route') : '';
+    const jogo = d.jogo ? ' · ' + tt(d.jogo.politica ? 'frag.report' : d.jogo.violacao === 'automatica' ? 'moon.auto.short' : 'moon.report.route') : '';
     return '<li><strong>' + esc(missionText(m, 'title')) + '</strong> — ' + esc(nomeEscolha(d)) + ' · ' + d.score + esc(risco) + esc(origem) + esc(jogo) + '</li>';
   }).join('');
   const blocos = MISSIONS.map((m) => {
     const d = S.done[m.id];
     if (!d || !d.jogo) return '';
     const alvo = objetoDoCapitulo(m);
-    return blocoMinijogo(d, alvo && alvo.dados);
+    return blocoJogo(d, alvo && alvo.dados);
   }).join('');
-  const notas = MISSIONS.map((m) => S.done[m.id] && S.done[m.id].score).filter((n) => n != null);
+  const notas = MISSIONS.map((m) => S.done[m.id] && S.done[m.id].score).filter((n) => typeof n === 'number' && !Number.isNaN(n));
   const media = notas.length ? Math.round(notas.reduce((a, b) => a + b, 0) / notas.length) : 0;
   $('rBody').innerHTML = '<h3>' + tt('result.report') + '</h3><p>' + esc(window.Jornada ? Jornada.preencher(tt('result.report.lead')) : tt('result.report.lead')) + '</p><ol class="path">' + linhas + '</ol>' + blocos + '<p>' + tt('result.report.avg') + ' <b>' + media + '</b>.</p><p class="muted">' + tt('result.report.ai') + '</p><div><button class="btn primary" id="continueBtn">' + tt('result.keepExploring') + '</button></div>';
   showLearning = true;
@@ -1234,9 +1642,10 @@ function abrirRelatorio() {
    5. MODAIS E NAVEGAÇÃO
    ===================================================================== */
 function openModal(id) {
-  ['missionsModal', 'kesslerModal', 'diaryModal', 'resultModal', 'introModal', 'minijogoModal'].forEach((m) => {
+  ['missionsModal', 'kesslerModal', 'diaryModal', 'resultModal', 'introModal', 'minijogoModal', 'minijogoFragModal'].forEach((m) => {
     if (m !== id) {
       if (m === 'minijogoModal' && !$(m).hidden && window.MinijogoLua) MinijogoLua.fechar();
+      if (m === 'minijogoFragModal' && !$(m).hidden && window.MinijogoFragmentos) MinijogoFragmentos.fechar();
       $(m).hidden = true;
     }
   });
@@ -1249,8 +1658,9 @@ function openModal(id) {
 }
 function closeModal(id) {
   if (id === 'minijogoModal' && window.MinijogoLua) MinijogoLua.fechar();
+  if (id === 'minijogoFragModal' && window.MinijogoFragmentos) MinijogoFragmentos.fechar();
   $(id).hidden = true;
-  if (id === 'minijogoModal' && $('missionsModal').hidden && $('resultModal').hidden) $('missionsModal').hidden = false;
+  if ((id === 'minijogoModal' || id === 'minijogoFragModal') && $('missionsModal').hidden && $('resultModal').hidden) $('missionsModal').hidden = false;
   if (id === 'kesslerModal') kPause();
   if (id === 'resultModal') { showLearning = false; refresh(); }
   syncDock();
@@ -1279,7 +1689,7 @@ function toggleAtlas(force, f) {
   const show = force !== undefined ? force : $('atlasDrawer').hidden;
   if (f) { filter = f; renderFilters(); }
   $('atlasDrawer').hidden = !show;
-  $('missionCard').hidden = show;
+  $('missionCard').hidden = show || cartaoFechado;
   if (show && window.innerWidth <= 760) { selectedId = null; renderObjPanel(); }
   renderAtlas(); updateMeshes(); syncDock();
 }
@@ -1293,10 +1703,17 @@ function renderDiary() {
         new Date(p.t).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) + '</small></span></li>').join('')
     : '<li><span class="n">—</span><span class="muted">' + tt('diary.path.empty') + '</span></li>';
   const star = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="9" r="6"/><path d="M8.5 14 7 22l5-3 5 3-1.5-8"/></svg>';
+  const jogos = MISSIONS.map((missao) => {
+    const feito = S.done[missao.id];
+    if (!feito || !feito.jogo) return '';
+    const alvo = objetoDoCapitulo(missao);
+    const bloco = blocoJogo(feito, alvo && alvo.dados);
+    return bloco ? '<div style="display:grid;gap:6px;margin-top:8px"><span class="eyebrow">' + esc(missionText(missao, 'title')) + '</span>' + bloco + '</div>' : '';
+  }).join('');
   $('dBody').innerHTML =
     '<div class="stat-row">' + stat(tt('hud.level') + ' ' + level(), S.xp + ' ' + tt('diary.stat.level')) + stat(objCount + '/' + OBJECTS.length, tt('diary.stat.objects')) +
       stat(S.analyzed.length, tt('diary.stat.analyses')) + stat(Object.keys(S.done).length + '/' + MISSIONS.length, tt('diary.stat.chapters')) + '</div>' +
-    '<div class="diary"><div style="display:grid;gap:10px;align-content:start"><div class="section-title"><h3>' + tt('diary.path') + '</h3><span class="eyebrow">' + tt('diary.path.sub') + '</span></div><ol class="path">' + path + '</ol></div>' +
+    '<div class="diary"><div style="display:grid;gap:10px;align-content:start"><div class="section-title"><h3>' + tt('diary.path') + '</h3><span class="eyebrow">' + tt('diary.path.sub') + '</span></div><ol class="path">' + path + '</ol>' + jogos + '</div>' +
     '<div style="display:grid;gap:10px;align-content:start"><div class="section-title"><h3>' + tt('diary.badges') + '</h3><span class="eyebrow mono">' + S.badges.length + '/' + BADGES.length + '</span></div><div class="badges">' +
       BADGES.map((b) => '<div class="bdg' + (S.badges.includes(b.id) ? ' on' : '') + '"><span class="ico">' + star + '</span><div><strong>' + esc(tt('badge.' + b.id)) + '</strong><span>' + esc(tt('badge.' + b.id + '.desc')) + '</span></div></div>').join('') + '</div></div></div>' +
     '<div class="confirm-row">' + (confirmReset
@@ -1326,7 +1743,17 @@ document.addEventListener('click', (e) => {
   }
   if (t.dataset.dest) { flyTo(t.dataset.dest); return; }
   if (t.dataset.speed) { setSpeed(t.dataset.speed); return; }
-  if (t.dataset.obj) { selectObject(t.dataset.obj); return; }
+  if (t.dataset.obj) {
+    const alvo = byId[t.dataset.obj];
+    const avisoBusca = buscaNoMapa(currentMission(), alvo);
+    if (avisoBusca) {
+      const nome = alvo.type === 'artefato' ? nomeArtefato(alvo) : nomeEstagio(alvo);
+      toast('<b>' + esc(nome) + '</b>' + esc(tt(avisoBusca)));
+      return;
+    }
+    selectObject(t.dataset.obj, true);
+    return;
+  }
   if (t.dataset.f) { filter = t.dataset.f; renderFilters(); renderAtlas(); updateMeshes(); return; }
   if (t.dataset.mc) { onMissionCheck(t.dataset.mc); return; }
   if (t.dataset.step) { doStep(t.dataset.step); return; }
@@ -1334,6 +1761,7 @@ document.addEventListener('click', (e) => {
   if (t.dataset.strategy) { choice = t.dataset.strategy; renderMissions(); return; }
   switch (t.id) {
     case 'closeObj': closeObject(); break;
+    case 'mcClose': fecharCartaoMissao(); break;
     case 'concludeBtn': conclude(); break;
     case 'confirmDecision': confirmDecision(); break;
     case 'planejarRota':
@@ -1343,7 +1771,22 @@ document.addEventListener('click', (e) => {
       rotaLuaPendente = { seg: 50, ciencia: 50, comb: 50, violacao: 'automatica', rota: null };
       confirmDecision();
       break;
-    case 'continueBtn': closeModal('resultModal'); break;
+    case 'gerenciarCasca':
+      try { abrirCasca(); } catch (erro) { console.warn(erro); jogoFragPendente = null; $('missionsModal').hidden = false; confirmDecision(); }
+      break;
+    case 'fragAutomatico':
+      try { cascaAutomatica(); } catch (erro) { console.warn(erro); jogoFragPendente = null; confirmDecision(); }
+      break;
+    case 'verAlvosFrag':
+      destaqueEventos = true;
+      $('missionsModal').hidden = true;
+      toggleAtlas(true, 'fragmento');
+      flyTo('terra');
+      break;
+    case 'continueBtn':
+      closeModal('resultModal');
+      if (!currentMission()) openModal('missionsModal');
+      break;
     case 'openReport': abrirRelatorio(); break;
     case 'seeSim': verNaSimulacao(t.dataset.capitulo, t.dataset.estrategia); break;
     case 'startBtn': S.started = true; save(); $('introModal').hidden = true; refresh(); toast('<b>Missão recebida</b>Capítulo 1'); break;
@@ -1355,7 +1798,7 @@ document.addEventListener('click', (e) => {
     case 'askReset': confirmReset = true; renderDiary(); break;
     case 'cancelReset': confirmReset = false; renderDiary(); break;
     case 'doReset':
-      confirmReset = false; S = blank(); save(); selectedId = null; closeModal('diaryModal');
+      confirmReset = false; cartaoFechado = false; S = blank(); save(); selectedId = null; $('missionCard').hidden = false; closeModal('diaryModal');
       // Encerra sessão e volta ao login para que o jogador possa recomeçar
       AP.sair();
       if (window._renderPerfil) window._renderPerfil();
@@ -1372,6 +1815,7 @@ document.addEventListener('keydown', (e) => {
   if (open) closeModal(open);
   else if (!$('atlasDrawer').hidden) toggleAtlas(false);
   else if (selectedId) closeObject();
+  else if (!$('missionCard').hidden && $('introModal').hidden) fecharCartaoMissao();
 });
 
 /* =====================================================================
@@ -1920,7 +2364,7 @@ function bindPointer(canvas) {
     pointerDown = null;
     if (moved > 6) return;
     const id = pick(e.clientX, e.clientY);
-    if (id) { if (byId[id].body !== curDest) flyTo(byId[id].body); selectObject(id); }
+    if (id) { if (byId[id].body !== curDest) flyTo(byId[id].body); selectObject(id, true); }
   });
   let last = 0;
   canvas.addEventListener('pointermove', (e) => {
@@ -2524,6 +2968,10 @@ document.addEventListener('DOMContentLoaded', bootAtlas);
     else AP.sair();
     window._authService = null;
     S = blank();
+    cartaoFechado = false;
+    $('missionCard').hidden = false;
+    try { localStorage.removeItem(KEY); } catch (e) { /* save antigo */ }
+    if (!$('atlasDrawer').hidden) toggleAtlas(false);
     abrirLogin();
     setTab('entrar');
     // Restaura botão Criar se estava no modo Google
@@ -2698,6 +3146,7 @@ window._onLangChange = () => {
     $('kPlay').textContent = K.running ? tt('kessler.pause') : (K.indice > 0 ? tt('kessler.continue') : tt('kessler.start'));
   }
   if (!$('minijogoModal').hidden && window.MinijogoLua) MinijogoLua.redesenhar();
+  if (!$('minijogoFragModal').hidden && window.MinijogoFragmentos) MinijogoFragmentos.redesenhar();
 };
 setSpeed('agora');
 refresh();
