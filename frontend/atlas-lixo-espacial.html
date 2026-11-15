@@ -2407,12 +2407,13 @@ if (!S.started) { renderIntro(); $('introModal').hidden = false; }
 document.addEventListener('DOMContentLoaded', () => {
   /* ---- CONFIGURAÇÃO DA IA --------------------------------------------
      A chave fica em frontend/groq-local.js (window.GROQ_API_KEY), fora do Git.
-     Sem chave, o chat usa respostas locais. Com chave, chama a Groq e troca
-     de modelo se a rede cair, o modelo recusar ou o limite de taxa estourar. */
+     O chat chama a Groq e troca de modelo se a rede cair, o modelo recusar
+     ou o limite de taxa estourar. Se a cadeia falhar, tenta de novo uma vez. */
   const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
   const GROQ_MODELS = [
     'llama-3.3-70b-versatile',
     'llama-3.1-8b-instant',
+    'qwen/qwen3.8-27b',
   ];
   const GROQ_SYSTEM = [
     'Você é o Assistente Orbital oficial do Atlas do Lixo Espacial, um guia amigável, inteligente e especialista em exploração espacial, ciência e sustentabilidade orbital. Seu objetivo é ajudar entusiastas em idade escolar e curiosos a descobrirem as máquinas históricas que a humanidade e a NASA deixaram na Lua, em Marte e no espaço profundo, além de explicar os riscos dos detritos orbitais e da Síndrome de Kessler.',
@@ -2529,14 +2530,7 @@ document.addEventListener('DOMContentLoaded', () => {
   input.addEventListener('input', updateSend);
 
   /* ---------- Falar com a IA ---------- */
-  function demoReply(q) {
-    const t = q.toLowerCase();
-    if (/(^|\s)(olá|ola|oi|bom dia|boa tarde|boa noite)(\s|!|,|$)/.test(t)) return 'Olá! Sou o assistente orbital. Pergunte sobre lixo espacial, órbitas ou as missões do Atlas.';
-    if (t.includes('kessler')) return 'A síndrome de Kessler é uma reação em cadeia: colisões geram fragmentos, que causam novas colisões e podem deixar certas órbitas inutilizáveis. Dá para simular isso no Atlas.';
-    if (t.includes('reduz') || t.includes('limpar') || t.includes('remov')) return 'Duas frentes principais: evitar criar lixo novo (desorbitar satélites no fim da vida) e remover os objetos mais perigosos que já estão lá em cima.';
-    if (t.includes('lixo') || t.includes('detrito') || t.includes('espacial')) return 'Lixo espacial são objetos sem uso em órbita, como satélites inativos, estágios de foguete e fragmentos. Eles viajam a milhares de km/h e ameaçam satélites ativos.';
-    return 'Ainda estou em modo de demonstração, sem IA conectada. Quando o servidor for configurado, vou responder qualquer dúvida sobre o Atlas.';
-  }
+  const MSG_INSTAVEL = 'Houve um pico de instabilidade orbital momentâneo. Tente perguntar de novo em alguns segundos.';
 
   function groqKey() {
     return String(window.GROQ_API_KEY || '').trim();
@@ -2568,16 +2562,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return String(text).trim();
   }
 
-  async function askAI(message) {
-    if (!groqKey()) {
-      await new Promise((r) => setTimeout(r, 700));
-      return demoReply(message);
-    }
-    const messages = [
-      { role: 'system', content: GROQ_SYSTEM },
-      ...history.slice(-MAX_HISTORY),
-      { role: 'user', content: message },
-    ];
+  async function pedirCadeia(messages) {
     let ultimo = null;
     for (const model of GROQ_MODELS) {
       const ctrl = new AbortController();
@@ -2586,12 +2571,27 @@ document.addEventListener('DOMContentLoaded', () => {
         return await pedirModelo(messages, model, ctrl.signal);
       } catch (err) {
         ultimo = err;
-        if (!trocaDeModelo(err)) break;
+        if (!trocaDeModelo(err)) throw err;
       } finally {
         clearTimeout(timer);
       }
     }
     throw ultimo || new Error('modelos indisponiveis');
+  }
+
+  async function askAI(message) {
+    if (!groqKey()) throw new Error('sem chave');
+    const messages = [
+      { role: 'system', content: GROQ_SYSTEM },
+      ...history.slice(-MAX_HISTORY),
+      { role: 'user', content: message },
+    ];
+    try {
+      return await pedirCadeia(messages);
+    } catch (err) {
+      if (!trocaDeModelo(err)) throw err;
+      return await pedirCadeia(messages);
+    }
   }
 
   async function send(raw) {
@@ -2611,7 +2611,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
       console.error(err);
       typing.remove();
-      addMessage('bot', 'Não consegui falar com a IA agora. Tente de novo em instantes.', 'error');
+      addMessage('bot', MSG_INSTAVEL, 'error');
     } finally {
       setBusy(false);
     }
