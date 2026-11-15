@@ -2280,7 +2280,7 @@ function initScene() {
   const earthMat = new THREE.MeshStandardMaterial({ color: 0x14325c, roughness: 0.55, metalness: 0 });
   earth = new THREE.Mesh(new THREE.SphereGeometry(1, 128, 96), earthMat);
   earthGroup.add(earth);
-  new THREE.TextureLoader().load(window.EARTH_TEXTURE_URL || 'frontend/earth.jpg', (loaded) => {
+  const paintEarth = (loaded) => {
     const maps = polishEarthMaps(loaded.image);
     earthMat.map = maps.map;
     earthMat.roughnessMap = maps.roughnessMap;
@@ -2288,6 +2288,9 @@ function initScene() {
     earthMat.bumpScale = 0.045;
     earthMat.color.set(0xffffff);
     earthMat.needsUpdate = true;
+  };
+  new THREE.TextureLoader().load('frontend/earth.jpg', paintEarth, undefined, () => {
+    if (window.EARTH_TEXTURE_URL) new THREE.TextureLoader().load(window.EARTH_TEXTURE_URL, paintEarth);
   });
   clouds = new THREE.Mesh(new THREE.SphereGeometry(1.012, 64, 40), new THREE.MeshLambertMaterial({ map: cloudTex(), transparent: true, depthWrite: false }));
   earthGroup.add(clouds);
