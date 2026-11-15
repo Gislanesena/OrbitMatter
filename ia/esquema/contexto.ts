@@ -4,7 +4,7 @@
  * é recusada com um aviso estável — o serviço não lança exceção.
  */
 
-export const TIPOS_OBJETO = ["sonda_de_impacto", "modulo_de_pouso", "estagio_descartado"] as const;
+export const TIPOS_OBJETO = ["sonda_de_impacto", "modulo_de_pouso", "estagio_descartado", "artefato"] as const;
 export type TipoObjeto = (typeof TIPOS_OBJETO)[number];
 
 export const NIVEIS_RISCO = ["baixo", "moderado", "alto"] as const;
@@ -14,6 +14,7 @@ export const ROTULO_TIPO: Record<TipoObjeto, string> = {
   sonda_de_impacto: "sonda de impacto",
   modulo_de_pouso: "módulo de pouso",
   estagio_descartado: "estágio descartado",
+  artefato: "artefato histórico",
 };
 
 export interface ContextoMissao {
