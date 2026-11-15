@@ -2833,7 +2833,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   function updateSend() { sendBtn.disabled = busy || input.value.trim() === ''; }
   const ROBOT_IDLE = 'frente.png';
-  const ROBOT_THINK = ['apontando_olhando_esquerda.png', 'frente.png', 'apontando_olhando_direita.png'];
+  const ROBOT_THINK = ['direita_interrog.png', 'esquerda_interrog.png'];
   const reduceRobotMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   let thinkTimer = null;
   let thinkFrame = 0;
@@ -2848,7 +2848,7 @@ document.addEventListener('DOMContentLoaded', () => {
     thinkTimer = setInterval(() => {
       thinkFrame = (thinkFrame + 1) % ROBOT_THINK.length;
       setRobotPose(ROBOT_THINK[thinkFrame]);
-    }, 350);
+    }, 300);
   }
   function stopThinking(reset) {
     if (thinkTimer) { clearInterval(thinkTimer); thinkTimer = null; }
