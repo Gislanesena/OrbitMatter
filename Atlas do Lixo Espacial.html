@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oxanium:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans:wght@400;600&display=swap">
-  <link rel="stylesheet" href="atlas.css?v=21">
+  <link rel="stylesheet" href="atlas.css?v=22">
 </head>
 <body>
 <div id="loading" data-i18n="loading">Loading orbit…</div>
@@ -57,6 +57,7 @@
 </header>
 
 <aside class="panel" id="missionCard" aria-label="Missão atual"></aside>
+<aside class="panel" id="expertNote" hidden></aside>
 
 <aside class="panel" id="objPanel" hidden aria-label="Ficha do objeto"></aside>
 
@@ -356,7 +357,8 @@
   </div>
 </div>
 
-<script src="i18n.js?v=21"></script>
+<script src="i18n.js?v=22"></script>
+<script src="js/consciencia-espacial.js?v=1"></script>
 <script src="firebase-config.js?v=4"></script>
 <script type="module" src="firebase-app.js?v=4"></script>
 <script src="auth-progresso.js?v=4"></script>
@@ -517,7 +519,7 @@ const XP_PER_LEVEL = 150;
    ===================================================================== */
 // KEY legado (mantido para não quebrar saves antigos sem login)
 const KEY = 'atlas-lixo-espacial-v1';
-const blank = () => ({ started: false, xp: 0, seen: [], analyzed: [], steps: {}, done: {}, badges: [], path: [], kesslerMax: 0, visited: ['terra'], dest: 'terra', voyagerSeen: false, descoberta: [], foco: {}, jogada: {}, achadosM1: [], achadosM3: [] });
+const blank = () => ({ started: false, xp: 0, seen: [], analyzed: [], steps: {}, done: {}, badges: [], path: [], kesslerMax: 0, visited: ['terra'], dest: 'terra', voyagerSeen: false, descoberta: [], foco: {}, jogada: {}, achadosM1: [], achadosM3: [], consciencia: { tema: 'arqueologia', aberto: false } });
 let S = blank();
 
 // Carrega progresso: se há sessão ativa usa AP, senão tenta legado
@@ -659,6 +661,7 @@ function botaoFecharCartao() {
 function fecharCartaoMissao() {
   cartaoFechado = true;
   $('missionCard').hidden = true;
+  if (window.Consciencia) Consciencia.place();
 }
 function renderMissionCard() {
   anunciarCapitulo();
@@ -905,7 +908,9 @@ function refresh() {
   document.querySelectorAll('.seg [data-dest]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.dest === curDest)));
   const leg = $('moonLegend');
   if (leg) { leg.hidden = curDest !== 'lua'; if (!leg.hidden) leg.textContent = tt('obj.moon.legend'); }
-  renderHUD(); renderMissionCard(); renderAtlas(); renderObjPanel(); updateMeshes(); save();
+  renderHUD(); renderMissionCard(); renderAtlas(); renderObjPanel(); updateMeshes();
+  if (window.Consciencia) Consciencia.render();
+  save();
 }
 
 /* =====================================================================
@@ -1663,6 +1668,7 @@ function closeModal(id) {
   if ((id === 'minijogoModal' || id === 'minijogoFragModal') && $('missionsModal').hidden && $('resultModal').hidden) $('missionsModal').hidden = false;
   if (id === 'kesslerModal') kPause();
   if (id === 'resultModal') { showLearning = false; refresh(); }
+  if (id === 'deepSpaceModal' && window.Consciencia) Consciencia.render();
   syncDock();
 }
 function abrirVoyager() {
@@ -1675,6 +1681,7 @@ function abrirVoyager() {
       refresh();
     }
     if (window.DeepSpace) DeepSpace.open();
+    if (window.Consciencia) Consciencia.render();
   } else closeModal('deepSpaceModal');
 }
 function syncDock() {
@@ -1692,6 +1699,7 @@ function toggleAtlas(force, f) {
   $('missionCard').hidden = show || cartaoFechado;
   if (show && window.innerWidth <= 760) { selectedId = null; renderObjPanel(); }
   renderAtlas(); updateMeshes(); syncDock();
+  if (window.Consciencia) Consciencia.place();
 }
 
 let confirmReset = false;
@@ -1759,6 +1767,7 @@ document.addEventListener('click', (e) => {
   if (t.dataset.step) { doStep(t.dataset.step); return; }
   if (t.dataset.mission) { viewMission = t.dataset.mission; choice = null; renderMissions(); return; }
   if (t.dataset.strategy) { choice = t.dataset.strategy; renderMissions(); return; }
+  if (window.Consciencia && Consciencia.clique(t)) return;
   switch (t.id) {
     case 'closeObj': closeObject(); break;
     case 'mcClose': fecharCartaoMissao(); break;
@@ -3148,6 +3157,25 @@ window._onLangChange = () => {
   if (!$('minijogoModal').hidden && window.MinijogoLua) MinijogoLua.redesenhar();
   if (!$('minijogoFragModal').hidden && window.MinijogoFragmentos) MinijogoFragmentos.redesenhar();
 };
+Consciencia.registrar({
+  estado() {
+    if (!S.consciencia || typeof S.consciencia !== 'object') S.consciencia = { tema: 'arqueologia', aberto: false };
+    return S.consciencia;
+  },
+  gravar() { save(); },
+  foco() {
+    if ($('deepSpaceModal') && !$('deepSpaceModal').hidden) return { key: 'voyager', title: tt('aware.title.voyager') };
+    const o = selectedId && byId[selectedId];
+    if (o) {
+      const key = o.id === 'insight' ? 'insight' : o.id === 'S-06' ? 'lunar' : o.id === 'F-09' ? 'beresheet' : o.id === 'F-10' ? 'schiaparelli' : o.type === 'fragmento' ? 'detrito' : o.type === 'estagio' ? 'estagio' : o.type === 'satelite' ? 'inativo' : 'legado';
+      return { key, title: objectName(o) };
+    }
+    if (curDest === 'lua') return { key: 'lua', title: tt('aware.title.lua') };
+    if (curDest === 'marte') return { key: 'marte', title: tt('aware.title.marte') };
+    return { key: 'terra', title: tt('aware.title.terra') };
+  },
+  tt, esc,
+});
 setSpeed('agora');
 refresh();
 // A exibição do introModal é gerenciada pelo initAuth (após login).
