@@ -4,21 +4,9 @@
  * Nenhuma chave de API é lida ou enviada daqui.
  */
 (function () {
-  const CENARIO_TERRA = {
-    objetosIniciais: 2000,
-    lancamentosPorCiclo: 6,
-    remocaoAtivaPorCiclo: 0,
-    multiplicadorVelocidade: 1,
-    ciclos: 40,
-  };
-  const CENARIO_LUA = {
-    objetosIniciais: 180,
-    lancamentosPorCiclo: 1,
-    remocaoAtivaPorCiclo: 2,
-    multiplicadorVelocidade: 1,
-    ciclos: 24,
-  };
-  const REMOCAO = { desvio: 0, monitorar: 0, desorbitar: 18, remocao: 30 };
+  function doBundle(nome) {
+    return window.AtlasIA && window.AtlasIA[nome];
+  }
 
   let atlas = null;
   let cacheMissoes = null;
@@ -72,35 +60,22 @@
     });
   }
 
-  function limitar(parcial) {
-    const base = {
-      objetosIniciais: 0,
-      lancamentosPorCiclo: 0,
-      remocaoAtivaPorCiclo: 0,
-      multiplicadorVelocidade: 1,
-      ciclos: 1,
-    };
-    const pedido = Object.assign(base, parcial || {});
-    pedido.objetosIniciais = Math.max(0, Math.min(50000, Math.round(pedido.objetosIniciais)));
-    pedido.lancamentosPorCiclo = Math.max(0, Math.min(60, Math.round(pedido.lancamentosPorCiclo)));
-    pedido.remocaoAtivaPorCiclo = Math.max(0, Math.min(60, Math.round(pedido.remocaoAtivaPorCiclo)));
-    pedido.multiplicadorVelocidade = Math.max(0.5, Math.min(3, Number(pedido.multiplicadorVelocidade) || 1));
-    pedido.ciclos = Math.max(1, Math.min(100, Math.round(pedido.ciclos)));
-    return pedido;
-  }
-
   function simular(parametros) {
     const vivo = garantirAtlas();
-    if (!vivo) return { ok: false, aviso: "O simulador não carregou." };
+    if (!vivo) return { ok: false, problemas: ["O simulador não carregou."] };
     try {
-      const resultado = vivo.simularOrbita(limitar(parametros));
-      if (!resultado || !resultado.ok) {
-        return { ok: false, aviso: "A simulação recusou estes parâmetros." };
+      const resultado = vivo.simularOrbita(parametros);
+      if (!resultado || resultado.ok !== true) {
+        const problemas = resultado && resultado.falha && resultado.falha.problemas;
+        return {
+          ok: false,
+          problemas: problemas && problemas.length ? problemas.slice() : ["A simulação recusou estes parâmetros."],
+        };
       }
       return resultado;
     } catch (erro) {
       aviso("A simulação falhou.", erro);
-      return { ok: false, aviso: "A simulação falhou." };
+      return { ok: false, problemas: ["A simulação falhou."] };
     }
   }
 
@@ -109,32 +84,44 @@
     return serie[serie.length - 1].risco;
   }
 
-  function decidirOrbita(estrategia, antecedencia) {
-    const antes = simular(CENARIO_TERRA);
-    if (!antes.ok) return { ok: false, aviso: antes.aviso || "Simulação indisponível." };
-    const riscoAntes = riscoFinal(antes.dados);
-    const lead = Math.max(1, Math.min(10, Math.round(Number(antecedencia) || 1)));
-    const ciclos = CENARIO_TERRA.ciclos;
-    const atraso = Math.round(((10 - lead) / 9) * (ciclos - 1));
-    const remocao = REMOCAO[estrategia] || 0;
-    if (!remocao) return { ok: true, antes: riscoAntes, depois: riscoAntes };
-    const noInicio = antes.dados[Math.min(atraso, antes.dados.length - 1)];
-    const depois = simular({
-      objetosIniciais: noInicio.objetos,
-      lancamentosPorCiclo: CENARIO_TERRA.lancamentosPorCiclo,
+  function completar(base, remocao) {
+    return {
+      objetosIniciais: base.objetosIniciais,
+      lancamentosPorCiclo: base.lancamentosPorCiclo,
       remocaoAtivaPorCiclo: remocao,
-      multiplicadorVelocidade: 1,
-      ciclos: Math.max(1, ciclos - atraso),
-    });
-    if (!depois.ok) {
-      return {
-        ok: true,
-        antes: riscoAntes,
-        depois: riscoAntes,
-        aviso: "A ação não entrou na simulação. A nota usa o risco sem remoção.",
-      };
+      multiplicadorVelocidade: base.multiplicadorVelocidade,
+      ciclos: base.ciclos,
+    };
+  }
+
+  function decidirOrbita(capitulo, estrategia) {
+    const tabela = doBundle("CAPITULOS");
+    const remocoes = doBundle("REMOCAO_POR_ESTRATEGIA");
+    const base = tabela && tabela[capitulo];
+    if (!base || !remocoes || !(estrategia in remocoes)) {
+      return { ok: false, problemas: ["Este capítulo não tem um cenário orbital calibrado."] };
     }
-    return { ok: true, antes: riscoAntes, depois: riscoFinal(depois.dados) };
+    const sem = simular(completar(base, 0));
+    if (!sem.ok) return { ok: false, problemas: sem.problemas };
+    const remocao = remocoes[estrategia];
+    const com = simular(completar(base, remocao));
+    if (!com.ok) return { ok: false, problemas: com.problemas, serieSem: sem.dados };
+    return {
+      ok: true,
+      antes: riscoFinal(sem.dados),
+      depois: riscoFinal(com.dados),
+      serieSem: sem.dados,
+      serieCom: com.dados,
+      remocao: remocao,
+      cenario: completar(base, remocao),
+    };
+  }
+
+  function cenarioDoArtefato(artefato) {
+    const mapa = doBundle("LUA_POR_ARTEFATO");
+    const niveis = doBundle("LUA_POR_NIVEL");
+    const chave = (mapa && artefato && mapa[artefato.id]) || "moderado";
+    return niveis && niveis[chave];
   }
 
   function nivelDe(risco) {
@@ -197,7 +184,8 @@
   }
 
   async function jogadaLua(artefato, lang) {
-    const serie = simular(CENARIO_LUA);
+    const cenario = cenarioDoArtefato(artefato);
+    const serie = cenario ? simular(cenario) : { ok: false, problemas: ["O cenário lunar não carregou."] };
     const orb = serie.ok
       ? { risco: riscoFinal(serie.dados) || "moderado" }
       : { risco: "moderado" };
@@ -212,14 +200,14 @@
       if (salvo && salvo.ok && salvo.missao) {
         return pacote(salvo.origem || "reserva", salvo.missao, salvo.aviso || avisoSim, orb, nivel);
       }
-      const vivoAtlas = garantirAtlas();
+      const vivoAtlas = cenario && garantirAtlas();
       if (vivoAtlas) {
         try {
           const jogada = await vivoAtlas.abrirJogada({
             artefatoId: artefato.id,
             tipoObjeto: "artefato",
             local: artefato.local,
-            orbita: CENARIO_LUA,
+            orbita: cenario,
           });
           if (jogada && jogada.ok && jogada.dados && jogada.dados.missao) {
             return pacote(
@@ -248,5 +236,9 @@
     simular: simular,
     decidirOrbita: decidirOrbita,
     jogadaLua: jogadaLua,
+    limites: function () { return doBundle("LIMITES"); },
+    modelo: function () { return doBundle("MODELO"); },
+    predefinicoes: function () { return doBundle("PREDEFINICOES"); },
+    riscos: function () { return doBundle("RISCOS_ORBITAIS"); },
   };
 })();

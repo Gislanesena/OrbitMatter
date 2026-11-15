@@ -29,6 +29,7 @@ img{max-width:100%}
   --good:#5fd49a;
   --warn:#ffb347;
   --bad:#ff5d6c;
+  --cascade:#c084fc;
   --display:'Oxanium','Segoe UI',system-ui,sans-serif;
   --body:'IBM Plex Sans','Noto Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
   --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
@@ -252,7 +253,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .gained{display:flex;gap:8px;flex-wrap:wrap}
 
 /* Kessler */
-.kessler{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:20px}
+.kessler{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px}
 .k-stage{position:relative;min-width:0}
 #kCanvas{width:100%;aspect-ratio:1/1;max-width:100%;display:block;border-radius:12px;background:var(--void);border:1px solid var(--line-soft)}
 .k-side{display:grid;gap:14px;align-content:start}
@@ -267,7 +268,16 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 #kChart{width:100%;height:110px;display:block}
 .legend{display:flex;gap:14px;font-size:12px;color:var(--muted)}
 .legend i{display:inline-block;width:14px;height:3px;border-radius:2px;vertical-align:middle;margin-right:6px}
-.k-note{font-size:12.5px;color:var(--faint)}
+.k-note{font-size:12.5px;color:var(--faint);margin:0}
+.k-rules{margin:0;padding-left:18px;display:grid;gap:4px;font-size:12.5px;color:var(--muted)}
+.k-advanced{display:grid;gap:12px}
+.k-advanced summary{cursor:pointer;font-size:13px;color:var(--fg)}
+.k-problemas{margin:0;font-size:12.5px;color:var(--bad)}
+.risk-pill[data-risco="baixo"]{color:var(--good)}
+.risk-pill[data-risco="moderado"]{color:var(--warn)}
+.risk-pill[data-risco="alto"]{color:var(--bad)}
+.risk-pill[data-risco="cascata"]{color:var(--cascade)}
+.serie-chart{width:100%;height:140px;display:block}
 
 /* Diário */
 .diary{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px}

@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oxanium:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans:wght@400;600&display=swap">
-  <link rel="stylesheet" href="atlas.css?v=10">
+  <link rel="stylesheet" href="atlas.css?v=11">
 </head>
 <body>
 <div id="loading" data-i18n="loading">Loading orbit…</div>
@@ -217,11 +217,18 @@
       <button class="icon-btn" data-close aria-label="Fechar" data-i18n="missions.close" data-i18n-attr="aria-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
     </div>
     <div class="modal-body">
-      <p class="muted" style="max-width:70ch" data-i18n="kessler.desc">Cada colisão gera dezenas de fragmentos. Mais fragmentos aumentam a chance de novas colisões, e o ciclo pode se alimentar sozinho. Ajuste os lançamentos e a remoção ativa e veja se a órbita se estabiliza ou entra em cascata.</p>
+      <p class="muted" style="max-width:70ch" data-i18n="kessler.desc">Cada colisão do modelo retira 2 objetos e devolve 6 fragmentos. O ciclo é uma unidade do modelo, não um ano. Ajuste os lançamentos e a remoção e compare o efeito.</p>
+      <p class="k-note" data-i18n="kessler.note">Modelo didático: mostra o efeito das escolhas do jogador, não uma previsão de órbitas reais. Os limiares são do modelo.</p>
+      <ul class="k-rules">
+        <li data-i18n="kessler.rule.low">Baixo: menos de 4.000 objetos e nenhuma colisão no ciclo.</li>
+        <li data-i18n="kessler.rule.mid">Moderado: 4.000 objetos ou mais, ou ao menos uma colisão.</li>
+        <li data-i18n="kessler.rule.high">Alto: 8.000 objetos ou mais, ou 5 colisões ou mais, enquanto a remoção cobre o saldo do ciclo.</li>
+        <li data-i18n="kessler.rule.critical">Cascata: 2 colisões ou mais e o saldo (colisões × 4) maior que a remoção do ciclo, ou a população no teto de 250.000.</li>
+      </ul>
       <div class="kessler">
         <div class="k-stage"><canvas id="kCanvas" aria-label="Simulação de objetos em órbita vista de cima"></canvas></div>
         <div class="k-side">
-          <div><span class="risk-pill" id="kRisk" data-i18n="kessler.risk.low">Risco baixo</span></div>
+          <div><span class="risk-pill" id="kRisk" data-risco="baixo" data-i18n="kessler.risk.low">Risco baixo</span></div>
           <div class="k-stats">
             <div class="k-stat"><b id="kTotal">0</b><span data-i18n="kessler.total">Objetos em órbita</span></div>
             <div class="k-stat"><b id="kFrags">0</b><span data-i18n="kessler.fragments">Fragmentos</span></div>
@@ -230,19 +237,27 @@
           </div>
           <div>
             <canvas id="kChart" aria-label="Gráfico da quantidade de objetos ao longo do tempo"></canvas>
-            <div class="legend"><span><i style="background:var(--fg)"></i><span data-i18n="kessler.total.legend">Total</span></span><span><i style="background:var(--frag)"></i><span data-i18n="kessler.fragments">Fragmentos</span></span></div>
+            <div class="legend"><span><i style="background:var(--fg)"></i><span data-i18n="kessler.total.legend">Objetos</span></span><span><i style="background:var(--warn)"></i><span data-i18n="kessler.mark">Mudança de risco</span></span></div>
           </div>
           <div class="k-controls">
-            <div class="slider-row"><label for="kLaunch"><span data-i18n="kessler.launch.label">Lançamentos por ciclo</span> <b class="mono" id="kLaunchV">6</b></label><input type="range" id="kLaunch" min="0" max="30" value="6"></div>
-            <div class="slider-row"><label for="kRemove"><span data-i18n="kessler.remove.label">Remoção ativa por ciclo</span> <b class="mono" id="kRemoveV">0</b></label><input type="range" id="kRemove" min="0" max="60" value="0"></div>
-            <div class="slider-row"><label for="kSpeed"><span data-i18n="kessler.speed.label">Velocidade</span> <b class="mono" id="kSpeedV">1×</b></label><input type="range" id="kSpeed" min="1" max="3" step="1" value="1"></div>
+            <div class="slider-row"><label for="kLaunch"><span data-i18n="kessler.launch.label">Lançamentos por ciclo</span> <b class="mono" id="kLaunchV">0</b></label><input type="range" id="kLaunch" disabled></div>
+            <div class="slider-row"><label for="kRemove"><span data-i18n="kessler.remove.label">Remoção ativa por ciclo</span> <b class="mono" id="kRemoveV">0</b></label><input type="range" id="kRemove" disabled></div>
+            <div class="slider-row"><label for="kAnim"><span data-i18n="kessler.anim.label">Velocidade da animação</span> <b class="mono" id="kAnimV">1×</b></label><input type="range" id="kAnim" min="1" max="3" step="1" value="1"></div>
+            <details class="k-advanced" id="kAdvanced">
+              <summary data-i18n="kessler.advanced">Avançado</summary>
+              <div class="slider-row"><label for="kPop"><span data-i18n="kessler.initial.label">População inicial</span> <b class="mono" id="kPopV">0</b></label><input type="range" id="kPop" disabled></div>
+              <div class="slider-row"><label for="kVel"><span data-i18n="kessler.velocity.label">Velocidade relativa dos objetos</span> <b class="mono" id="kVelV">1</b></label><input type="range" id="kVel" disabled></div>
+              <div class="slider-row"><label for="kCiclos"><span data-i18n="kessler.horizon.label">Horizonte em ciclos</span> <b class="mono" id="kCiclosV">1</b></label><input type="range" id="kCiclos" disabled></div>
+            </details>
           </div>
           <div class="k-buttons">
             <button class="btn primary" id="kPlay" data-i18n="kessler.start">Iniciar</button>
-            <button class="btn" id="kTrigger" data-i18n="kessler.trigger">Provocar colisão</button>
+            <button class="btn" type="button" data-preset="controle" data-i18n="kessler.preset.control">Órbita sob controle</button>
+            <button class="btn" type="button" data-preset="cascata" data-i18n="kessler.preset.cascade">Rumo à cascata</button>
+            <button class="btn" type="button" data-preset="limpeza" data-i18n="kessler.preset.cleanup">Limpeza máxima</button>
             <button class="btn ghost" id="kReset" data-i18n="kessler.reset">Reiniciar</button>
           </div>
-          <p class="k-note" data-i18n="kessler.note">Modelo didático. O risco e o gráfico vêm do simulador orbital. O desenho redondo é só ilustração.</p>
+          <p class="k-problemas" id="kProblemas" hidden></p>
         </div>
       </div>
     </div>
@@ -271,7 +286,7 @@
   </div>
 </div>
 
-<script src="i18n.js?v=10"></script>
+<script src="i18n.js?v=11"></script>
 <script src="firebase-config.js?v=4"></script>
 <script type="module" src="firebase-app.js?v=4"></script>
 <script src="auth-progresso.js?v=4"></script>
@@ -282,8 +297,8 @@
 <script src="deep-space/voyager-1.js?v=2"></script>
 <script src="js/jornada.js?v=2"></script>
 <script src="js/artefatos-reserva.js?v=1"></script>
-<script src="dist/atlas-ia.js?v=1" defer></script>
-<script src="js/atlas-adapter.js?v=1" defer></script>
+<script src="dist/atlas-ia.js?v=2" defer></script>
+<script src="js/atlas-adapter.js?v=2" defer></script>
 <script>
 (function () {
 'use strict';
@@ -756,7 +771,6 @@ function refresh() {
    4. MISSÕES (simulador de decisões)
    ===================================================================== */
 let viewMission = null, choice = null, lead = 5;
-const AJUSTE_RISCO = { baixo: 6, moderado: 0, alto: -6, cascata: -12 };
 function scoreFromMeters(b) {
   const vals = [b.seg, b.comb, b.orc, b.ciencia];
   const avg = vals.reduce((a, v) => a + v, 0) / vals.length;
@@ -774,26 +788,53 @@ function computeMeters(m, sid, L) {
 }
 function previaOrbital(m, sid, L) {
   const base = computeMeters(m, sid, L);
-  let antes = null, depois = null, ajuste = 0, aviso = null;
+  let antes = null, depois = null, aviso = null, serieSem = null, serieCom = null, cenario = null;
   if (window.AtlasJogo) {
     try {
-      const sim = AtlasJogo.decidirOrbita(sid, L);
+      const sim = AtlasJogo.decidirOrbita(m.id, sid);
       if (sim && sim.ok) {
         antes = sim.antes;
         depois = sim.depois;
-        ajuste = AJUSTE_RISCO[depois] || 0;
-        aviso = sim.aviso || null;
-      } else aviso = (sim && sim.aviso) || null;
+        serieSem = sim.serieSem;
+        serieCom = sim.serieCom;
+        cenario = sim.cenario;
+      } else aviso = (sim && sim.problemas && sim.problemas.join(' ')) || 'A simulação não entrou nesta nota.';
     } catch (erro) { aviso = 'A simulação não entrou nesta nota.'; console.warn(erro); }
   }
-  return { m: base.m, score: Math.max(0, Math.min(100, base.score + ajuste)), antes: antes, depois: depois, ajuste: ajuste, aviso: aviso };
+  return { m: base.m, score: base.score, antes: antes, depois: depois, ajuste: 0, aviso: aviso, serieSem: serieSem, serieCom: serieCom, cenario: cenario };
+}
+function graficoDuasSeries(sem, com) {
+  if (!sem || !com || sem.length < 2 || com.length < 2) return '';
+  const w = 520, h = 140, pad = 18;
+  const max = Math.max(1, ...sem.map((e) => e.objetos), ...com.map((e) => e.objetos));
+  const linha = (serie) => serie.map((e, i) => {
+    const x = pad + (i / (serie.length - 1)) * (w - pad * 2);
+    const y = h - pad - (e.objetos / max) * (h - pad * 2);
+    return x.toFixed(1) + ',' + y.toFixed(1);
+  }).join(' ');
+  return '<svg class="serie-chart" viewBox="0 0 ' + w + ' ' + h + '" role="img" aria-label="' + esc(tt('result.chart')) + '">' +
+    '<polyline fill="none" stroke="var(--muted)" stroke-width="2" points="' + linha(sem) + '"/>' +
+    '<polyline fill="none" stroke="var(--data)" stroke-width="2" points="' + linha(com) + '"/></svg>';
+}
+function blocoSeries(sim) {
+  if (!sim || !sim.serieSem || !sim.serieCom) {
+    const texto = (sim && sim.aviso) || (sim && sim.problemas && sim.problemas.join(' '));
+    return texto ? '<p class="muted">' + esc(texto) + '</p>' : '';
+  }
+  const antes = window.Jornada ? Jornada.rotuloRisco(sim.antes) : sim.antes;
+  const depois = window.Jornada ? Jornada.rotuloRisco(sim.depois) : sim.depois;
+  return '<p class="k-note">' + esc(tt('result.practice')) + '</p>' +
+    '<p class="muted" style="font-size:12.5px">' + esc(tt('result.series.none')) + ': <b>' + esc(antes) + '</b> · ' +
+    esc(tt('result.series.with')) + ': <b>' + esc(depois) + '</b></p>' +
+    graficoDuasSeries(sim.serieSem, sim.serieCom) +
+    '<div class="legend"><span><i style="background:var(--muted)"></i>' + esc(tt('result.series.none')) + '</span><span><i style="background:var(--data)"></i>' + esc(tt('result.series.with')) + '</span></div>';
 }
 function notaPesos(pesos) {
   const metros = Jornada.metrosDePesos(pesos);
   return { m: metros, score: scoreFromMeters(metros) };
 }
 function chaveJogada(o) {
-  return o.id + '|' + (I18n.lang === 'en' ? 'en' : 'pt');
+  return o.id + '|' + (I18n.lang === 'en' ? 'en' : 'pt') + '|orb2';
 }
 function prepararJogada(o) {
   if (!o || o.type !== 'artefato' || !window.AtlasJogo) return;
@@ -843,24 +884,22 @@ function textoAprendizado(m, detalhe, o) {
       : '';
     return tt('result.what') + ' ' + cliente + '. ' + feedback + aviso;
   }
-  const risco = detalhe.antes
+  const pratica = detalhe.antes
     ? (I18n.lang === 'en'
-      ? ' Teaching-scenario risk went from ' + Jornada.rotuloRisco(detalhe.antes) + ' to ' + Jornada.rotuloRisco(detalhe.depois) + '.'
-      : ' O risco do cenário didático passou de ' + Jornada.rotuloRisco(detalhe.antes) + ' para ' + Jornada.rotuloRisco(detalhe.depois) + '.')
+      ? ' Without the practice the scenario ends ' + Jornada.rotuloRisco(detalhe.antes) + '; with it, ' + Jornada.rotuloRisco(detalhe.depois) + '.'
+      : ' Sem a prática, o cenário termina em ' + Jornada.rotuloRisco(detalhe.antes) + '; com ela, em ' + Jornada.rotuloRisco(detalhe.depois) + '.')
     : '';
   const ficha = cienciaDoObjeto(o);
-  return tt('result.what') + ' ' + cliente + '.' + risco + (ficha ? ' ' + ficha : '');
+  return tt('result.what') + ' ' + cliente + '.' + pratica + (ficha ? ' ' + ficha : '');
 }
 function textoNota(detalhe) {
-  if (!detalhe.depois) {
-    return I18n.lang === 'en'
-      ? 'The score is 70% of the average of the four meters and 30% of the lowest one.'
-      : 'A nota é 70% da média dos quatro medidores e 30% do pior deles.';
-  }
-  const ajuste = detalhe.ajuste || 0;
-  return I18n.lang === 'en'
-    ? 'The score is 70% of the average of the four meters and 30% of the lowest one. Risk after the action is ' + Jornada.rotuloRisco(detalhe.depois) + ', which shifts the score by ' + (ajuste > 0 ? '+' : '') + ajuste + '.'
-    : 'A nota é 70% da média dos quatro medidores e 30% do pior deles. O risco depois da ação é ' + Jornada.rotuloRisco(detalhe.depois) + ', o que ajusta a nota em ' + (ajuste > 0 ? '+' : '') + ajuste + '.';
+  const base = I18n.lang === 'en'
+    ? 'The score is 70% of the average of the four meters and 30% of the lowest one.'
+    : 'A nota é 70% da média dos quatro medidores e 30% do pior deles.';
+  if (!detalhe.antes) return base;
+  return base + (I18n.lang === 'en'
+    ? ' Lead time changes those meters only. The orbit simulation does not use lead time: the practice removal applies on every cycle.'
+    : ' A antecedência muda só esses medidores. A simulação orbital não usa a antecedência: a remoção da prática vale em todos os ciclos.');
 }
 const gradeOf = (s) => (s >= 80 ? [tt('grade.excellent'), 'var(--good)'] : s >= 65 ? [tt('grade.good'), 'var(--data)'] : s >= 50 ? [tt('grade.risky'), 'var(--warn)'] : [tt('grade.critical'), 'var(--bad)']);
 const meterColor = (v) => (v >= 65 ? 'var(--good)' : v >= 40 ? 'var(--warn)' : 'var(--bad)');
@@ -892,6 +931,10 @@ function renderMissions() {
     html += '<div class="placeholder" style="border-style:solid">' + tt('missions.youChose') + ' <b>' + esc(nomeEscolha(done)) + '</b> ' + tt('missions.andScored') + ' <b style="color:' + c + '">' + done.score + ' ' + tt('missions.points') + ' (' + g + ')</b>.</div>' +
       '<div class="placeholder">' + esc(done.aprendizado || missionText(m, 'explain')) + '</div>' +
       (done.porque ? '<div class="placeholder">' + esc(done.porque) + '</div>' : '');
+    if (m.target !== 'artefato' && window.AtlasJogo) {
+      html += blocoSeries(AtlasJogo.decidirOrbita(m.id, done.strategy)) +
+        '<button class="btn" id="seeSim" data-capitulo="' + m.id + '" data-estrategia="' + done.strategy + '">' + tt('result.seeSim') + '</button>';
+    }
   } else if (!hasAnalyzedType(m.target)) {
     html += '<div class="locked-note"><span>' + tt('missions.locked.msg') + ' <b style="color:' + t.css + '">' + typeLabel(m.target).toLowerCase() + '</b>.</span>' +
       '<button class="btn" data-open="atlas" data-filter="' + m.target + '">' + tt('missions.locked.btn') + '</button></div>';
@@ -932,10 +975,9 @@ function renderMissions() {
     if (choice) {
       const r = previaOrbital(m, choice, lead);
       const [g, c] = gradeOf(r.score);
-      const risco = r.antes ? '<p class="muted" style="font-size:12.5px">' + tt('missions.risk.before') + ' ' + esc(Jornada.rotuloRisco(r.antes)) + ' · ' + tt('missions.risk.after') + ' ' + esc(Jornada.rotuloRisco(r.depois)) + '</p>' : '';
       html += '<div class="meters">' + METERS.map(([k]) =>
         '<div class="meter"><div class="mt"><span>' + tt(METER_KEY[k]) + '</span><b>' + r.m[k] + '</b></div><div class="bar"><i style="width:' + r.m[k] + '%;background:' + meterColor(r.m[k]) + '"></i></div></div>').join('') + '</div>' +
-        risco +
+        blocoSeries(r) +
         '<div class="score-line"><div><span class="eyebrow">' + tt('missions.preview') + '</span><div class="sc" style="color:' + c + '">' + r.score + ' · ' + g + '</div></div>' +
         '<button class="btn primary" id="confirmDecision">' + tt('missions.confirm') + '</button></div>';
     } else {
@@ -997,6 +1039,7 @@ function confirmDecision() {
       '<div class="meter"><div class="mt"><span>' + tt(METER_KEY[k]) + '</span><b>' + r.m[k] + '</b></div><div class="bar"><i style="width:' + r.m[k] + '%;background:' + meterColor(r.m[k]) + '"></i></div></div>').join('') + '</div>' +
     '<div style="display:grid;gap:6px"><span class="eyebrow">' + tt('result.science.eyebrow') + '</span><p class="placeholder">' + esc(aprendizado) + '</p></div>' +
     '<div style="display:grid;gap:6px"><span class="eyebrow">' + tt('result.why') + '</span><p class="placeholder">' + esc(porque) + '</p></div>' +
+    (m.target !== 'artefato' ? blocoSeries(r) + '<button class="btn" id="seeSim" data-capitulo="' + m.id + '" data-estrategia="' + choice + '">' + tt('result.seeSim') + '</button>' : '') +
     (aviso ? '<p class="muted" style="font-size:12.5px">' + esc(aviso) + '</p>' : '') +
     '<div class="gained"><span class="chip target">+' + xp + ' XP</span>' +
       gained.map((id) => '<span class="chip ok">' + esc(tt('badge.' + id)) + '</span>').join('') +
@@ -1123,6 +1166,7 @@ document.addEventListener('click', (e) => {
     case 'confirmDecision': confirmDecision(); break;
     case 'continueBtn': closeModal('resultModal'); break;
     case 'openReport': abrirRelatorio(); break;
+    case 'seeSim': verNaSimulacao(t.dataset.capitulo, t.dataset.estrategia); break;
     case 'startBtn': S.started = true; save(); $('introModal').hidden = true; refresh(); toast('<b>Missão recebida</b>Capítulo 1'); break;
     case 'dAtlas': toggleAtlas(); break;
     case 'dMissions': $('missionsModal').hidden ? openModal('missionsModal') : closeModal('missionsModal'); break;
@@ -1850,126 +1894,131 @@ function animate() {
 }
 
 /* =====================================================================
-   7. SIMULAÇÃO DA SÍNDROME DE KESSLER (2D, vista de cima)
-   Unidades normalizadas: raio do planeta = 0.3, órbitas entre 0.4 e 0.94.
-   1 ciclo = 4 segundos na velocidade 1×. Modelo fictício e simplificado.
+   7. SIMULAÇÃO DA SÍNDROME DE KESSLER
+   A série vem de simularOrbita. O canvas só ilustra os números, com teto
+   de pontos. O ciclo é uma unidade do modelo, não um ano.
    ===================================================================== */
-const K = { parts: [], coll: 0, t: 0, running: false, hist: [], flashes: [], recent: [], reentries: 0, raf: 0, last: 0, lastSample: 0, launchAcc: 0, removeAcc: 0 };
-const KMAX = 2600, PR = 0.3, RMIN = 0.4, RMAX = 0.94, YEAR = 4;
-function kAdd(frag, r, a, dir) {
-  if (K.parts.length >= KMAX) return;
-  K.parts.push({ r, a, dir: dir || (Math.random() < 0.2 ? -1 : 1), frag, size: frag ? 0.0008 : 0.0015, dead: false, born: K.t });
+const K = { serie: null, indice: 0, running: false, raf: 0, ultimo: 0, acum: 0 };
+const PONTOS_MAX = 360;
+const COR_RISCO = { baixo: '#5fd49a', moderado: '#ffb347', alto: '#ff5d6c', cascata: '#c084fc' };
+const CAMPOS = [
+  ['kLaunch', 'lancamentosPorCiclo', 'kLaunchV', (v) => String(Math.round(v))],
+  ['kRemove', 'remocaoAtivaPorCiclo', 'kRemoveV', (v) => String(Math.round(v))],
+  ['kPop', 'objetosIniciais', 'kPopV', (v) => String(Math.round(v))],
+  ['kVel', 'multiplicadorVelocidade', 'kVelV', (v) => (Math.round(v * 10) / 10).toFixed(1)],
+  ['kCiclos', 'ciclos', 'kCiclosV', (v) => String(Math.round(v))],
+];
+let kPendente = null;
+let kLimitesProntos = false;
+
+function kLocale() { return I18n.lang === 'en' ? 'en-US' : 'pt-BR'; }
+function kProblemas(lista) {
+  const el = $('kProblemas');
+  if (!el) return;
+  if (!lista || !lista.length) { el.hidden = true; el.textContent = ''; return; }
+  el.hidden = false;
+  el.textContent = lista.join(' ');
 }
-function kRandomSat() { kAdd(false, RMIN + Math.random() * (RMAX - RMIN) * Math.random() + 0.02, Math.random() * Math.PI * 2); }
-function kReset() {
-  K.parts = []; K.coll = 0; K.t = 0; K.hist = []; K.flashes = []; K.recent = []; K.reentries = 0; K.lastSample = 0; K.launchAcc = 0; K.removeAcc = 0;
-  for (let i = 0; i < 240; i++) kRandomSat();
-  for (let i = 0; i < 60; i++) kAdd(true, RMIN + Math.random() * 0.4, Math.random() * Math.PI * 2);
-  kSample(); kStats(); kDraw();
-}
-const omega = (r) => 1.25 * Math.pow(RMIN / r, 1.5);
-function kBreak(p, q) {
-  const r0 = (p.r + q.r) / 2, a0 = (p.a + q.a) / 2;
-  p.dead = q.dead = true;
-  K.coll++; K.recent.push(K.t);
-  const n = (p.frag && q.frag) ? 3 : (p.frag || q.frag) ? 5 : 10;
-  for (let i = 0; i < n; i++) kAdd(true, Math.max(PR + 0.02, Math.min(RMAX + 0.03, r0 + (Math.random() - 0.5) * 0.07)), a0 + (Math.random() - 0.5) * 0.05, Math.random() < 0.35 ? -1 : 1);
-  K.flashes.push({ x: r0 * Math.cos(a0), y: r0 * Math.sin(a0), life: 1 });
-}
-function kStep(dt) {
-  const P = K.parts;
-  for (const p of P) {
-    p.a += omega(p.r) * p.dir * dt;
-    if (p.frag) p.r -= dt * 0.02 * Math.pow(RMIN / p.r, 6); // arrasto atmosférico: mais forte nas órbitas baixas
-    if (p.r < PR + 0.015) { p.dead = true; K.reentries++; }
-  }
-  // detecção de colisões por grade espacial
-  const cell = 0.016, grid = new Map();
-  for (let i = 0; i < P.length; i++) {
-    const p = P[i]; if (p.dead) continue;
-    p.x = p.r * Math.cos(p.a); p.y = p.r * Math.sin(p.a);
-    const key = Math.floor(p.x / cell) * 4096 + Math.floor(p.y / cell);
-    let arr = grid.get(key); if (!arr) grid.set(key, (arr = [])); arr.push(i);
-  }
-  for (let i = 0; i < P.length; i++) {
-    const p = P[i]; if (p.dead) continue;
-    const cx = Math.floor(p.x / cell), cy = Math.floor(p.y / cell);
-    for (let dx = -1; dx <= 1 && !p.dead; dx++) for (let dy = -1; dy <= 1 && !p.dead; dy++) {
-      const arr = grid.get((cx + dx) * 4096 + (cy + dy)); if (!arr) continue;
-      for (const j of arr) {
-        if (j <= i) continue; const q = P[j]; if (q.dead) continue;
-        if (K.t - p.born < 1.5 || K.t - q.born < 1.5) continue; // fragmentos recém-criados ainda se afastam
-        const d = Math.hypot(p.x - q.x, p.y - q.y);
-        if (d > p.size + q.size) continue;
-        const rel = Math.abs(omega(p.r) * p.dir - omega(q.r) * q.dir);
-        if (rel < 0.15) continue; // mesmo sentido e mesma altitude: andam juntos, não colidem
-        if (Math.random() < 0.15) { kBreak(p, q); break; }
-      }
-    }
-  }
-  // lançamentos e remoção ativa
-  K.launchAcc += (+$('kLaunch').value / YEAR) * dt;
-  while (K.launchAcc >= 1) { kRandomSat(); K.launchAcc -= 1; }
-  K.removeAcc += (+$('kRemove').value / YEAR) * dt;
-  while (K.removeAcc >= 1) {
-    K.removeAcc -= 1;
-    for (let tries = 0; tries < 6; tries++) { const p = P[(Math.random() * P.length) | 0]; if (p && p.frag && !p.dead) { p.dead = true; break; } }
-  }
-  K.parts = P.filter((p) => !p.dead);
-  K.t += dt;
-  K.recent = K.recent.filter((t) => K.t - t < YEAR);
-  if (K.t - K.lastSample >= YEAR / 4) { K.lastSample = K.t; kSample(); }
-}
-function kSample() {
-  const frags = K.parts.reduce((n, p) => n + (p.frag ? 1 : 0), 0);
-  K.hist.push([K.parts.length, frags]);
-  if (K.hist.length > 240) K.hist.shift();
-}
-function kTrigger() {
-  const sats = K.parts.filter((p) => !p.frag);
-  if (sats.length < 2) return;
-  const p = sats[(Math.random() * sats.length) | 0];
-  let best = null, bd = 1;
-  for (const q of sats) { if (q === p) continue; const d = Math.abs(q.r - p.r); if (d < bd) { bd = d; best = q; } }
-  if (!best) return;
-  kBreak(p, best);
-  K.parts = K.parts.filter((x) => !x.dead);
-  kStats(); if (!K.running) kDraw();
-}
-function kModelo() {
-  if (!window.AtlasJogo) return;
-  const resultado = AtlasJogo.simular({
-    objetosIniciais: 2000,
-    lancamentosPorCiclo: +$('kLaunch').value,
-    remocaoAtivaPorCiclo: +$('kRemove').value,
-    multiplicadorVelocidade: +$('kSpeed').value,
-    ciclos: 40,
+function kMontar() {
+  if (!window.AtlasJogo || kLimitesProntos) return;
+  const L = AtlasJogo.limites();
+  if (!L) { kProblemas(['O simulador não carregou.']); return; }
+  CAMPOS.forEach(([id, chave]) => {
+    const faixa = L[chave];
+    const input = $(id);
+    input.min = String(faixa.min);
+    input.max = String(faixa.max);
+    input.step = String(faixa.step);
+    input.disabled = false;
   });
-  if (!resultado || !resultado.ok || !resultado.dados) return;
-  K.serie = resultado.dados;
-  K.riscoModelo = resultado.dados[resultado.dados.length - 1].risco;
+  kLimitesProntos = true;
 }
-function kRisk() {
-  if (K.riscoModelo) {
-    const mapa = { baixo: ['kessler.risk.low', 'var(--good)'], moderado: ['kessler.risk.mid', 'var(--warn)'], alto: ['kessler.risk.high', 'var(--bad)'], cascata: ['kessler.risk.critical', 'var(--bad)'] };
-    const par = mapa[K.riscoModelo] || mapa.moderado;
-    return [tt(par[0]), par[1]];
+function kRotulos() {
+  CAMPOS.forEach(([id, , destino, formato]) => { $(destino).textContent = formato(+$(id).value); });
+}
+function kLer() {
+  const L = AtlasJogo.limites();
+  const passo = L.multiplicadorVelocidade.step;
+  const vel = Math.round((+$('kVel').value) / passo) * passo;
+  return {
+    objetosIniciais: Math.round(+$('kPop').value),
+    lancamentosPorCiclo: Math.round(+$('kLaunch').value),
+    remocaoAtivaPorCiclo: Math.round(+$('kRemove').value),
+    multiplicadorVelocidade: Math.round(vel * 10) / 10,
+    ciclos: Math.round(+$('kCiclos').value),
+  };
+}
+function kRegistrar(serie) {
+  const maximo = serie.reduce((m, estado) => Math.max(m, estado.colisoesAcumuladas), 0);
+  if (maximo > (S.kesslerMax || 0)) {
+    S.kesslerMax = maximo;
+    checkBadges();
+    renderHUD();
+    save();
   }
-  const rate = K.recent.length;
-  if (rate >= 25) return [tt('kessler.risk.critical'), 'var(--bad)'];
-  if (rate >= 12) return [tt('kessler.risk.high'), 'var(--bad)'];
-  if (rate >= 5) return [tt('kessler.risk.mid'), 'var(--warn)'];
-  return [tt('kessler.risk.low'), 'var(--good)'];
 }
-function kStats() {
-  const frags = K.parts.reduce((n, p) => n + (p.frag ? 1 : 0), 0);
-  $('kTotal').textContent = K.parts.length.toLocaleString('pt-BR');
-  $('kFrags').textContent = frags.toLocaleString('pt-BR');
-  $('kColl').textContent = K.coll;
-  $('kYear').textContent = (K.t / YEAR).toFixed(1);
-  const [label, color] = kRisk();
-  const pill = $('kRisk'); pill.textContent = label; pill.style.color = color;
-  if (K.coll > S.kesslerMax) { S.kesslerMax = K.coll; if (S.kesslerMax >= 25) { checkBadges(); renderHUD(); } save(); }
+function kRecalcular() {
+  kRotulos();
+  if (!window.AtlasJogo || !AtlasJogo.limites()) {
+    kProblemas(['O simulador não carregou.']);
+    return;
+  }
+  let resultado = null;
+  try { resultado = AtlasJogo.simular(kLer()); }
+  catch (erro) { console.warn(erro); resultado = { ok: false, problemas: ['A simulação falhou.'] }; }
+  if (!resultado || !resultado.ok || !resultado.dados) {
+    kProblemas((resultado && resultado.problemas) || ['A simulação recusou estes parâmetros.']);
+    kPintar();
+    return;
+  }
+  kProblemas(null);
+  K.serie = resultado.dados;
+  K.indice = 0;
+  K.acum = 0;
+  kRegistrar(K.serie);
+  kPintar();
+}
+function kAplicar(pedido) {
+  if (!pedido) return;
+  $('kPop').value = String(pedido.objetosIniciais);
+  $('kLaunch').value = String(pedido.lancamentosPorCiclo);
+  $('kRemove').value = String(pedido.remocaoAtivaPorCiclo);
+  $('kVel').value = String(pedido.multiplicadorVelocidade);
+  $('kCiclos').value = String(pedido.ciclos);
+  const avancado = $('kAdvanced');
+  if (avancado) avancado.open = true;
+  kRecalcular();
+}
+function kPreset(id) {
+  const tabela = window.AtlasJogo && AtlasJogo.predefinicoes();
+  if (!tabela || !tabela[id]) return;
+  kPause();
+  kAplicar(tabela[id]);
+}
+function verNaSimulacao(capitulo, estrategia) {
+  if (!window.AtlasJogo) return;
+  let sim = null;
+  try { sim = AtlasJogo.decidirOrbita(capitulo, estrategia); }
+  catch (erro) { console.warn(erro); }
+  if (!sim || !sim.ok || !sim.cenario) {
+    kPendente = null;
+    openModal('kesslerModal');
+    kProblemas((sim && sim.problemas) || ['A simulação recusou estes parâmetros.']);
+    return;
+  }
+  kPendente = sim.cenario;
+  openModal('kesslerModal');
+}
+function kMostrar(estado) {
+  const loc = kLocale();
+  $('kTotal').textContent = estado.objetos.toLocaleString(loc);
+  $('kFrags').textContent = estado.fragmentosAcumulados.toLocaleString(loc);
+  $('kColl').textContent = estado.colisoesAcumuladas.toLocaleString(loc);
+  $('kYear').textContent = String(estado.ciclo);
+  const chaves = { baixo: 'kessler.risk.low', moderado: 'kessler.risk.mid', alto: 'kessler.risk.high', cascata: 'kessler.risk.critical' };
+  const pill = $('kRisk');
+  pill.dataset.risco = estado.risco;
+  pill.textContent = tt(chaves[estado.risco] || 'kessler.risk.mid');
 }
 function kSize(cv) {
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -1977,76 +2026,128 @@ function kSize(cv) {
   if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
   return [cv.getContext('2d'), w, h, dpr];
 }
-function kDraw() {
-  const cv = $('kCanvas'); if (!cv.clientWidth) return;
+function kDesenhar() {
+  const cv = $('kCanvas'); if (!cv || !cv.clientWidth) return;
   const [g, w, h, dpr] = kSize(cv);
   g.setTransform(dpr, 0, 0, dpr, 0, 0);
-  const S2 = Math.min(w, h) / 2 * 0.98, cx = w / 2, cy = h / 2;
+  const escala = Math.min(w, h) / 2 * 0.98, cx = w / 2, cy = h / 2;
   g.fillStyle = '#05080f'; g.fillRect(0, 0, w, h);
-  // faixas de órbita
   g.strokeStyle = 'rgba(143,153,186,0.12)'; g.lineWidth = 1;
-  [0.45, 0.6, 0.75, 0.9].forEach((r) => { g.beginPath(); g.arc(cx, cy, r * S2, 0, Math.PI * 2); g.stroke(); });
-  // planeta
-  const pg = g.createRadialGradient(cx - PR * S2 * 0.3, cy - PR * S2 * 0.3, PR * S2 * 0.1, cx, cy, PR * S2);
+  [0.45, 0.6, 0.75, 0.9].forEach((r) => { g.beginPath(); g.arc(cx, cy, r * escala, 0, Math.PI * 2); g.stroke(); });
+  const pg = g.createRadialGradient(cx - 8, cy - 10, 8, cx, cy, 0.3 * escala);
   pg.addColorStop(0, '#2a7a9a'); pg.addColorStop(0.7, '#123f66'); pg.addColorStop(1, '#0a2240');
-  g.fillStyle = pg; g.beginPath(); g.arc(cx, cy, PR * S2, 0, Math.PI * 2); g.fill();
-  g.strokeStyle = 'rgba(111,180,255,0.35)'; g.lineWidth = 2; g.beginPath(); g.arc(cx, cy, PR * S2 + 2, 0, Math.PI * 2); g.stroke();
-  // objetos
-  for (const p of K.parts) {
-    const x = cx + p.r * Math.cos(p.a) * S2, y = cy + p.r * Math.sin(p.a) * S2;
-    if (p.frag) { g.fillStyle = '#ff7a59'; g.fillRect(x - 0.8, y - 0.8, 1.6, 1.6); }
-    else { g.fillStyle = '#6fd3ff'; g.fillRect(x - 1.4, y - 1.4, 2.8, 2.8); }
+  g.fillStyle = pg; g.beginPath(); g.arc(cx, cy, 0.3 * escala, 0, Math.PI * 2); g.fill();
+  const estado = K.serie && K.serie[K.indice];
+  if (!estado) return;
+  const n = Math.min(PONTOS_MAX, estado.objetos);
+  const fracao = estado.objetos ? Math.min(1, estado.fragmentosAcumulados / estado.objetos) : 0;
+  for (let i = 0; i < n; i++) {
+    const ang = estado.ciclo * 0.07 + i * 2.399;
+    const anel = 0.4 + ((i * 37) % 100) / 100 * 0.52;
+    const x = cx + Math.cos(ang) * anel * escala;
+    const y = cy + Math.sin(ang) * anel * escala;
+    const fragmento = n > 0 && i / n < fracao;
+    if (fragmento) { g.fillStyle = '#ff7a59'; g.fillRect(x - 0.8, y - 0.8, 1.6, 1.6); }
+    else { g.fillStyle = '#6fd3ff'; g.fillRect(x - 1.3, y - 1.3, 2.6, 2.6); }
   }
-  // colisões
-  K.flashes = K.flashes.filter((f) => f.life > 0);
-  for (const f of K.flashes) {
-    g.strokeStyle = 'rgba(255,179,71,' + f.life + ')'; g.lineWidth = 1.5;
-    g.beginPath(); g.arc(cx + f.x * S2, cy + f.y * S2, (1 - f.life) * 22 + 3, 0, Math.PI * 2); g.stroke();
+  if (estado.colisoes > 0) {
+    g.strokeStyle = 'rgba(255,179,71,0.85)'; g.lineWidth = 1.5;
+    g.beginPath();
+    g.arc(cx + Math.cos(estado.ciclo) * 0.62 * escala, cy + Math.sin(estado.ciclo * 0.7) * 0.62 * escala, 6 + Math.min(estado.colisoes, 14), 0, Math.PI * 2);
+    g.stroke();
   }
-  kChart();
 }
-function kChart() {
-  const cv = $('kChart'); if (!cv.clientWidth) return;
+function kGrafico() {
+  const cv = $('kChart'); if (!cv || !cv.clientWidth) return;
   const [g, w, h, dpr] = kSize(cv);
   g.setTransform(dpr, 0, 0, dpr, 0, 0);
   g.clearRect(0, 0, w, h);
-  const H = (K.serie && K.serie.length > 1) ? K.serie.map((estado) => [estado.objetos, estado.fragmentosAcumulados]) : K.hist;
-  if (H.length < 2) return;
-  const max = Math.max(400, ...H.map((x) => x[0])) * 1.1;
-  const top = 6, bottom = h - 16;
+  const serie = K.serie;
+  if (!serie || serie.length < 2) return;
+  const max = Math.max(1, ...serie.map((estado) => estado.objetos)) * 1.08;
+  const top = 8, bottom = h - 16;
   g.strokeStyle = 'rgba(143,153,186,0.15)'; g.lineWidth = 1;
   [0, 0.5, 1].forEach((t) => { const y = bottom - t * (bottom - top); g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke(); });
-  g.fillStyle = '#8f99ba'; g.font = '10px "IBM Plex Mono", monospace';
-  g.fillText(Math.round(max).toLocaleString('pt-BR'), 2, top + 9);
-  g.fillText('0', 2, bottom - 2);
-  const X = (i) => (i / (H.length - 1)) * w, Y = (v) => bottom - (v / max) * (bottom - top);
-  g.beginPath(); H.forEach((d, i) => (i ? g.lineTo(X(i), Y(d[0])) : g.moveTo(X(i), Y(d[0]))));
-  g.lineTo(w, bottom); g.lineTo(0, bottom); g.closePath(); g.fillStyle = 'rgba(232,235,245,0.06)'; g.fill();
-  [[0, '#e8ebf5'], [1, '#ff7a59']].forEach(([k, c]) => {
-    g.strokeStyle = c; g.lineWidth = 1.6; g.beginPath();
-    H.forEach((d, i) => (i ? g.lineTo(X(i), Y(d[k])) : g.moveTo(X(i), Y(d[k])))); g.stroke();
-  });
-  g.fillStyle = '#5c6789'; g.fillText('tempo →', w - 46, h - 3);
+  const X = (i) => (i / (serie.length - 1)) * w;
+  const Y = (v) => bottom - (v / max) * (bottom - top);
+  g.beginPath();
+  serie.forEach((estado, i) => (i ? g.lineTo(X(i), Y(estado.objetos)) : g.moveTo(X(i), Y(estado.objetos))));
+  g.strokeStyle = '#e8ebf5'; g.lineWidth = 1.6; g.stroke();
+  for (let i = 1; i < serie.length; i++) {
+    if (serie[i].risco === serie[i - 1].risco) continue;
+    g.fillStyle = COR_RISCO[serie[i].risco] || '#8f99ba';
+    g.beginPath(); g.arc(X(i), Y(serie[i].objetos), 3.4, 0, Math.PI * 2); g.fill();
+  }
+  g.strokeStyle = 'rgba(232,235,245,0.45)'; g.lineWidth = 1;
+  g.beginPath(); g.moveTo(X(K.indice), top); g.lineTo(X(K.indice), bottom); g.stroke();
+}
+function kPintar() {
+  const estado = K.serie && K.serie[K.indice];
+  if (estado) kMostrar(estado);
+  kDesenhar();
+  kGrafico();
 }
 function kLoop(now) {
-  if (!K.running) return;
-  const dt = Math.min((now - (K.last || now)) / 1000, 0.05); K.last = now;
-  const sp = +$('kSpeed').value;
-  for (let i = 0; i < sp; i++) kStep(dt);
-  K.flashes.forEach((f) => { f.life -= dt * 1.4; });
-  kDraw(); kStats();
+  if (!K.running || !K.serie) return;
+  const dt = Math.min((now - (K.ultimo || now)) / 1000, 0.05);
+  K.ultimo = now;
+  const sp = Math.max(1, Math.min(3, +$('kAnim').value || 1));
+  K.acum += dt * sp;
+  while (K.acum >= 0.55) {
+    K.acum -= 0.55;
+    if (K.indice >= K.serie.length - 1) { kPause(); kPintar(); return; }
+    K.indice += 1;
+  }
+  kPintar();
   K.raf = requestAnimationFrame(kLoop);
 }
-function kPlay() { if (K.running) { kPause(); return; } K.running = true; K.last = 0; $('kPlay').textContent = tt('kessler.pause'); K.raf = requestAnimationFrame(kLoop); }
-function kPause() { K.running = false; cancelAnimationFrame(K.raf); $('kPlay').textContent = K.t > 0 ? tt('kessler.continue') : tt('kessler.start'); }
-function kOpen() { if (!K.parts.length) kReset(); kModelo(); requestAnimationFrame(() => { kDraw(); kStats(); }); }
+function kPlay() {
+  if (K.running) { kPause(); return; }
+  if (!K.serie || !K.serie.length) return;
+  if (K.indice >= K.serie.length - 1) K.indice = 0;
+  K.running = true; K.ultimo = 0; K.acum = 0;
+  $('kPlay').textContent = tt('kessler.pause');
+  K.raf = requestAnimationFrame(kLoop);
+}
+function kPause() {
+  K.running = false;
+  cancelAnimationFrame(K.raf);
+  const botao = $('kPlay');
+  if (botao) botao.textContent = K.indice > 0 ? tt('kessler.continue') : tt('kessler.start');
+}
+function kReset() {
+  kPause();
+  K.indice = 0;
+  K.acum = 0;
+  $('kPlay').textContent = tt('kessler.start');
+  kPintar();
+}
+function kOpen() {
+  kMontar();
+  if (kPendente) {
+    const pedido = kPendente;
+    kPendente = null;
+    kPause();
+    kAplicar(pedido);
+    return;
+  }
+  if (!K.serie && window.AtlasJogo && AtlasJogo.predefinicoes) {
+    const presets = AtlasJogo.predefinicoes();
+    if (presets && presets.controle) { kAplicar(presets.controle); return; }
+  }
+  requestAnimationFrame(kPintar);
+}
 $('kPlay').addEventListener('click', kPlay);
-$('kTrigger').addEventListener('click', kTrigger);
-$('kReset').addEventListener('click', () => { kPause(); kReset(); $('kPlay').textContent = tt('kessler.start'); });
-[['kLaunch', (v) => v], ['kRemove', (v) => v], ['kSpeed', (v) => v + '×']].forEach(([id, f]) => {
-  $(id).addEventListener('input', () => { $(id + 'V').textContent = f($(id).value); kModelo(); kChart(); kStats(); });
+$('kReset').addEventListener('click', kReset);
+document.querySelectorAll('[data-preset]').forEach((botao) => {
+  botao.addEventListener('click', () => kPreset(botao.dataset.preset));
 });
-window.addEventListener('resize', () => { if (!$('kesslerModal').hidden) kDraw(); });
+CAMPOS.forEach(([id]) => {
+  $(id).addEventListener('input', kRotulos);
+  $(id).addEventListener('change', () => { kPause(); kRecalcular(); });
+});
+$('kAnim').addEventListener('input', () => { $('kAnimV').textContent = $('kAnim').value + '×'; });
+window.addEventListener('resize', () => { if (!$('kesslerModal').hidden) kPintar(); });
 
 /* =====================================================================
    8. INICIALIZAÇÃO
@@ -2066,6 +2167,7 @@ function bootAtlas() {
   cenaPronta = true;
   orbitRadius = (DEST[curDest] && DEST[curDest].view) || orbitRadius;
   anunciarCapitulo();
+  kMontar();
   refresh();
 }
 document.addEventListener('DOMContentLoaded', bootAtlas);
@@ -2413,8 +2515,8 @@ window._onLangChange = () => {
   if (!$('introModal').hidden) renderIntro();
   if (!$('deepSpaceModal').hidden && window.DeepSpace) DeepSpace.refresh();
   if (!$('kesslerModal').hidden) {
-    kStats();
-    $('kPlay').textContent = K.running ? tt('kessler.pause') : (K.t > 0 ? tt('kessler.continue') : tt('kessler.start'));
+    kPintar();
+    $('kPlay').textContent = K.running ? tt('kessler.pause') : (K.indice > 0 ? tt('kessler.continue') : tt('kessler.start'));
   }
 };
 setSpeed('agora');

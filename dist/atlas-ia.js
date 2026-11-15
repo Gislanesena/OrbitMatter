@@ -23,6 +23,14 @@ var AtlasIA = (() => {
   // app/entrada-navegador.ts
   var entrada_navegador_exports = {};
   __export(entrada_navegador_exports, {
+    CAPITULOS: () => CAPITULOS,
+    LIMITES: () => LIMITES,
+    LUA_POR_ARTEFATO: () => LUA_POR_ARTEFATO,
+    LUA_POR_NIVEL: () => LUA_POR_NIVEL,
+    MODELO: () => MODELO,
+    PREDEFINICOES: () => PREDEFINICOES,
+    REMOCAO_POR_ESTRATEGIA: () => REMOCAO_POR_ESTRATEGIA,
+    RISCOS_ORBITAIS: () => RISCOS_ORBITAIS,
     criarAtlas: () => criarAtlas
   });
 
@@ -996,11 +1004,11 @@ Devolva s\xF3 o JSON corrigido.`;
 
   // simulacao/parametros.ts
   var LIMITES = {
-    lancamentosPorCiclo: { min: 0, max: 60 },
-    remocaoAtivaPorCiclo: { min: 0, max: 60 },
-    multiplicadorVelocidade: { min: 0.5, max: 3 },
-    ciclos: { min: 1, max: 100 },
-    objetosIniciais: { min: 0, max: 5e4 }
+    lancamentosPorCiclo: { min: 0, max: 60, step: 1 },
+    remocaoAtivaPorCiclo: { min: 0, max: 60, step: 1 },
+    multiplicadorVelocidade: { min: 0.5, max: 3, step: 0.1 },
+    ciclos: { min: 1, max: 100, step: 1 },
+    objetosIniciais: { min: 0, max: 5e4, step: 1 }
   };
   var CHAVES2 = [
     "objetosIniciais",
@@ -1436,5 +1444,32 @@ Devolva s\xF3 o JSON corrigido.`;
   function ehRegistro7(valor) {
     return typeof valor === "object" && valor !== null && !Array.isArray(valor);
   }
+
+  // simulacao/cenarios.ts
+  var REMOCAO_POR_ESTRATEGIA = {
+    monitorar: 0,
+    desvio: 0,
+    desorbitar: 15,
+    remocao: 30
+  };
+  var PREDEFINICOES = {
+    controle: { objetosIniciais: 2e3, lancamentosPorCiclo: 8, remocaoAtivaPorCiclo: 12, multiplicadorVelocidade: 1, ciclos: 40 },
+    cascata: { objetosIniciais: 2e3, lancamentosPorCiclo: 40, remocaoAtivaPorCiclo: 0, multiplicadorVelocidade: 2, ciclos: 40 },
+    limpeza: { objetosIniciais: 12e3, lancamentosPorCiclo: 0, remocaoAtivaPorCiclo: 60, multiplicadorVelocidade: 1, ciclos: 40 }
+  };
+  var CAPITULOS = {
+    m1: { objetosIniciais: 2e3, lancamentosPorCiclo: 60, multiplicadorVelocidade: 2, ciclos: 80 },
+    m3: { objetosIniciais: 2e3, lancamentosPorCiclo: 40, multiplicadorVelocidade: 1, ciclos: 60 }
+  };
+  var LUA_POR_NIVEL = {
+    baixo: { objetosIniciais: 180, lancamentosPorCiclo: 1, remocaoAtivaPorCiclo: 2, multiplicadorVelocidade: 1, ciclos: 24 },
+    moderado: { objetosIniciais: 4500, lancamentosPorCiclo: 2, remocaoAtivaPorCiclo: 8, multiplicadorVelocidade: 1, ciclos: 24 },
+    alto: { objetosIniciais: 1e4, lancamentosPorCiclo: 0, remocaoAtivaPorCiclo: 60, multiplicadorVelocidade: 1, ciclos: 20 }
+  };
+  var LUA_POR_ARTEFATO = {
+    "luna-2": "baixo",
+    "luna-9": "moderado",
+    "surveyor-1": "alto"
+  };
   return __toCommonJS(entrada_navegador_exports);
 })();

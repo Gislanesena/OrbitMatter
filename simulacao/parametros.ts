@@ -4,11 +4,11 @@
  */
 
 export const LIMITES = {
-  lancamentosPorCiclo: { min: 0, max: 60 },
-  remocaoAtivaPorCiclo: { min: 0, max: 60 },
-  multiplicadorVelocidade: { min: 0.5, max: 3 },
-  ciclos: { min: 1, max: 100 },
-  objetosIniciais: { min: 0, max: 50_000 },
+  lancamentosPorCiclo: { min: 0, max: 60, step: 1 },
+  remocaoAtivaPorCiclo: { min: 0, max: 60, step: 1 },
+  multiplicadorVelocidade: { min: 0.5, max: 3, step: 0.1 },
+  ciclos: { min: 1, max: 100, step: 1 },
+  objetosIniciais: { min: 0, max: 50_000, step: 1 },
 } as const;
 
 export interface ParametrosCiclo {
