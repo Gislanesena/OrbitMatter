@@ -849,6 +849,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="groq-local.js"></script>
+<script src="dados-objetos.js"></script>
 <script>
 (function () {
 'use strict';
@@ -887,6 +888,26 @@ const DEST = {
   lua:   { label: 'Lua', article: 'a Lua', band: 'Órbita lunar', view: 2.1, min: 0.6, max: 9 },
   marte: { label: 'Marte', article: 'Marte', band: 'Órbita marciana', view: 3.6, min: 1.1, max: 12 },
 };
+function catalogEntry(id) {
+  const cat = (window.DADOS_OBJETOS || {})[id];
+  if (!cat) return null;
+  return {
+    name: cat.nome,
+    data: {
+      origem: cat.origem || '',
+      altitude: cat.altitude || '',
+      velocidade: cat.velocidade || '',
+      permanencia: cat.permanencia || '',
+      riscos: cat.riscos || '',
+      destinos: cat.destinos || '',
+    },
+    analysis: {
+      origem: cat.analise_origem || '',
+      permanencia: cat.analise_permanencia || '',
+      riscos: cat.analise_riscos || '',
+    },
+  };
+}
 const OBJECTS = [];
 const counters = { fragmento: 0, satelite: 0, estagio: 0, artefato: 0 };
 [['terra', 'fragmento', 8], ['terra', 'satelite', 5], ['terra', 'estagio', 5],
@@ -898,10 +919,12 @@ const counters = { fragmento: 0, satelite: 0, estagio: 0, artefato: 0 };
     if (body === 'terra') { const b = rnd(); r = b < 0.55 ? 1.35 + rnd() * 0.35 : b < 0.85 ? 1.9 + rnd() * 0.4 : 2.75 + rnd() * 0.35; }
     else r = R * (1.7 + rnd() * 1.1);
     const code = TYPES[type].prefix + '-' + String(++counters[type]).padStart(2, '0');
+    const cat = catalogEntry(code);
     OBJECTS.push({
-      id: code, type, body, name: TYPES[type].label + ' ' + code,
+      id: code, type, body, name: (cat && cat.name) || (TYPES[type].label + ' ' + code),
       r, incl: (rnd() - 0.5) * 1.7, node: rnd() * Math.PI * 2, phase: rnd() * Math.PI * 2,
-      data: {}, // ex.: { origem: '...', altitude: '... km', velocidade: '... km/s' }
+      data: (cat && cat.data) || {},
+      analysis: (cat && cat.analysis) || null,
     });
   }
 });
