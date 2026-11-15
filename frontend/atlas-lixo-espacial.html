@@ -84,6 +84,10 @@ p{margin:0}
   backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 20px 50px rgba(0,0,0,.45)}
 #missionCard{left:var(--gutter-l);top:calc(78px + env(safe-area-inset-top,0px));width:300px;padding:16px;display:grid;gap:12px}
 #missionCard h2{font-size:18px}
+#expertNote{left:var(--gutter-l);width:300px;padding:14px 16px;display:grid;gap:8px;align-content:start;overflow:auto;z-index:15}
+#expertNote p{font-size:13.5px;color:var(--muted)}
+#expertNote strong{color:var(--fg);font-weight:600}
+#expertNote em{color:var(--fg);font-style:italic}
 .mc-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .checklist{list-style:none;margin:0;padding:0;display:grid;gap:8px}
 .checklist li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--muted)}
@@ -209,7 +213,16 @@ p{margin:0}
 .strategy span{font-size:12.5px;color:var(--muted)}
 .slider-row{display:grid;gap:6px}
 .slider-row label{display:flex;justify-content:space-between;font-size:13.5px}
-input[type=range]{width:100%;accent-color:var(--accent)}
+input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
+.lead-scale{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--faint)}
+.lead-range{height:28px;margin:0;background:transparent;cursor:grab}
+.lead-range:active{cursor:grabbing}
+.lead-range::-webkit-slider-runnable-track{height:10px;border-radius:999px;background:linear-gradient(90deg,var(--line),var(--accent))}
+.lead-range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;margin-top:-6px;border-radius:50%;background:var(--accent);border:2px solid var(--accent-ink);box-shadow:0 0 0 4px rgba(255,179,71,.28);cursor:grab}
+.lead-range:active::-webkit-slider-thumb{cursor:grabbing;transform:scale(1.08)}
+.lead-range::-moz-range-track{height:10px;border-radius:999px;background:linear-gradient(90deg,var(--line),var(--accent))}
+.lead-range::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--accent);border:2px solid var(--accent-ink);box-shadow:0 0 0 4px rgba(255,179,71,.28);cursor:grab}
+.meter-help{margin:0;font-size:12px;color:var(--muted)}
 .meters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 16px}
 .meter{display:grid;gap:4px}
 .meter .mt{display:flex;justify-content:space-between;font-size:13px}
@@ -289,8 +302,11 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .toast.level{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .toast.level b{color:var(--accent-ink)}
 @keyframes tin{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
-#hint{position:fixed;z-index:10;left:50%;transform:translateX(-50%);bottom:calc(var(--dock-h) + var(--nav-h) + 26px + env(safe-area-inset-bottom,0px));
-  font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.04em;text-align:center;pointer-events:none;transition:opacity .6s;width:max-content;max-width:calc(100% - 32px)}
+#hint{position:fixed;z-index:18;left:50%;transform:translateX(-50%);bottom:calc(var(--dock-h) + var(--nav-h) + 26px + env(safe-area-inset-bottom,0px));
+  font-family:var(--mono);font-size:13px;color:var(--fg);letter-spacing:.04em;text-align:center;pointer-events:none;transition:opacity .6s;width:max-content;max-width:calc(100% - 32px);
+  padding:8px 14px;border:1px solid var(--accent);border-radius:999px;background:var(--panel-solid);
+  animation:hintPulse 1.8s ease-in-out 3}
+@keyframes hintPulse{50%{box-shadow:0 0 0 6px rgba(255,179,71,.2)}}
 #loading{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:var(--void);font-family:var(--mono);color:var(--muted);font-size:13px;letter-spacing:.1em;text-transform:uppercase}
 
 @media (max-width:1100px){
@@ -317,6 +333,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
   #missionCard .mc-head{grid-column:1/-1}
   #missionCard .mc-next{font-size:12.5px;color:var(--muted)}
   #missionCard .btn{padding:7px 12px;font-size:13px}
+  #expertNote{width:min(300px, calc(100vw - var(--gutter-l) - var(--gutter-r) - 32px));padding:12px}
   #objPanel,#atlasDrawer{left:0;right:0;width:auto;bottom:calc(var(--dock-h) + env(safe-area-inset-bottom,0px));top:auto;z-index:16;
     max-height:58%;border-radius:14px 14px 0 0;border-bottom:0;
     padding-left:var(--gutter-l);padding-right:var(--gutter-r)}
@@ -662,6 +679,10 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 </header>
 
 <aside class="panel" id="missionCard" aria-label="Missão atual"></aside>
+<aside class="panel" id="expertNote" aria-label="Nota do especialista">
+  <span class="eyebrow">Nota do especialista</span>
+  <p><strong>Arqueologia Espacial vs. Detritos:</strong> <em>“Diferenciar detritos gerados por explosões de naves históricas (como sondas e landers) é o primeiro passo para a sustentabilidade espacial. Enquanto o lixo comum (fragmentos e estágios vazios) exige remoção urgente para travar a Síndrome de Kessler, o hardware legado (como o que a NASA deixou na Lua e em Marte) representa os nossos primeiros passos e deve ser tratado como arqueologia espacial: monumentos que ensinaram a humanidade a olhar para as estrelas.”</em></p>
+</aside>
 
 <aside class="panel" id="objPanel" hidden aria-label="Ficha do objeto"></aside>
 
@@ -689,7 +710,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 <div class="navbar" id="navbar">
   <div class="seg" role="group" aria-label="Destino">
     <span class="seg-label">Destino</span>
-    <button data-dest="terra">Terra</button><button data-dest="lua">Lua</button><button data-dest="marte">Marte</button>
+    <button data-dest="terra">Terra</button><button data-dest="lua">Lua</button><button data-dest="marte">Marte</button><button type="button" id="navVoyager">Voyager</button>
   </div>
   <div class="clock"><b class="mono" id="clockText">--/-- --:--</b><span class="daynight" id="dayText">Dia em Brasília</span></div>
   <div class="seg" role="group" aria-label="Velocidade do tempo">
@@ -699,7 +720,17 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 
 <div id="tip" hidden></div>
 <div id="toasts" aria-live="polite"></div>
-<div id="hint">Arraste para girar · role para aproximar · clique em um objeto para investigar</div>
+<div id="hint">Arraste o planeta com o mouse para girar a cena</div>
+
+<div class="overlay" id="voyagerModal" hidden>
+  <div class="modal narrow" role="dialog" aria-modal="true" aria-labelledby="voyagerTitle">
+    <div class="modal-head">
+      <div><span class="eyebrow">Espaço profundo</span><h2 id="voyagerTitle">Voyager 1</h2></div>
+      <button class="icon-btn" data-close aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <div class="modal-body" id="voyagerBody"></div>
+  </div>
+</div>
 
 <!-- Intro (Descoberta) -->
 <div class="overlay" id="introModal" hidden>
@@ -782,7 +813,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
             <button class="btn" id="kTrigger">Provocar colisão</button>
             <button class="btn ghost" id="kReset">Reiniciar</button>
           </div>
-          <p class="k-note">Modelo simplificado e fictício, feito para mostrar a relação de causa e consequência. Os números ainda serão calibrados com dados reais.</p>
+          <p class="k-note">Simulação simplificada e fictícia, feita para mostrar a relação de causa e consequência. Os números ainda serão calibrados com dados reais.</p>
         </div>
       </div>
     </div>
@@ -821,15 +852,16 @@ const TYPES = {
   fragmento: { label: 'Fragmento', plural: 'Fragmentos', hex: 0xff7a59, css: '#ff7a59', prefix: 'F' },
   satelite:  { label: 'Satélite inativo', plural: 'Satélites', hex: 0x6fd3ff, css: '#6fd3ff', prefix: 'S' },
   estagio:   { label: 'Estágio de foguete', plural: 'Estágios', hex: 0xb9a4ff, css: '#b9a4ff', prefix: 'E' },
+  artefato:  { label: 'Artefato histórico', plural: 'Artefatos', hex: 0xffb347, css: '#ffb347', prefix: 'A' },
 };
 const FIELDS = [
   ['origem', 'Origem'], ['altitude', 'Altitude'], ['velocidade', 'Velocidade'],
   ['permanencia', 'Tempo em órbita'], ['riscos', 'Riscos'], ['destinos', 'Possíveis destinos'],
 ];
 const ANALYSIS = [
-  { id: 'origem', label: 'Como surgiu', text: 'Espaço reservado para a história do objeto: quem o lançou, quando, com qual objetivo e como ele contribuiu para a exploração espacial.' },
-  { id: 'permanencia', label: 'Quanto tempo fica em órbita', text: 'Espaço reservado para a estimativa de permanência em órbita, considerando altitude e arrasto atmosférico.' },
-  { id: 'riscos', label: 'Quais riscos apresenta', text: 'Espaço reservado para a análise do risco de colisão e do impacto em satélites ativos e missões futuras.' },
+  { id: 'origem', label: 'Como surgiu', text: 'Quem lançou este objeto, em que ano e para qual objetivo. Essa origem diz se ele é um fragmento sem uso ou um marco da exploração.' },
+  { id: 'permanencia', label: 'Quanto tempo permanece', text: 'Por quanto tempo o objeto continua no caminho de outras missões. Em órbita, altitude e arrasto mudam esse prazo. Na superfície, ele fica onde pousou.' },
+  { id: 'riscos', label: 'Quais riscos apresenta', text: 'O que pode acontecer se ninguém agir: colisão em órbita, ou perda de um marco científico na superfície.' },
 ];
 
 let seed = 20261004;
@@ -842,10 +874,10 @@ const DEST = {
   marte: { label: 'Marte', article: 'Marte', band: 'Órbita marciana', view: 3.6, min: 1.1, max: 12 },
 };
 const OBJECTS = [];
-const counters = { fragmento: 0, satelite: 0, estagio: 0 };
+const counters = { fragmento: 0, satelite: 0, estagio: 0, artefato: 0 };
 [['terra', 'fragmento', 8], ['terra', 'satelite', 5], ['terra', 'estagio', 5],
  ['lua', 'satelite', 1], ['lua', 'estagio', 1], ['lua', 'fragmento', 1],
- ['marte', 'satelite', 2], ['marte', 'estagio', 1], ['marte', 'fragmento', 1]].forEach(([body, type, n]) => {
+ ['marte', 'estagio', 1], ['marte', 'fragmento', 1]].forEach(([body, type, n]) => {
   for (let i = 0; i < n; i++) {
     const R = BODY_R[body];
     let r;
@@ -859,8 +891,44 @@ const counters = { fragmento: 0, satelite: 0, estagio: 0 };
     });
   }
 });
+[
+  {
+    id: 'curiosity', type: 'artefato', body: 'marte', name: 'Curiosity',
+    r: BODY_R.marte * 1.35, incl: 0.2, node: 0.4, phase: 0.6, surface: true,
+    data: {
+      origem: 'NASA / JPL · Mars Science Laboratory. Pouso em 6 de agosto de 2012 na cratera Gale.',
+      altitude: 'Superfície, cratera Gale (cerca de 4,6° S, 137,4° E). A posição no mapa é ilustrativa.',
+      velocidade: 'No solo. Não está em órbita.',
+      permanencia: 'Em operação desde 2012. Em 2026 ainda envia dados científicos.',
+      riscos: 'Ainda faz ciência. Tratar o rover como lixo apagaria um instrumento ativo.',
+      destinos: 'Seguir como arquivo vivo da geologia de Marte.',
+    },
+    analysis: {
+      origem: 'O rover Curiosity foi lançado em 26 de novembro de 2011 e pousou na cratera Gale em 6 de agosto de 2012. O JPL, laboratório da NASA, o enviou para ler as rochas e procurar sinais de que Marte já teve condições para a vida.',
+      permanencia: 'Curiosity não orbita Marte. Trabalha na superfície desde 2012 e, em 2026, continua ativo. Por isso não entra na conta de detrito a remover.',
+      riscos: 'O risco não é uma colisão em órbita. É interromper um instrumento que ainda produz ciência na cratera Gale.',
+    },
+  },
+  {
+    id: 'insight', type: 'artefato', body: 'marte', name: 'InSight',
+    r: BODY_R.marte * 1.48, incl: -0.25, node: 2.1, phase: 2.4, surface: true,
+    data: {
+      origem: 'NASA / JPL · InSight. Pouso em 26 de novembro de 2018 em Elysium Planitia.',
+      altitude: 'Superfície, Elysium Planitia (cerca de 4,5° N, 135,6° E). A posição no mapa é ilustrativa.',
+      velocidade: 'No solo, imóvel desde o fim da missão.',
+      permanencia: 'Contato encerrado em dezembro de 2022, quando a poeira cobriu os painéis solares.',
+      riscos: 'Já não se move. Removê-lo sem estudo apaga um monumento da sismologia de Marte.',
+      destinos: 'Permanecer como hardware legado na superfície.',
+    },
+    analysis: {
+      origem: 'O lander InSight foi lançado em 5 de maio de 2018 e pousou em Elysium Planitia em 26 de novembro de 2018. O JPL, laboratório da NASA, o usou para ouvir os martemotos.',
+      permanencia: 'O contato terminou em dezembro de 2022. O veículo permanece inteiro no solo, fora de qualquer órbita.',
+      riscos: 'InSight já não opera. Tratá-lo como fragmento sem história apaga o registro de uma missão que mediu o interior de Marte.',
+    },
+  },
+].forEach((o) => OBJECTS.push(o));
 const byId = Object.fromEntries(OBJECTS.map((o) => [o.id, o]));
-const bandOf = (o) => DEST[o.body].band || (o.r < 1.8 ? 'Órbita baixa' : o.r < 2.6 ? 'Órbita média' : 'Órbita alta');
+const bandOf = (o) => o.surface ? 'Superfície de ' + DEST[o.body].label : (DEST[o.body].band || (o.r < 1.8 ? 'Órbita baixa' : o.r < 2.6 ? 'Órbita média' : 'Órbita alta'));
 
 const STRATEGIES = [
   { id: 'desvio', name: 'Manobra de desvio', desc: 'Mover a nave ou o satélite ativo para fora da rota do objeto.', base: { seg: 68, comb: 48, orc: 76, ciencia: 50 } },
@@ -869,8 +937,12 @@ const STRATEGIES = [
   { id: 'monitorar', name: 'Monitorar e aguardar', desc: 'Acompanhar o objeto com radares e agir só se o risco subir.', base: { seg: 42, comb: 94, orc: 90, ciencia: 38 } },
 ];
 const METERS = [
-  ['seg', 'Segurança'], ['comb', 'Combustível restante'], ['orc', 'Orçamento restante'], ['ciencia', 'Impacto científico'],
+  ['seg', 'Segurança'], ['comb', 'Combustível restante'], ['orc', 'Equilíbrio de custo'], ['ciencia', 'Impacto científico'],
 ];
+const METER_HELP = {
+  orc: 'Quanto da verba da missão ainda sobra depois da ação. Um número alto significa uma escolha mais barata.',
+  ciencia: 'Impacto científico é o quanto a decisão ainda permite estudar o objeto, em vez de só afastá-lo do caminho.',
+};
 
 // 3 missões por planeta (campo body: 'terra' | 'lua' | 'marte').
 // Em cada missão: briefing, explain (explicação geral) e comentarios (um por estratégia escolhida).
@@ -878,12 +950,12 @@ const ALL_MISSIONS = [
   /* ==================== TERRA ==================== */
   { id: 'm1', body: 'terra', chapter: 1, title: 'Estágio à deriva', target: 'estagio',
     briefing: 'Na órbita da Terra, estágios de foguete abandonados podem explodir sozinhos. O terceiro estágio do foguete do CBERS 1, por exemplo, se fragmentou cinco meses depois do lançamento e virou centenas de pedaços. Agora um estágio assim, abandonado, cruza a rota de uma missão planejada. O que você faz?',
-    explain: 'Estágios de foguete podem guardar combustível que sobrou ou pressão nos tanques. Com o tempo, isso pode causar uma explosão e espalhar centenas de fragmentos, como aconteceu com o TES 1 e o STEP 2. Por isso, remover o estágio ou fazê-lo voltar à atmosfera antes que ele exploda funciona melhor do que só desviar a nave.',
+    explain: 'Estágios de foguete podem guardar combustível que sobrou ou pressão nos tanques. Com o tempo, isso pode causar uma explosão e espalhar centenas de fragmentos, como aconteceu com o terceiro estágio do CBERS-1. Por isso, remover o estágio ou fazê-lo voltar à atmosfera antes que ele exploda funciona melhor do que só desviar a nave.',
     comentarios: {
       desvio: 'Desviar a nave resolve só dessa vez. O estágio continua lá, com combustível sobrando, e pode explodir mais tarde e atingir outras missões.',
       remocao: 'Capturar o estágio antes que ele exploda elimina o problema na raiz e evita centenas de fragmentos. É a opção mais segura, mas é cara e difícil.',
       desorbitar: 'Na Terra a atmosfera ajuda: ao descer, o estágio queima na reentrada. Funciona bem, desde que seja feito antes de ele explodir.',
-      monitorar: 'Ficar só observando é arriscado. Estágios com combustível sobrando, como o do TES 1, podem explodir sem aviso e virar centenas de pedaços.'
+      monitorar: 'Ficar só observando é arriscado. Estágios com combustível sobrando, como o do CBERS-1, podem explodir sem aviso e virar centenas de pedaços.'
     },
     bonus: { remocao: { seg: 6, ciencia: 6 }, monitorar: { seg: -8 } } },
   { id: 'm2', body: 'terra', chapter: 2, title: 'Satélite silencioso', target: 'satelite',
@@ -950,14 +1022,14 @@ const ALL_MISSIONS = [
       monitorar: 'Ficar só observando é arriscado, porque o estágio é grande, pesado e sem controle.'
     },
     bonus: { remocao: { seg: 6, ciencia: 6 }, monitorar: { seg: -8 } } },
-  { id: 'marte2', body: 'marte', chapter: 2, title: 'Satélite silencioso', target: 'satelite',
-    briefing: 'Em Marte já existem sondas desligadas. A plataforma de pouso da Tianwen-1, de 1.285 kg, e o rover Zhurong terminaram suas missões e estão extintos. Agora uma sonda inativa, sem controle, ameaça atrapalhar uma sonda ativa. Como você lida com isso?',
-    explain: 'Uma sonda que termina a missão não pode mais ser controlada nem se mover. Ela fica onde está, como a Tianwen-1 e o Zhurong, e vira lixo permanente. Por isso o fim da missão precisa ser planejado antes. Só observar não resolve o risco, apenas adia.',
+  { id: 'marte2', body: 'marte', chapter: 2, title: 'Hardware legado', target: 'artefato',
+    briefing: 'Na superfície de Marte há máquinas da NASA com histórias diferentes. O rover Curiosity, operado pelo JPL, ainda trabalha na cratera Gale. O lander InSight, também do JPL, encerrou o contato em dezembro de 2022 e permanece em Elysium Planitia. Uma missão nova precisa passar perto desse hardware. O que você faz?',
+    explain: 'JPL é o Jet Propulsion Laboratory, o laboratório da NASA que opera essas missões. Curiosity ainda envia ciência, então deve ser tratado como instrumento ativo, não como lixo. InSight já está inativo: é um monumento da exploração, e removê-lo sem estudo apaga o registro.',
     comentarios: {
-      desvio: 'Desviar protege a sonda ativa agora, mas a sonda inativa continua lá e segue sendo um problema para as próximas missões.',
-      remocao: 'Retirar a sonda resolve o problema de vez. Em compensação, é uma operação muito cara, ainda mais a tanta distância da Terra.',
-      desorbitar: 'A atmosfera fina de Marte ajuda só um pouco. Objetos grandes e pesados, como a plataforma da Tianwen-1, podem não queimar por completo e cair na superfície.',
-      monitorar: 'Só observar não muda nada, porque uma sonda desligada não sai do lugar sozinha. Você apenas adia a decisão.'
+      desvio: 'Desviar protege a missão nova agora. Curiosity continua trabalhando e InSight continua no solo, então o cuidado precisa se repetir na próxima passagem.',
+      remocao: 'Retirar o hardware apaga o registro. Curiosity ainda faz ciência, e InSight é um monumento inativo. Levar os dois embora, tão longe da Terra, também é caro.',
+      desorbitar: 'Não se aplica: os dois já estão na superfície. A atmosfera fina de Marte não remove um rover nem um lander que já pousaram.',
+      monitorar: 'Observar Curiosity faz sentido enquanto ele opera. Para InSight, só observar adia a decisão de preservá-lo como marco.'
     },
     bonus: { desvio: { comb: 8 }, desorbitar: { seg: 6, orc: 6 } } },
   { id: 'marte3', body: 'marte', chapter: 3, title: 'Nuvem de fragmentos', target: 'fragmento',
@@ -1129,12 +1201,12 @@ function renderObjPanel() {
   const m = currentMission();
   const isTarget = m && m.target === o.type;
   const facts = FIELDS.map(([k, label]) =>
-    '<div class="fact"><dt>' + label + '</dt><dd>' + (o.data[k] ? esc(o.data[k]) : 'Aguardando dados') + '</dd></div>').join('');
+    '<div class="fact"><dt>' + label + '</dt><dd>' + (o.data[k] ? esc(o.data[k]) : 'Ainda sem medida nesta ficha') + '</dd></div>').join('');
   const stepsHtml = ANALYSIS.map((a, i) => {
     const done = steps.includes(a.id);
     return '<button class="step' + (done ? ' done' : '') + '" data-step="' + a.id + '" aria-expanded="' + (openStep === a.id) + '">' +
       '<span class="s-l"><span class="num">' + (done ? '✓' : '0' + (i + 1)) + '</span>' + a.label + '</span><span class="xp">' + (done ? 'Feito' : '+10 XP') + '</span></button>' +
-      (openStep === a.id ? '<p class="reveal">' + esc(a.text) + '</p>' : '');
+      (openStep === a.id ? '<p class="reveal">' + esc((o.analysis && o.analysis[a.id]) || a.text) + '</p>' : '');
   }).join('');
   let action;
   if (analyzed) {
@@ -1150,7 +1222,7 @@ function renderObjPanel() {
       (isTarget && !analyzed ? '<span class="chip target">Alvo da missão</span>' : '') + '</div>' +
       '<h2>' + esc(o.name) + '</h2><span class="eyebrow">' + bandOf(o) + ' · posição ilustrativa</span></div>' +
       '<button class="icon-btn" id="closeObj" aria-label="Fechar ficha"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>' +
-    '<div><div class="section-title" style="margin-bottom:8px"><h3>Ficha do objeto</h3><span class="eyebrow">Dados reais em breve</span></div><dl class="facts" style="margin:0">' + facts + '</dl></div>' +
+    '<div><div class="section-title" style="margin-bottom:8px"><h3>Ficha do objeto</h3><span class="eyebrow">' + (Object.keys(o.data).length ? 'Dados da missão' : 'Ficha ilustrativa') + '</span></div><dl class="facts" style="margin:0">' + facts + '</dl></div>' +
     '<div class="steps"><div class="section-title"><h3>Análise</h3><span class="eyebrow mono">' + steps.length + '/' + ANALYSIS.length + '</span></div>' + stepsHtml + '</div>' +
     '<div style="display:grid;gap:8px">' + action + '</div>';
   el.hidden = false;
@@ -1189,7 +1261,25 @@ function conclude() {
   refresh();
 }
 
-function refresh() { document.querySelectorAll('.seg [data-dest]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.dest === curDest))); renderHUD(); renderMissionCard(); renderAtlas(); renderObjPanel(); updateMeshes(); save(); }
+function placeExpertNote() {
+  const note = $('expertNote');
+  const card = $('missionCard');
+  if (!note || !card) return;
+  if (card.hidden) { note.hidden = true; return; }
+  const r = card.getBoundingClientRect();
+  let limit = window.innerHeight - 12;
+  ['.navbar', '.dock'].forEach((sel) => {
+    const el = document.querySelector(sel);
+    if (el && el.getClientRects().length) limit = Math.min(limit, el.getBoundingClientRect().top - 12);
+  });
+  const top = r.bottom + 12;
+  const room = limit - top;
+  if (room < 72) { note.hidden = true; return; }
+  note.hidden = false;
+  note.style.top = Math.round(top) + 'px';
+  note.style.maxHeight = Math.round(room) + 'px';
+}
+function refresh() { document.querySelectorAll('.seg [data-dest]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.dest === curDest))); renderHUD(); renderMissionCard(); renderAtlas(); renderObjPanel(); updateMeshes(); save(); placeExpertNote(); }
 
 /* =====================================================================
    4. MISSÕES (simulador de decisões)
@@ -1210,6 +1300,11 @@ function computeMeters(m, sid, L) {
 }
 const gradeOf = (s) => (s >= 80 ? ['Excelente', 'var(--good)'] : s >= 65 ? ['Boa', 'var(--data)'] : s >= 50 ? ['Arriscada', 'var(--warn)'] : ['Crítica', 'var(--bad)']);
 const meterColor = (v) => (v >= 65 ? 'var(--good)' : v >= 40 ? 'var(--warn)' : 'var(--bad)');
+function metersHtml(values) {
+  return '<div class="meters">' + METERS.map(([k, label]) =>
+    '<div class="meter"><div class="mt"><span>' + label + '</span><b>' + values[k] + '</b></div><div class="bar"><i style="width:' + values[k] + '%;background:' + meterColor(values[k]) + '"></i></div>' +
+    (METER_HELP[k] ? '<p class="meter-help">' + METER_HELP[k] + '</p>' : '') + '</div>').join('') + '</div>';
+}
 
 function renderMissions() {
   const cur = currentMission();
@@ -1239,12 +1334,11 @@ function renderMissions() {
   } else {
     html += '<div style="display:grid;gap:8px"><div class="section-title"><h3 style="font-size:15px">Escolha uma estratégia</h3></div><div class="strategies" role="radiogroup" aria-label="Estratégias">' +
       STRATEGIES.map((s) => '<button class="strategy" role="radio" aria-checked="' + (choice === s.id) + '" data-strategy="' + s.id + '"><strong>' + s.name + '</strong><span>' + s.desc + '</span></button>').join('') + '</div></div>' +
-      '<div class="slider-row"><label for="leadRange">Antecedência da ação <b class="mono">' + lead + '/10</b></label><input type="range" id="leadRange" min="1" max="10" value="' + lead + '"><span class="muted" style="font-size:12.5px">Agir cedo gasta menos combustível, mas deixa menos tempo para estudar o objeto.</span></div>';
+      '<div class="slider-row lead-row"><label for="leadRange">Antecedência da ação <b class="mono">' + lead + '/10</b></label><input type="range" id="leadRange" class="lead-range" min="1" max="10" value="' + lead + '" aria-valuemin="1" aria-valuemax="10" aria-valuenow="' + lead + '" aria-describedby="leadHelp"><div class="lead-scale"><span>1 · agir agora</span><span>10 · agir com folga</span></div><span class="muted" id="leadHelp">Arraste a barra. Agir cedo gasta menos combustível, mas deixa menos tempo para estudar o objeto.</span></div>';
     if (choice) {
       const r = computeMeters(m, choice, lead);
       const [g, c] = gradeOf(r.score);
-      html += '<div class="meters">' + METERS.map(([k, label]) =>
-        '<div class="meter"><div class="mt"><span>' + label + '</span><b>' + r.m[k] + '</b></div><div class="bar"><i style="width:' + r.m[k] + '%;background:' + meterColor(r.m[k]) + '"></i></div></div>').join('') + '</div>' +
+      html += metersHtml(r.m) +
         '<div class="score-line"><div><span class="eyebrow">Previsão</span><div class="sc" style="color:' + c + '">' + r.score + ' · ' + g + '</div></div>' +
         '<button class="btn primary" id="confirmDecision">Confirmar decisão</button></div>';
     } else {
@@ -1271,8 +1365,7 @@ function confirmDecision() {
   const next = currentMission();
   $('rBody').innerHTML =
     '<div class="result-top"><div class="grade" style="color:' + c + '">' + r.score + '</div><div><strong style="font-family:var(--display);font-size:20px">' + g + '</strong><p class="muted">Capítulo ' + m.chapter + ' · ' + esc(m.title) + '</p></div></div>' +
-    '<div class="meters">' + METERS.map(([k, label]) =>
-      '<div class="meter"><div class="mt"><span>' + label + '</span><b>' + r.m[k] + '</b></div><div class="bar"><i style="width:' + r.m[k] + '%;background:' + meterColor(r.m[k]) + '"></i></div></div>').join('') + '</div>' +
+    metersHtml(r.m) +
     comentarioHtml(m, choice) +
     '<div style="display:grid;gap:6px"><span class="eyebrow">Explicação científica</span><p class="placeholder">' + esc(m.explain) + '</p></div>' +
     '<div class="gained"><span class="chip target">+' + xp + ' XP</span>' +
@@ -1288,7 +1381,7 @@ function confirmDecision() {
    5. MODAIS E NAVEGAÇÃO
    ===================================================================== */
 function openModal(id) {
-  ['missionsModal', 'kesslerModal', 'diaryModal', 'resultModal', 'introModal'].forEach((m) => { if (m !== id) $(m).hidden = true; });
+  ['missionsModal', 'kesslerModal', 'diaryModal', 'resultModal', 'introModal', 'voyagerModal'].forEach((m) => { if (m !== id) $(m).hidden = true; });
   $(id).hidden = false;
   if (id === 'missionsModal') renderMissions();
   if (id === 'diaryModal') renderDiary();
@@ -1299,7 +1392,7 @@ function openModal(id) {
 function closeModal(id) {
   $(id).hidden = true;
   if (id === 'kesslerModal') kPause();
-  if (id === 'resultModal') { showLearning = false; refresh(); }
+  if (id === 'voyagerModal') $('navVoyager').setAttribute('aria-pressed', 'false');
   syncDock();
 }
 function syncDock() {
@@ -1313,6 +1406,7 @@ function toggleAtlas(force, f) {
   if (f) { filter = f; renderFilters(); }
   $('atlasDrawer').hidden = !show;
   $('missionCard').hidden = show;
+  placeExpertNote();
   if (show && window.innerWidth <= 760) { selectedId = null; renderObjPanel(); }
   renderAtlas(); updateMeshes(); syncDock();
 }
@@ -1343,6 +1437,22 @@ function renderIntro() {
 }
 
 /* Eventos globais por delegação */
+const VOYAGER_EVENTS = [
+  { id: 'jupiter', title: 'Sobrevoo de Júpiter', text: 'Em 5 de março de 1979 a Voyager 1 passou a 280 mil km de Júpiter, encontrou um anel fino e as luas Tebe e Métis.' },
+  { id: 'saturn', title: 'Sobrevoo de Saturno', text: 'Em 12 de novembro de 1980 passou a cerca de 126 mil km de Saturno, encontrou cinco luas e o anel G, e mediu a atmosfera de Titã.' },
+  { id: 'interstellar', title: 'Espaço interestelar', text: 'Em 25 de agosto de 2012 cruzou a heliopausa e passou a medir o espaço interestelar. Continua a ser o objeto humano mais distante.' },
+];
+let voyagerEvent = 'jupiter';
+function renderVoyager() {
+  const event = VOYAGER_EVENTS.find((e) => e.id === voyagerEvent) || VOYAGER_EVENTS[0];
+  $('voyagerBody').innerHTML =
+    '<p>Estes botões revelam os marcos históricos da Voyager 1. Escolha um para ler o que a sonda fez.</p>' +
+    '<div class="strategies" role="list">' + VOYAGER_EVENTS.map((e) =>
+      '<button type="button" class="strategy" data-voyager-event="' + e.id + '" aria-pressed="' + (e.id === event.id) + '"><strong>' + e.title + '</strong></button>').join('') + '</div>' +
+    '<p class="reveal">' + esc(event.text) + '</p>' +
+    '<p class="muted">JPL é o Jet Propulsion Laboratory, o laboratório da NASA, na Califórnia, que opera a Voyager 1 e outras sondas planetárias.</p>';
+  $('navVoyager').setAttribute('aria-pressed', 'true');
+}
 document.addEventListener('click', (e) => {
   const t = e.target.closest('button'); if (!t) {
     const ov = e.target.closest('.overlay');
@@ -1364,12 +1474,14 @@ document.addEventListener('click', (e) => {
   if (t.dataset.step) { doStep(t.dataset.step); return; }
   if (t.dataset.mission) { viewMission = t.dataset.mission; choice = null; renderMissions(); return; }
   if (t.dataset.strategy) { choice = t.dataset.strategy; renderMissions(); return; }
+  if (t.dataset.voyagerEvent) { voyagerEvent = t.dataset.voyagerEvent; renderVoyager(); return; }
   switch (t.id) {
     case 'closeObj': closeObject(); break;
     case 'concludeBtn': conclude(); break;
     case 'confirmDecision': confirmDecision(); break;
     case 'continueBtn': closeModal('resultModal'); break;
     case 'startBtn': S.started = true; save(); $('introModal').hidden = true; refresh(); toast('<b>Missão recebida</b>Capítulo 1'); break;
+    case 'navVoyager': openModal('voyagerModal'); renderVoyager(); break;
     case 'dAtlas': toggleAtlas(); break;
     case 'dMissions': $('missionsModal').hidden ? openModal('missionsModal') : closeModal('missionsModal'); break;
     case 'dKessler': $('kesslerModal').hidden ? openModal('kesslerModal') : closeModal('kesslerModal'); break;
@@ -1386,7 +1498,7 @@ document.addEventListener('input', (e) => {
 });
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
-  const open = ['kesslerModal', 'missionsModal', 'diaryModal'].find((m) => !$(m).hidden);
+  const open = ['kesslerModal', 'missionsModal', 'diaryModal', 'voyagerModal'].find((m) => !$(m).hidden);
   if (open) closeModal(open);
   else if (!$('atlasDrawer').hidden) toggleAtlas(false);
   else if (selectedId) closeObject();
@@ -1536,7 +1648,7 @@ function makeBody(o) {
   if (o.type === 'fragmento') {
     body = new THREE.Mesh(new THREE.DodecahedronGeometry(0.04, 0), mat);
     body.scale.set(1.3, 0.6, 0.9);
-  } else if (o.type === 'satelite') {
+  } else if (o.type === 'satelite' || o.type === 'artefato') {
     body = new THREE.Group();
     body.add(new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.05, 0.05), mat));
     const pm = new THREE.MeshStandardMaterial({ color: 0x1d3f7a, emissive: 0x2a5bb0, emissiveIntensity: 0.4, metalness: 0.6, roughness: 0.4 });
@@ -2068,7 +2180,7 @@ $('kReset').addEventListener('click', () => { kPause(); kReset(); $('kPlay').tex
 [['kLaunch', (v) => v], ['kRemove', (v) => v], ['kSpeed', (v) => v + '×']].forEach(([id, f]) => {
   $(id).addEventListener('input', () => { $(id + 'V').textContent = f($(id).value); });
 });
-window.addEventListener('resize', () => { if (!$('kesslerModal').hidden) kDraw(); });
+window.addEventListener('resize', () => { placeExpertNote(); if (!$('kesslerModal').hidden) kDraw(); });
 
 /* =====================================================================
    8. INICIALIZAÇÃO

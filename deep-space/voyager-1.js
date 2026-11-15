@@ -46,6 +46,8 @@
       whereV: 'Interstellar space, outside the heliosphere',
       statusV: 'As of 17 April 2026, NASA reports two science instruments still on: the magnetometer (MAG) and the plasma wave subsystem (PWS). The low-energy charged particle instrument was turned off that day to save power. This is a published status, not a live telemetry feed.',
       timeline: 'Timeline',
+      timelineHelp: 'These buttons reveal Voyager 1’s historical milestones. Pick one to read what the probe did.',
+      jpl: 'JPL is the Jet Propulsion Laboratory, the NASA lab in California that operates Voyager 1 and other planetary missions.',
       pick: 'Choose an event.',
       found: 'Scientific findings',
       track: 'Calculated position',
@@ -96,6 +98,8 @@
       whereV: 'Espaço interestelar, fora da heliosfera',
       statusV: 'Em 17 de abril de 2026, a NASA informa dois instrumentos científicos ainda ligados: o magnetômetro (MAG) e o subsistema de ondas de plasma (PWS). O detector de partículas de baixa energia foi desligado nesse dia para poupar energia. Este é um boletim publicado, não uma telemetria ao vivo.',
       timeline: 'Linha do tempo',
+      timelineHelp: 'Estes botões revelam os marcos históricos da Voyager 1. Escolha um para ler o que a sonda fez.',
+      jpl: 'JPL é o Jet Propulsion Laboratory, o laboratório da NASA, na Califórnia, que opera a Voyager 1 e outras sondas planetárias.',
       pick: 'Escolha um acontecimento.',
       found: 'Descobertas científicas',
       track: 'Posição calculada',
@@ -359,8 +363,10 @@
       + '<div class="ds-intro"><p>' + esc(c.intro) + '</p>'
       + '<div class="section-title"><h3>' + esc(c.facts) + '</h3></div>'
       + '<dl class="facts">' + facts.map(([k, v]) => '<div class="fact"><dt>' + esc(k) + '</dt><dd>' + esc(v) + '</dd></div>').join('') + '</dl>'
+      + '<p class="muted">' + esc(c.jpl) + '</p>'
       + '</div></div>'
       + '<section><div class="section-title"><h3>' + esc(c.timeline) + '</h3></div>'
+      + '<p class="muted">' + esc(c.timelineHelp) + '</p>'
       + '<div class="ds-timeline" role="list">' + EVENTS.map((e) => '<button type="button" class="step ds-event' + (e.id === event.id ? ' on' : '') + '" data-ds-event="' + e.id + '" aria-pressed="' + (e.id === event.id) + '"><span class="s-l"><span class="num">' + esc(e.when[lang()]) + '</span>' + esc(e.title[lang()]) + '</span></button>').join('') + '</div>'
       + '<p class="reveal" id="dsEventText">' + esc(event.text[lang()]) + '</p></section>'
       + '<section><div class="section-title"><h3>' + esc(c.found) + '</h3></div><ul class="ds-found">' + FINDINGS.map((f) => '<li>' + esc(f[lang()]) + '</li>').join('') + '</ul>'
