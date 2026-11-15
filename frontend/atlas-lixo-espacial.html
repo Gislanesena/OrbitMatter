@@ -3,7 +3,7 @@
 
 
 </style></head><body>
-<title>Atlas do Lixo Espacial</title>
+<title>Memórias do Espaço</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -48,6 +48,11 @@ body{background:var(--void);color:var(--fg);font-family:var(--body);font-size:15
 #scene{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;outline:none}
 button{font:inherit;color:inherit;cursor:pointer}
 button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+input[type=range],input[type=range]:hover,input[type=range]:focus,input[type=range]:focus-visible,input[type=range]:active{
+  outline:none !important;outline-offset:0 !important;box-shadow:none !important}
+input[type=range]::-moz-focus-outer{border:0}
+input[type=range]::-webkit-slider-thumb,input[type=range]::-webkit-slider-runnable-track,
+input[type=range]::-moz-range-thumb,input[type=range]::-moz-range-track{outline:none !important;box-shadow:none !important}
 h1,h2,h3{font-family:var(--display);font-weight:600;margin:0;text-wrap:balance;letter-spacing:.01em}
 p{margin:0}
 .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
@@ -84,21 +89,18 @@ p{margin:0}
   backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 20px 50px rgba(0,0,0,.45)}
 #missionCard{left:var(--gutter-l);top:calc(78px + env(safe-area-inset-top,0px));width:300px;padding:16px;display:grid;gap:12px}
 #missionCard h2{font-size:18px}
-#expertNote{left:var(--gutter-l);width:300px;padding:14px 14px 14px 16px;display:grid;gap:10px;align-content:start;overflow:auto;z-index:15;
-  background:rgba(8,14,28,.78);border:1px solid rgba(255,102,0,.22);border-left:3px solid #FF6600;border-radius:14px;
-  box-shadow:0 18px 40px rgba(0,0,0,.38)}
+#expertNote{left:var(--gutter-l);width:300px;padding:14px 16px;display:grid;gap:10px;align-content:start;overflow:auto;z-index:15}
 .expert-head{display:flex;align-items:center;gap:8px;min-width:0}
 .expert-head div{min-width:0}
-.expert-badge{width:28px;height:28px;display:grid;place-items:center;border-radius:8px;background:rgba(255,102,0,.16);font-size:15px;line-height:1;flex:none}
-#expertNote .eyebrow{color:#ffb088;letter-spacing:.12em}
+.expert-badge{width:28px;height:28px;display:grid;place-items:center;border-radius:8px;background:var(--raise);border:1px solid var(--line);font-size:15px;line-height:1;flex:none}
 #expertNote h3{margin:2px 0 0;font-size:14px;line-height:1.3;font-weight:650}
-.aware-taxon{justify-self:start;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#ffb088;border:1px solid rgba(255,102,0,.35);border-radius:999px;padding:3px 8px}
+.aware-taxon{justify-self:start;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 8px}
 .aware-themes{display:flex;flex-wrap:wrap;gap:6px}
 .aware-themes button{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:4px 8px;font-size:11px;line-height:1.2}
-.aware-themes button[aria-pressed="true"]{border-color:#FF6600;color:var(--fg);background:rgba(255,102,0,.14)}
+.aware-themes button[aria-pressed="true"]{color:var(--fg);border-color:var(--faint);background:var(--raise)}
 #expertNote p{margin:0;font-size:13px;line-height:1.55;color:var(--muted)}
 #awareMore{color:var(--fg)}
-#awareMoreBtn{justify-self:start;border:0;background:transparent;color:#ffb088;padding:0;font-size:12.5px;font-weight:600}
+#awareMoreBtn{justify-self:start;border:0;background:transparent;color:var(--data);padding:0;font-size:12.5px;font-weight:600}
 .mc-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .checklist{list-style:none;margin:0;padding:0;display:grid;gap:8px}
 .checklist li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--muted)}
@@ -244,10 +246,11 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
 .lead-range{height:28px;margin:0;background:transparent;cursor:grab}
 .lead-range:active{cursor:grabbing}
 .lead-range::-webkit-slider-runnable-track{height:10px;border-radius:999px;background:linear-gradient(90deg,var(--line),var(--accent))}
-.lead-range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;margin-top:-6px;border-radius:50%;background:var(--accent);border:2px solid var(--accent-ink);box-shadow:0 0 0 4px rgba(255,179,71,.28);cursor:grab}
+.lead-range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;margin-top:-6px;border-radius:50%;background:var(--accent);border:2px solid var(--accent-ink);box-shadow:none;cursor:grab}
 .lead-range:active::-webkit-slider-thumb{cursor:grabbing;transform:scale(1.08)}
 .lead-range::-moz-range-track{height:10px;border-radius:999px;background:linear-gradient(90deg,var(--line),var(--accent))}
-.lead-range::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--accent);border:2px solid var(--accent-ink);box-shadow:0 0 0 4px rgba(255,179,71,.28);cursor:grab}
+.lead-range::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--accent);border:2px solid var(--accent-ink);box-shadow:none;cursor:grab}
+.lead-range:focus,.lead-range:focus-visible,.lead-range:active,.lead-row:focus-within{outline:none !important;box-shadow:none !important}
 .meter-help{margin:0;font-size:12px;color:var(--muted)}
 .meters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 16px}
 .meter{display:grid;gap:4px}
@@ -702,7 +705,7 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
 
 <header class="hud">
   <div class="brand">
-    <h1>Atlas do Lixo Espacial</h1>
+    <h1>Memórias do Espaço</h1>
     <span>Protótipo · dados de exemplo</span>
   </div>
   <ol class="phases" id="phases" aria-label="Etapas da jornada"></ol>
@@ -939,7 +942,7 @@ const OBJECTS = [];
 const counters = { fragmento: 0, satelite: 0, estagio: 0, artefato: 0 };
 [['terra', 'fragmento', 8], ['terra', 'satelite', 5], ['terra', 'estagio', 5],
  ['lua', 'satelite', 1], ['lua', 'estagio', 1], ['lua', 'fragmento', 1],
- ['marte', 'estagio', 1], ['marte', 'fragmento', 1]].forEach(([body, type, n]) => {
+ ['marte', 'satelite', 2], ['marte', 'estagio', 1], ['marte', 'fragmento', 1]].forEach(([body, type, n]) => {
   for (let i = 0; i < n; i++) {
     const R = BODY_R[body];
     let r;
@@ -956,23 +959,6 @@ const counters = { fragmento: 0, satelite: 0, estagio: 0, artefato: 0 };
   }
 });
 [
-  {
-    id: 'curiosity', type: 'artefato', body: 'marte', name: 'Curiosity',
-    r: BODY_R.marte * 1.35, incl: 0.2, node: 0.4, phase: 0.6, surface: true,
-    data: {
-      origem: 'NASA / JPL · Mars Science Laboratory. Pouso em 6 de agosto de 2012 na cratera Gale.',
-      altitude: 'Superfície, cratera Gale (cerca de 4,6° S, 137,4° E). A posição no mapa é ilustrativa.',
-      velocidade: 'No solo. Não está em órbita.',
-      permanencia: 'Em operação desde 2012. Em 2026 ainda envia dados científicos.',
-      riscos: 'Ainda faz ciência. Tratar o rover como lixo apagaria um instrumento ativo.',
-      destinos: 'Seguir como arquivo vivo da geologia de Marte.',
-    },
-    analysis: {
-      origem: 'O rover Curiosity foi lançado em 26 de novembro de 2011 e pousou na cratera Gale em 6 de agosto de 2012. O JPL, laboratório da NASA, o enviou para ler as rochas e procurar sinais de que Marte já teve condições para a vida.',
-      permanencia: 'Curiosity não orbita Marte. Trabalha na superfície desde 2012 e, em 2026, continua ativo. Por isso não entra na conta de detrito a remover.',
-      riscos: 'O risco não é uma colisão em órbita. É interromper um instrumento que ainda produz ciência na cratera Gale.',
-    },
-  },
   {
     id: 'insight', type: 'artefato', body: 'marte', name: 'InSight',
     r: BODY_R.marte * 1.48, incl: -0.25, node: 2.1, phase: 2.4, surface: true,
@@ -1077,23 +1063,23 @@ const ALL_MISSIONS = [
 
   /* ==================== MARTE ==================== */
   { id: 'marte1', body: 'marte', chapter: 1, title: 'Estágio à deriva', target: 'estagio',
-    briefing: 'Em Marte, os estágios usados para chegar à superfície ficam para trás. O estágio de cruzeiro da Curiosity queimou ao entrar na atmosfera, mas o guindaste aéreo, de 680 kg, foi descartado e fez um pouso forçado. Agora um estágio abandonado está no caminho de uma missão nova. O que você faz?',
-    explain: 'Marte tem uma atmosfera fina, então parte dos estágios pode queimar na entrada, como o de cruzeiro da Curiosity. O que sobra cai na superfície e vira lixo que pode atrapalhar missões futuras. Por isso, tirar o objeto do caminho ou fazê-lo entrar na atmosfera funciona melhor do que só desviar a nave.',
+    briefing: 'Em Marte, os estágios usados para chegar à superfície ficam para trás. O estágio de cruzeiro do Mars Science Laboratory queimou ao entrar na atmosfera, e o guindaste aéreo, de 680 kg, foi descartado num pouso forçado. Agora um estágio abandonado está no caminho de uma missão nova. O que você faz?',
+    explain: 'Marte tem uma atmosfera fina, então parte dos estágios pode queimar na entrada, como o estágio de cruzeiro do Mars Science Laboratory. O que sobra cai na superfície e vira lixo que pode atrapalhar missões futuras. Por isso, tirar o objeto do caminho ou fazê-lo entrar na atmosfera funciona melhor do que só desviar a nave.',
     comentarios: {
       desvio: 'Desviar a nave resolve só dessa vez. O estágio continua lá e pode atrapalhar as próximas missões.',
       remocao: 'Capturar o estágio tira o perigo de vez. É a opção mais segura, mas Marte fica muito longe da Terra, então é cara e difícil.',
-      desorbitar: 'Em Marte existe atmosfera, ainda que fina, então parte do estágio pode queimar, como o de cruzeiro da Curiosity. O que sobrar cai na superfície, então o local da queda precisa ser escolhido com cuidado.',
+      desorbitar: 'Em Marte existe atmosfera, ainda que fina, então parte do estágio pode queimar, como o estágio de cruzeiro do Mars Science Laboratory. O que sobrar cai na superfície, então o local da queda precisa ser escolhido com cuidado.',
       monitorar: 'Ficar só observando é arriscado, porque o estágio é grande, pesado e sem controle.'
     },
     bonus: { remocao: { seg: 6, ciencia: 6 }, monitorar: { seg: -8 } } },
   { id: 'marte2', body: 'marte', chapter: 2, title: 'Hardware legado', target: 'artefato',
-    briefing: 'Na superfície de Marte há máquinas da NASA com histórias diferentes. O rover Curiosity, operado pelo JPL, ainda trabalha na cratera Gale. O lander InSight, também do JPL, encerrou o contato em dezembro de 2022 e permanece em Elysium Planitia. Uma missão nova precisa passar perto desse hardware. O que você faz?',
-    explain: 'JPL é o Jet Propulsion Laboratory, o laboratório da NASA que opera essas missões. Curiosity ainda envia ciência, então deve ser tratado como instrumento ativo, não como lixo. InSight já está inativo: é um monumento da exploração, e removê-lo sem estudo apaga o registro.',
+    briefing: 'Na superfície de Marte há hardware de missões já encerradas. O lander InSight, operado pelo JPL, perdeu o contato em dezembro de 2022 e permanece em Elysium Planitia. Uma missão nova precisa passar perto desse lander. O que você faz?',
+    explain: 'JPL é o Jet Propulsion Laboratory, o laboratório da NASA que operou o InSight. O lander já está inativo: é um monumento da exploração, e removê-lo sem estudo apaga o registro.',
     comentarios: {
-      desvio: 'Desviar protege a missão nova agora. Curiosity continua trabalhando e InSight continua no solo, então o cuidado precisa se repetir na próxima passagem.',
-      remocao: 'Retirar o hardware apaga o registro. Curiosity ainda faz ciência, e InSight é um monumento inativo. Levar os dois embora, tão longe da Terra, também é caro.',
-      desorbitar: 'Não se aplica: os dois já estão na superfície. A atmosfera fina de Marte não remove um rover nem um lander que já pousaram.',
-      monitorar: 'Observar Curiosity faz sentido enquanto ele opera. Para InSight, só observar adia a decisão de preservá-lo como marco.'
+      desvio: 'Desviar protege a missão nova agora. O InSight continua no solo, então o cuidado precisa se repetir na próxima passagem.',
+      remocao: 'Retirar o lander apaga o registro de uma missão encerrada. Levá-lo embora, tão longe da Terra, também é caro.',
+      desorbitar: 'Não se aplica: o InSight já está na superfície. A atmosfera fina de Marte não remove um lander que já pousou.',
+      monitorar: 'Só observar adia a decisão de preservar o InSight como marco de uma missão encerrada.'
     },
     bonus: { desvio: { comb: 8 }, desorbitar: { seg: 6, orc: 6 } } },
   { id: 'marte3', body: 'marte', chapter: 3, title: 'Nuvem de fragmentos', target: 'fragmento',
@@ -1133,14 +1119,16 @@ const KEY = 'atlas-lixo-espacial-v1';
 const blank = () => ({ started: false, xp: 0, seen: [], analyzed: [], steps: {}, done: {}, badges: [], path: [], kesslerMax: 0, visited: ['terra'], dest: 'terra' });
 let S = blank();
 try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(blank(), JSON.parse(raw)); } catch (e) { /* sem armazenamento */ }
+S.seen = (S.seen || []).filter((id) => byId[id]);
+S.analyzed = (S.analyzed || []).filter((id) => byId[id]);
 function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* ignora */ } }
 
 let curDest = DEST[S.dest] ? S.dest : 'terra';
 let MISSIONS = ALL_MISSIONS.filter((m) => m.body === curDest); // só as missões do planeta atual
 const level = () => Math.floor(S.xp / XP_PER_LEVEL) + 1;
 const currentMission = () => MISSIONS.find((m) => !S.done[m.id]) || null;
-const hasAnalyzedType = (t, b = curDest) => S.analyzed.some((id) => byId[id].type === t && (!b || byId[id].body === b));
-const hasSeenType = (t, b = curDest) => S.seen.some((id) => byId[id].type === t && (!b || byId[id].body === b));
+const hasAnalyzedType = (t, b = curDest) => S.analyzed.some((id) => { const o = byId[id]; return o && o.type === t && (!b || o.body === b); });
+const hasSeenType = (t, b = curDest) => S.seen.some((id) => { const o = byId[id]; return o && o.type === t && (!b || o.body === b); });
 let showLearning = false;
 
 function phaseIndex() {
@@ -1424,14 +1412,6 @@ const AWARE = {
     legado: ['A missão continua nos artigos, nas fotos e no catálogo.', 'Manter o corpo em órbita sem controle não é a forma de honrar esse legado.'],
     responsabilidade: ['Desligar o satélite inclui um plano para sair da órbita útil.', 'Deixar o veículo à deriva transfere o risco para as missões seguintes.'],
   },
-  curiosity: {
-    taxon: 'Equipamento ativo',
-    arqueologia: ['O Curiosity ainda trabalha na cratera Gale. Não é ruína nem detrito.', 'Arqueologia espacial olha para o que já encerrou, não para um rover que segue enviando dados.'],
-    sustentabilidade: ['Ele está no solo de Marte, fora das órbitas lotadas da Terra.', 'Tratá-lo como lixo apagaria um instrumento que a própria ficha marca como ativo.'],
-    kessler: ['A síndrome de Kessler é um risco de órbita, não da superfície.', 'O Curiosity não entra nessa cascata.'],
-    legado: ['O Mars Science Laboratory pousou em Gale em 6 de agosto de 2012.', 'Enquanto opera, o legado dele é a ciência que ainda produz, não uma peça abandonada.'],
-    responsabilidade: ['A responsabilidade aqui é não interromper uma missão ativa.', 'Decidir remover um rover que ainda mede o solo confunde detrito com instrumento.'],
-  },
   insight: {
     taxon: 'Hardware legado',
     arqueologia: ['O contato do InSight acabou em dezembro de 2022, quando a poeira cobriu os painéis.', 'O lander ficou inteiro em Elysium Planitia: é registro de uma missão, não fragmento em órbita.'],
@@ -1470,7 +1450,7 @@ const AWARE = {
     sustentabilidade: ['Ele está no solo. Não ocupa a órbita da Terra.', 'Sustentabilidade orbital se resolve nos objetos que ainda cruzam satélites ativos.'],
     kessler: ['A queda não gera a cascata de Kessler.', 'Esse risco continua sendo o das colisões em órbita.'],
     legado: ['A falha ensinou sobre a entrada na atmosfera de Marte.', 'Guardar a lição não exige tratar o módulo como se ainda operasse.'],
-    responsabilidade: ['Nomear o acidente evita dois erros: chamar tudo de lixo ou tudo de monumento.', 'O Schiaparelli é um impacto, não o Curiosity.'],
+    responsabilidade: ['Nomear o acidente evita dois erros: chamar tudo de lixo ou tudo de monumento.', 'O Schiaparelli é um impacto, não o lander InSight.'],
   },
   lua: {
     taxon: 'Hardware legado e detrito',
@@ -1481,12 +1461,12 @@ const AWARE = {
     responsabilidade: ['As recomendações da NASA pedem que novas missões respeitem esses locais.', 'Chegar de novo à Lua inclui não passar por cima da história já deixada lá.'],
   },
   marte: {
-    taxon: 'Ativo, legado e impacto',
-    arqueologia: ['Em Marte convivem um rover ainda ativo, um lander que já calou e um módulo que caiu.', 'Só o último é detrito de impacto. Os outros não entram na mesma classe.'],
-    sustentabilidade: ['Nenhum deles alimenta a órbita lotada da Terra.', 'A sustentabilidade, aqui, é não desligar o que ainda faz ciência nem apagar o que já fez.'],
+    taxon: 'Inativo, legado e impacto',
+    arqueologia: ['Em Marte ficaram sondas desligadas, um lander que já calou e um módulo que caiu.', 'Nenhum deles ainda opera. O que resta é hardware legado ou detrito.'],
+    sustentabilidade: ['Nenhum deles alimenta a órbita lotada da Terra.', 'A sustentabilidade, aqui, é não apagar o registro do que já encerrou.'],
     kessler: ['Kessler não descreve a superfície de Marte.', 'A cascata é um problema de órbita terrestre.'],
-    legado: ['Curiosity, InSight e o acidente do Schiaparelli contam capítulos diferentes.', 'O legado muda conforme a missão ainda fala, já encerrou ou caiu.'],
-    responsabilidade: ['A primeira pergunta é a classe do objeto.', 'Sem isso, uma decisão de limpeza trata instrumento ativo e destroço como se fossem iguais.'],
+    legado: ['InSight, o Mars Global Surveyor e o acidente do Schiaparelli contam capítulos diferentes.', 'O legado muda conforme a missão já encerrou em órbita, no solo ou na queda.'],
+    responsabilidade: ['A primeira pergunta é a classe do objeto.', 'Sem isso, uma decisão de limpeza trata lander histórico e destroço como se fossem iguais.'],
   },
   terra: {
     taxon: 'Detrito, estágio e satélite inativo',
@@ -1500,11 +1480,12 @@ const AWARE = {
 let awareTheme = 'arqueologia';
 let awareOpen = false;
 let awareKey = '';
+const AWARE_FOLD_AT = 280;
 function awarenessFocus() {
   if ($('voyagerModal') && !$('voyagerModal').hidden) return { key: 'voyager', title: 'Voyager 1' };
   const o = selectedId && byId[selectedId];
   if (o) {
-    const key = o.id === 'curiosity' ? 'curiosity' : o.id === 'insight' ? 'insight' : o.id === 'S-06' ? 'lunar' : o.id === 'F-09' ? 'beresheet' : o.id === 'F-10' ? 'schiaparelli' : o.type === 'fragmento' ? 'detrito' : o.type === 'estagio' ? 'estagio' : o.type === 'satelite' ? 'inativo' : 'legado';
+    const key = o.id === 'insight' ? 'insight' : o.id === 'S-06' ? 'lunar' : o.id === 'F-09' ? 'beresheet' : o.id === 'F-10' ? 'schiaparelli' : o.type === 'fragmento' ? 'detrito' : o.type === 'estagio' ? 'estagio' : o.type === 'satelite' ? 'inativo' : 'legado';
     return { key, title: o.name };
   }
   if (curDest === 'lua') return { key: 'lua', title: 'Lua' };
@@ -1520,6 +1501,9 @@ function renderAwareness() {
   const theme = AWARE_THEMES.some((t) => t.id === awareTheme) ? awareTheme : 'arqueologia';
   const copy = pack[theme] || pack.arqueologia;
   const current = AWARE_THEMES.find((t) => t.id === theme);
+  const full = copy[0] + ' ' + (copy[1] || '');
+  const fold = full.length >= AWARE_FOLD_AT;
+  if (!fold) awareOpen = false;
   note.innerHTML =
     '<div class="expert-head"><span class="expert-badge" aria-hidden="true">' + current.icon + '</span><div><span class="eyebrow">Consciência Espacial</span><h3>' + esc(focus.title) + '</h3></div></div>' +
     '<span class="aware-taxon">' + esc(pack.taxon) + '</span>' +
@@ -1527,8 +1511,8 @@ function renderAwareness() {
       AWARE_THEMES.map((t) => '<button type="button" data-aware="' + t.id + '" aria-pressed="' + (t.id === theme) + '">' + t.icon + ' ' + t.label + '</button>').join('') +
     '</div>' +
     '<p>' + esc(copy[0]) + '</p>' +
-    (awareOpen ? '<p id="awareMore">' + esc(copy[1]) + '</p>' : '') +
-    '<button type="button" id="awareMoreBtn" aria-expanded="' + awareOpen + '">' + (awareOpen ? 'Mostrar menos' : 'Saiba mais') + '</button>';
+    ((!fold || awareOpen) && copy[1] ? '<p id="awareMore">' + esc(copy[1]) + '</p>' : '') +
+    (fold ? '<button type="button" id="awareMoreBtn" aria-expanded="' + awareOpen + '">' + (awareOpen ? 'Mostrar menos' : 'Saiba mais') + '</button>' : '');
 }
 
 
@@ -1625,7 +1609,7 @@ function renderMissions() {
   } else {
     html += '<div style="display:grid;gap:8px"><div class="section-title"><h3 style="font-size:15px">Escolha uma estratégia</h3></div><div class="strategies" role="radiogroup" aria-label="Estratégias">' +
       STRATEGIES.map((s) => '<button class="strategy" role="radio" aria-checked="' + (choice === s.id) + '" data-strategy="' + s.id + '"><strong>' + s.name + '</strong><span>' + s.desc + '</span></button>').join('') + '</div></div>' +
-      '<div class="slider-row lead-row"><label for="leadRange">Antecedência da ação <b class="mono">' + lead + '/10</b></label><input type="range" id="leadRange" class="lead-range" min="1" max="10" value="' + lead + '" aria-valuemin="1" aria-valuemax="10" aria-valuenow="' + lead + '" aria-describedby="leadHelp"><div class="lead-scale"><span>1 · agir agora</span><span>10 · agir com folga</span></div><span class="muted" id="leadHelp">Arraste a barra. Agir cedo gasta menos combustível, mas deixa menos tempo para estudar o objeto.</span></div>';
+      '<div class="slider-row lead-row"><label for="leadRange">Antecedência da ação <b class="mono">' + formatLead(lead) + '/10</b></label><input type="range" id="leadRange" class="lead-range action-slider" data-action="lead" min="1" max="10" step="0.1" value="' + lead + '" aria-valuemin="1" aria-valuemax="10" aria-valuenow="' + formatLead(lead) + '" aria-describedby="leadHelp"><div class="lead-scale"><span>1 · agir agora</span><span>10 · agir com folga</span></div><span class="muted" id="leadHelp">Arraste a barra. Agir cedo gasta menos combustível, mas deixa menos tempo para estudar o objeto.</span></div>';
     if (choice) {
       const r = computeMeters(m, choice, lead);
       const [g, c] = gradeOf(r.score);
@@ -1639,6 +1623,37 @@ function renderMissions() {
   
   
   $('mDetail').innerHTML = html;
+}
+function formatLead(n) { return (Math.round(+n * 10) / 10).toFixed(1); }
+function paintLead(input) {
+  const value = Math.min(10, Math.max(1, Math.round(+input.value * 10) / 10));
+  lead = value;
+  document.querySelectorAll('.action-slider[data-action="lead"]').forEach((el) => {
+    if (el !== input) el.value = String(value);
+    el.setAttribute('aria-valuenow', formatLead(value));
+    const b = el.closest('.lead-row') && el.closest('.lead-row').querySelector('b');
+    if (b) b.textContent = formatLead(value) + '/10';
+  });
+  const m = MISSIONS.find((x) => x.id === viewMission);
+  if (!m || !choice || S.done[m.id]) return;
+  const r = computeMeters(m, choice, lead);
+  const meters = document.querySelector('#mDetail .meters');
+  if (meters) {
+    METERS.forEach(([k], i) => {
+      const meter = meters.children[i];
+      if (!meter) return;
+      const b = meter.querySelector('.mt b');
+      const bar = meter.querySelector('.bar i');
+      if (b) b.textContent = r.m[k];
+      if (bar) { bar.style.width = r.m[k] + '%'; bar.style.background = meterColor(r.m[k]); }
+    });
+  }
+  const sc = document.querySelector('#mDetail .score-line .sc');
+  if (sc) {
+    const [g, c] = gradeOf(r.score);
+    sc.style.color = c;
+    sc.textContent = r.score + ' · ' + g;
+  }
 }
 
 function confirmDecision() {
@@ -1794,7 +1809,7 @@ document.addEventListener('click', (e) => {
   }
 });
 document.addEventListener('input', (e) => {
-  if (e.target.id === 'leadRange') { lead = +e.target.value; renderMissions(); const r = $('leadRange'); if (r) r.focus(); }
+  if (e.target.classList && e.target.classList.contains('action-slider') && e.target.dataset.action === 'lead') paintLead(e.target);
 });
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
