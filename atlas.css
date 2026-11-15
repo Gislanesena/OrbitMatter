@@ -25,11 +25,12 @@ img{max-width:100%}
   --frag:#ff7a59;
   --sat:#6fd3ff;
   --stage:#b9a4ff;
+  --art:#e7c27a;
   --good:#5fd49a;
   --warn:#ffb347;
   --bad:#ff5d6c;
   --display:'Oxanium','Segoe UI',system-ui,sans-serif;
-  --body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --body:'IBM Plex Sans','Noto Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
   --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   --dock-h:66px;
   --nav-h:52px;
@@ -82,13 +83,14 @@ p{margin:0}
 #missionCard h2{font-size:18px}
 .mc-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .checklist{list-style:none;margin:0;padding:0;display:grid;gap:8px}
-.checklist li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--muted)}
-.checklist li .tick{flex:none;width:16px;height:16px;border-radius:4px;border:1.5px solid var(--faint);margin-top:2px;display:grid;place-items:center}
-.checklist li.ok{color:var(--fg)}
-.checklist li.ok .tick{background:var(--good);border-color:var(--good)}
-.checklist li.ok .tick::after{content:"";width:8px;height:4px;border-left:2px solid #062014;border-bottom:2px solid #062014;transform:rotate(-45deg) translate(1px,-1px)}
-.checklist li.cur{color:var(--fg)}
-.checklist li.cur .tick{border-color:var(--accent)}
+.checklist .check{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--muted);text-align:left;width:100%;border:0;background:transparent;padding:2px;border-radius:6px}
+.checklist .check:hover{color:var(--fg)}
+.checklist .check .tick{flex:none;width:16px;height:16px;border-radius:4px;border:1.5px solid var(--faint);margin-top:2px;display:grid;place-items:center}
+.checklist .check.ok{color:var(--fg)}
+.checklist .check.ok .tick{background:var(--good);border-color:var(--good)}
+.checklist .check.ok .tick::after{content:"";width:8px;height:4px;border-left:2px solid #062014;border-bottom:2px solid #062014;transform:rotate(-45deg) translate(1px,-1px)}
+.checklist .check.cur{color:var(--fg)}
+.checklist .check.cur .tick{border-color:var(--accent)}
 
 #objPanel{right:var(--gutter-r);top:calc(78px + env(safe-area-inset-top,0px));width:360px;
   max-height:calc(100% - 78px - var(--dock-h) - var(--nav-h) - 44px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
@@ -321,6 +323,10 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .toast.level{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .toast.level b{color:var(--accent-ink)}
 @keyframes tin{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.nome-original{font-family:'Noto Sans','IBM Plex Sans',sans-serif}
+.moon-legend{position:fixed;z-index:10;left:50%;transform:translateX(-50%);bottom:calc(var(--dock-h) + var(--nav-h) + 78px + env(safe-area-inset-bottom,0px));
+  max-width:46ch;margin:0;text-align:center;font-size:12px;line-height:1.4;color:var(--muted);
+  background:rgba(5,8,15,.78);padding:6px 12px;border-radius:8px;pointer-events:none}
 #hint{position:fixed;z-index:10;left:50%;transform:translateX(-50%);bottom:calc(var(--dock-h) + var(--nav-h) + 26px + env(safe-area-inset-bottom,0px));
   font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.04em;text-align:center;pointer-events:none;transition:opacity .6s;width:max-content;max-width:calc(100% - 32px)}
 #loading{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:var(--void);font-family:var(--mono);color:var(--muted);font-size:13px;letter-spacing:.1em;text-transform:uppercase}

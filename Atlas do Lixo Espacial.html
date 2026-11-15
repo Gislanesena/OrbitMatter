@@ -7,8 +7,8 @@
   <meta name="claude:viewport-fit-sides" content="cover">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oxanium:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
-  <link rel="stylesheet" href="atlas.css?v=8">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oxanium:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans:wght@400;600&display=swap">
+  <link rel="stylesheet" href="atlas.css?v=10">
 </head>
 <body>
 <div id="loading" data-i18n="loading">Loading orbit…</div>
@@ -97,6 +97,7 @@
 <div id="tip" hidden></div>
 <div id="toasts" aria-live="polite"></div>
 <div id="hint" data-i18n="hint">Drag to look · scroll past the planets to Voyager · click an object to investigate</div>
+<p id="moonLegend" class="moon-legend" hidden></p>
 
 <!-- Modal de Login / Cadastro -->
 <div class="overlay" id="loginModal" hidden>
@@ -233,15 +234,15 @@
           </div>
           <div class="k-controls">
             <div class="slider-row"><label for="kLaunch"><span data-i18n="kessler.launch.label">Lançamentos por ciclo</span> <b class="mono" id="kLaunchV">6</b></label><input type="range" id="kLaunch" min="0" max="30" value="6"></div>
-            <div class="slider-row"><label for="kRemove"><span data-i18n="kessler.remove.label">Remoção ativa por ciclo</span> <b class="mono" id="kRemoveV">0</b></label><input type="range" id="kRemove" min="0" max="80" value="0"></div>
-            <div class="slider-row"><label for="kSpeed"><span data-i18n="kessler.speed.label">Velocidade</span> <b class="mono" id="kSpeedV">1×</b></label><input type="range" id="kSpeed" min="1" max="4" value="1"></div>
+            <div class="slider-row"><label for="kRemove"><span data-i18n="kessler.remove.label">Remoção ativa por ciclo</span> <b class="mono" id="kRemoveV">0</b></label><input type="range" id="kRemove" min="0" max="60" value="0"></div>
+            <div class="slider-row"><label for="kSpeed"><span data-i18n="kessler.speed.label">Velocidade</span> <b class="mono" id="kSpeedV">1×</b></label><input type="range" id="kSpeed" min="1" max="3" step="1" value="1"></div>
           </div>
           <div class="k-buttons">
             <button class="btn primary" id="kPlay" data-i18n="kessler.start">Iniciar</button>
             <button class="btn" id="kTrigger" data-i18n="kessler.trigger">Provocar colisão</button>
             <button class="btn ghost" id="kReset" data-i18n="kessler.reset">Reiniciar</button>
           </div>
-          <p class="k-note" data-i18n="kessler.note">Modelo simplificado e fictício, feito para mostrar a relação de causa e consequência. Os números ainda serão calibrados com dados reais.</p>
+          <p class="k-note" data-i18n="kessler.note">Modelo didático. O risco e o gráfico vêm do simulador orbital. O desenho redondo é só ilustração.</p>
         </div>
       </div>
     </div>
@@ -270,7 +271,7 @@
   </div>
 </div>
 
-<script src="i18n.js?v=8"></script>
+<script src="i18n.js?v=10"></script>
 <script src="firebase-config.js?v=4"></script>
 <script type="module" src="firebase-app.js?v=4"></script>
 <script src="auth-progresso.js?v=4"></script>
@@ -279,14 +280,18 @@
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="deep-space/voyager-1.js?v=2"></script>
+<script src="js/jornada.js?v=2"></script>
+<script src="js/artefatos-reserva.js?v=1"></script>
+<script src="dist/atlas-ia.js?v=1" defer></script>
+<script src="js/atlas-adapter.js?v=1" defer></script>
 <script>
 (function () {
 'use strict';
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const tt = (key) => (window.I18n ? I18n.t(key) : key);
-const TYPE_KEY = { fragmento: 'type.fragment', satelite: 'type.satellite', estagio: 'type.stage' };
-const TYPE_PLURAL_KEY = { fragmento: 'atlas.type.fragment', satelite: 'atlas.type.satellite', estagio: 'atlas.type.stage' };
+const TYPE_KEY = { fragmento: 'type.fragment', satelite: 'type.satellite', estagio: 'type.stage', artefato: 'type.artifact' };
+const TYPE_PLURAL_KEY = { fragmento: 'atlas.type.fragment', satelite: 'atlas.type.satellite', estagio: 'atlas.type.stage', artefato: 'atlas.type.artifact' };
 const FIELD_KEY = { origem: 'obj.field.origin', altitude: 'obj.field.altitude', velocidade: 'obj.field.speed', permanencia: 'obj.field.time', riscos: 'obj.field.risks', destinos: 'obj.field.destinations' };
 const STEP_KEY = { origem: 'obj.analysis.step1', permanencia: 'obj.analysis.step2', riscos: 'obj.analysis.step3' };
 const METER_KEY = { seg: 'meter.seg', comb: 'meter.comb', orc: 'meter.orc', ciencia: 'meter.ciencia' };
@@ -299,7 +304,16 @@ function objectName(o) {
   return o.name;
 }
 function destArticle(id) { return tt('dest.' + id + '.article'); }
-function missionText(m, part) { return tt('mission.' + m.id + '.' + part); }
+function missionText(m, part) {
+  const base = (window.Jornada && Jornada.texto(m.id, part)) || tt('mission.' + m.id + '.' + part);
+  let texto = window.Jornada ? Jornada.preencher(base) : base;
+  if (part === 'briefing' && m.chapter > 1) {
+    const prev = MISSIONS.find((item) => item.chapter === m.chapter - 1);
+    const nota = prev && S.done[prev.id] && S.done[prev.id].score;
+    if (nota != null) texto += I18n.lang === 'en' ? ' The previous chapter scored ' + nota + '.' : ' A nota do capítulo anterior foi ' + nota + '.';
+  }
+  return texto;
+}
 function nounArticle(label) { return I18n.lang === 'en' && /^[aeiou]/i.test(label) ? 'an' : (I18n.lang === 'en' ? 'a' : 'um'); }
 const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -313,7 +327,9 @@ const TYPES = {
   fragmento: { label: 'Fragmento', plural: 'Fragmentos', hex: 0xff7a59, css: '#ff7a59', prefix: 'F' },
   satelite:  { label: 'Satélite inativo', plural: 'Satélites', hex: 0x6fd3ff, css: '#6fd3ff', prefix: 'S' },
   estagio:   { label: 'Estágio de foguete', plural: 'Estágios', hex: 0xb9a4ff, css: '#b9a4ff', prefix: 'E' },
+  artefato:  { label: 'Artefato histórico', plural: 'Artefatos', hex: 0xe7c27a, css: '#e7c27a', prefix: 'A' },
 };
+const TIPOS_CATALOGO = ['fragmento', 'satelite', 'estagio'];
 const FIELDS = [
   ['origem', 'Origem'], ['altitude', 'Altitude'], ['velocidade', 'Velocidade'],
   ['permanencia', 'Tempo em órbita'], ['riscos', 'Riscos'], ['destinos', 'Possíveis destinos'],
@@ -335,7 +351,9 @@ const DEST = {
   marte: { label: 'Marte', article: 'Marte', band: 'Órbita marciana', view: 3.6, min: 1.1, max: 12 },
 };
 const OBJECTS = [];
-const counters = { fragmento: 0, satelite: 0, estagio: 0 };
+const counters = { fragmento: 0, satelite: 0, estagio: 0, artefato: 0 };
+const COM_DADOS_APENAS = true;
+const SEM_DADOS_ORBITAIS = { 'E-06': true, 'F-09': true, 'F-10': true };
 [['terra', 'fragmento', 8], ['terra', 'satelite', 5], ['terra', 'estagio', 5],
  ['lua', 'satelite', 1], ['lua', 'estagio', 1], ['lua', 'fragmento', 1],
  ['marte', 'satelite', 2], ['marte', 'estagio', 1], ['marte', 'fragmento', 1]].forEach(([body, type, n]) => {
@@ -345,6 +363,7 @@ const counters = { fragmento: 0, satelite: 0, estagio: 0 };
     if (body === 'terra') { const b = rnd(); r = b < 0.55 ? 1.35 + rnd() * 0.35 : b < 0.85 ? 1.9 + rnd() * 0.4 : 2.75 + rnd() * 0.35; }
     else r = R * (1.7 + rnd() * 1.1);
     const code = TYPES[type].prefix + '-' + String(++counters[type]).padStart(2, '0');
+    if (COM_DADOS_APENAS && SEM_DADOS_ORBITAIS[code]) continue;
     // Busca dados reais do arquivo dados-objetos.js
     const dadosReais = (window.DADOS_OBJETOS && window.DADOS_OBJETOS[code]) || {};
     const data = {
@@ -369,8 +388,8 @@ const counters = { fragmento: 0, satelite: 0, estagio: 0 };
     });
   }
 });
-const byId = Object.fromEntries(OBJECTS.map((o) => [o.id, o]));
-const bandOf = (o) => o.body === 'lua' ? tt('obj.band.lunar') : o.body === 'marte' ? tt('obj.band.martian') : tt(o.r < 1.8 ? 'obj.band.low' : o.r < 2.6 ? 'obj.band.mid' : 'obj.band.high');
+let byId = Object.fromEntries(OBJECTS.map((o) => [o.id, o]));
+const bandOf = (o) => o.surface ? tt('obj.band.surface') + (o.codigo ? ' · ' + o.codigo : '') : o.body === 'lua' ? tt('obj.band.lunar') : o.body === 'marte' ? tt('obj.band.martian') : tt(o.r < 1.8 ? 'obj.band.low' : o.r < 2.6 ? 'obj.band.mid' : 'obj.band.high');
 
 const STRATEGIES = [
   { id: 'desvio', name: 'Manobra de desvio', desc: 'Mover a nave ou o satélite ativo para fora da rota do objeto.', base: { seg: 68, comb: 48, orc: 76, ciencia: 50 } },
@@ -383,17 +402,11 @@ const METERS = [
 ];
 
 const MISSIONS = [
-  { id: 'm1', chapter: 1, title: 'Estágio à deriva', target: 'estagio',
-    briefing: 'Briefing da missão (a definir): um estágio de foguete abandonado cruza a rota de uma missão planejada.',
-    explain: 'Explicação científica (a definir): por que estágios de foguete são grandes fontes de risco e quais estratégias funcionam melhor para eles.',
+  { id: 'm1', chapter: 1, title: 'Estágio à deriva', target: 'estagio', dest: 'terra', cliente: 'Equipe Aurora',
     bonus: { remocao: { seg: 6, ciencia: 6 }, monitorar: { seg: -8 } } },
-  { id: 'm2', chapter: 2, title: 'Satélite silencioso', target: 'satelite',
-    briefing: 'Briefing da missão (a definir): um satélite inativo perdeu o controle e se aproxima de uma constelação ativa.',
-    explain: 'Explicação científica (a definir): o que acontece com satélites no fim da vida útil e como planejar a desorbitação.',
-    bonus: { desvio: { comb: 8 }, desorbitar: { seg: 6, orc: 6 } } },
-  { id: 'm3', chapter: 3, title: 'Nuvem de fragmentos', target: 'fragmento',
-    briefing: 'Briefing da missão (a definir): uma nuvem de fragmentos se espalha por uma faixa de órbita muito usada.',
-    explain: 'Explicação científica (a definir): por que fragmentos pequenos são difíceis de rastrear e como eles alimentam a síndrome de Kessler.',
+  { id: 'm2', chapter: 2, title: 'Herança na Lua', target: 'artefato', dest: 'lua', cliente: 'Equipe Selene',
+    bonus: {} },
+  { id: 'm3', chapter: 3, title: 'Nuvem de fragmentos', target: 'fragmento', dest: 'terra', cliente: 'Operador de constelação',
     bonus: { monitorar: { seg: -16 }, remocao: { orc: -10, seg: -6 }, desvio: { seg: 8 } } },
 ];
 
@@ -415,7 +428,7 @@ const XP_PER_LEVEL = 150;
    ===================================================================== */
 // KEY legado (mantido para não quebrar saves antigos sem login)
 const KEY = 'atlas-lixo-espacial-v1';
-const blank = () => ({ started: false, xp: 0, seen: [], analyzed: [], steps: {}, done: {}, badges: [], path: [], kesslerMax: 0, visited: ['terra'], dest: 'terra', voyagerSeen: false });
+const blank = () => ({ started: false, xp: 0, seen: [], analyzed: [], steps: {}, done: {}, badges: [], path: [], kesslerMax: 0, visited: ['terra'], dest: 'terra', voyagerSeen: false, descoberta: [], foco: {}, jogada: {} });
 let S = blank();
 
 // Carrega progresso: se há sessão ativa usa AP, senão tenta legado
@@ -446,8 +459,8 @@ function save() {
 let curDest = DEST[S.dest] ? S.dest : 'terra';
 const level = () => Math.floor(S.xp / XP_PER_LEVEL) + 1;
 const currentMission = () => MISSIONS.find((m) => !S.done[m.id]) || null;
-const hasAnalyzedType = (t) => S.analyzed.some((id) => byId[id].type === t);
-const hasSeenType = (t) => S.seen.some((id) => byId[id].type === t);
+const hasAnalyzedType = (t) => S.analyzed.some((id) => byId[id] && byId[id].type === t);
+const hasSeenType = (t) => S.seen.some((id) => byId[id] && byId[id].type === t);
 let showLearning = false;
 
 function phaseIndex() {
@@ -481,7 +494,7 @@ function checkBadges() {
   const tryA = (cond, id) => { if (cond && award(id)) gained.push(id); };
   tryA(S.seen.length >= 1, 'contato');
   tryA(S.analyzed.length >= 3, 'analista');
-  tryA(Object.keys(TYPES).every(hasSeenType), 'catalogo');
+  tryA(TIPOS_CATALOGO.every(hasSeenType), 'catalogo');
   tryA(S.path.filter((p) => p.kind === 'obj').length >= 8, 'rota');
   tryA(Object.keys(S.done).length >= 1, 'estrategista');
   tryA(Object.values(S.done).some((d) => d.score >= 80), 'equilibrio');
@@ -515,12 +528,49 @@ function renderHUD() {
   $('missionPing').hidden = !(m && hasAnalyzedType(m.target));
 }
 
+let cenaPronta = false;
+let pedindoJogada = null;
+function anunciarCapitulo() {
+  if (!S.started || !cenaPronta) return;
+  const m = currentMission();
+  if (!m) return;
+  S.descoberta = S.descoberta || [];
+  if (S.descoberta.includes(m.id)) return;
+  S.descoberta.push(m.id);
+  const frase = window.Jornada && Jornada.texto(m.id, 'descoberta');
+  if (frase) toast('<b>' + esc(Jornada.texto(m.id, 'cliente')) + '</b>' + esc(Jornada.preencher(frase)));
+  if (m.dest && DEST[m.dest] && m.dest !== curDest) flyTo(m.dest);
+  else save();
+}
+function analysisOf(o) {
+  if (o && o.type === 'artefato' && window.Jornada) return Jornada.etapas(o);
+  return ANALYSIS;
+}
+function objetoDoCapitulo(m) {
+  if (!m) return null;
+  const foco = S.foco && S.foco[m.id];
+  if (foco && byId[foco] && byId[foco].type === m.target) return byId[foco];
+  return OBJECTS.find((o) => o.type === m.target && S.analyzed.includes(o.id)) || null;
+}
+function fatosDoObjeto(o) {
+  if (!o) return [];
+  if (o.type === 'artefato' && window.Jornada) return Jornada.fatos(o);
+  const ordem = ['origem', 'permanencia', 'riscos', 'altitude', 'velocidade', 'destinos'];
+  const saida = [];
+  ordem.forEach((chave) => {
+    if (saida.length >= 3 || !o.data || !o.data[chave]) return;
+    saida.push({ rotulo: tt(FIELD_KEY[chave]), valor: o.data[chave] });
+  });
+  return saida;
+}
 function renderMissionCard() {
+  anunciarCapitulo();
   const m = currentMission();
   const el = $('missionCard');
   if (!m) {
     el.innerHTML = '<div class="mc-head"><span class="eyebrow">' + tt('mc.done') + '</span></div>' +
       '<h2>' + tt('mc.done.title') + '</h2><p class="muted mc-brief">' + tt('mc.done.sub') + '</p>' +
+      '<button class="btn primary" id="openReport">' + tt('result.report') + '</button>' +
       '<button class="btn" data-open="diary">' + tt('mc.done.diary') + '</button>';
     return;
   }
@@ -532,11 +582,11 @@ function renderMissionCard() {
     '<div class="mc-head"><span class="eyebrow">' + tt('mc.chapter') + ' ' + m.chapter + ' ' + tt('mc.of') + ' ' + MISSIONS.length + '</span><span class="chip target"><span class="dot" style="background:' + t.css + '"></span>' + tt('mc.target') + '</span></div>' +
     '<div><h2>' + esc(missionText(m, 'title')) + '</h2><span class="mc-next">' + next + '</span></div>' +
     '<p class="muted mc-brief" style="font-size:13.5px">' + esc(missionText(m, 'briefing')) + '</p>' +
-    '<ul class="checklist">' +
-      '<li class="' + (s1 ? 'ok' : 'cur') + '"><span class="tick"></span>' + tt('mc.check1pre') + ' ' + nounArticle(label) + ' ' + label.toLowerCase() + '</li>' +
-      '<li class="' + (s2 ? 'ok' : s1 ? 'cur' : '') + '"><span class="tick"></span>' + tt('mc.check2') + '</li>' +
-      '<li class="' + (s2 ? 'cur' : '') + '"><span class="tick"></span>' + tt('mc.check3') + '</li>' +
-    '</ul>' +
+    '<div class="checklist">' +
+      '<button type="button" class="check ' + (s1 ? 'ok' : 'cur') + '" data-mc="1"><span class="tick"></span><span>' + tt('mc.check1pre') + ' ' + nounArticle(label) + ' ' + label.toLowerCase() + '</span></button>' +
+      '<button type="button" class="check ' + (s2 ? 'ok' : s1 ? 'cur' : '') + '" data-mc="2"><span class="tick"></span><span>' + tt('mc.check2') + '</span></button>' +
+      '<button type="button" class="check ' + (s2 ? 'cur' : '') + '" data-mc="3"><span class="tick"></span><span>' + tt('mc.check3') + '</span></button>' +
+    '</div>' +
     (s2 ? '<button class="btn primary" data-open="missions">' + tt('mc.decide.btn') + '</button>'
         : '<button class="btn" data-open="atlas" data-filter="' + m.target + '">' + tt('mc.atlas.btn') + '</button>');
 }
@@ -569,24 +619,24 @@ function renderObjPanel() {
   if (!o) { el.hidden = true; return; }
   const t = TYPES[o.type];
   const steps = S.steps[o.id] || [];
+  const etapas = analysisOf(o);
   const analyzed = S.analyzed.includes(o.id);
   const m = currentMission();
   const isTarget = m && m.target === o.type;
-  const facts = FIELDS.map(([k]) =>
-    '<div class="fact"><dt>' + tt(FIELD_KEY[k]) + '</dt><dd>' + (o.data[k] ? esc(o.data[k]) : tt('obj.nodata')) + '</dd></div>').join('');
-  // Verifica se o objeto tem dados reais preenchidos
-  const temDadosReais = Object.values(o.data).some(v => v !== null && v !== undefined);
+  const facts = o.type === 'artefato' && window.Jornada
+    ? Jornada.ficha(o).map((fato) => '<div class="fact"><dt>' + esc(fato.rotulo) + '</dt><dd' + (fato.classe ? ' class="' + fato.classe + '"' : '') + '>' + esc(fato.valor) + '</dd></div>').join('')
+    : FIELDS.map(([k]) =>
+      '<div class="fact"><dt>' + tt(FIELD_KEY[k]) + '</dt><dd>' + (o.data && o.data[k] ? esc(o.data[k]) : tt('obj.nodata')) + '</dd></div>').join('');
+  const temDadosReais = o.type === 'artefato' || (o.data && Object.values(o.data).some(v => v !== null && v !== undefined));
   const badgeHtml = temDadosReais
     ? ''
     : '<span class="eyebrow" style="color:var(--warn)">' + tt('obj.soon') + '</span>';
-  const stepsHtml = ANALYSIS.map((a, i) => {
+  const stepsHtml = etapas.map((a, i) => {
     const done = steps.includes(a.id);
-    // Busca o texto de análise específico do objeto
-    const textoAnalise = (o._analise && o._analise[a.id])
-      ? o._analise[a.id]
-      : tt('obj.analysis.noref');
+    const textoAnalise = a.texto || ((o._analise && o._analise[a.id]) ? o._analise[a.id] : tt('obj.analysis.noref'));
+    const titulo = a.titulo || tt(STEP_KEY[a.id]);
     return '<button class="step' + (done ? ' done' : '') + '" data-step="' + a.id + '" aria-expanded="' + (openStep === a.id) + '">' +
-      '<span class="s-l"><span class="num">' + (done ? '✓' : '0' + (i + 1)) + '</span>' + tt(STEP_KEY[a.id]) + '</span><span class="xp">' + (done ? tt('obj.analysis.done') : tt('obj.analysis.xp')) + '</span></button>' +
+      '<span class="s-l"><span class="num">' + (done ? '✓' : '0' + (i + 1)) + '</span>' + esc(titulo) + '</span><span class="xp">' + (done ? tt('obj.analysis.done') : tt('obj.analysis.xp')) + '</span></button>' +
       (openStep === a.id ? '<p class="reveal">' + esc(textoAnalise) + '</p>' : '');
   }).join('');
   let action;
@@ -594,17 +644,19 @@ function renderObjPanel() {
     action = '<span class="chip ok">' + tt('obj.analyzed') + '</span>' +
       (isTarget && m ? '<button class="btn primary block" data-open="missions">' + tt('obj.go.decision') + '</button>' : '');
   } else {
-    action = '<button class="btn primary block" id="concludeBtn"' + (steps.length < ANALYSIS.length ? ' disabled' : '') + '>' + tt('obj.conclude') + '</button>' +
-      (steps.length < ANALYSIS.length ? '<p class="muted" style="font-size:12.5px">' + tt('obj.conclude.hint') + '</p>' : '');
+    action = '<button class="btn primary block" id="concludeBtn"' + (steps.length < etapas.length ? ' disabled' : '') + '>' + tt('obj.conclude') + '</button>' +
+      (steps.length < etapas.length ? '<p class="muted" style="font-size:12.5px">' + tt('obj.conclude.hint') + '</p>' : '');
   }
   el.innerHTML =
     '<div class="op-head"><div style="display:grid;gap:8px;min-width:0">' +
       '<div style="display:flex;gap:6px;flex-wrap:wrap"><span class="chip"><span class="dot" style="background:' + t.css + '"></span>' + typeLabel(o.type) + '</span>' +
       (isTarget && !analyzed ? '<span class="chip target">' + tt('obj.mission.target') + '</span>' : '') + '</div>' +
-      '<h2>' + esc(objectName(o)) + '</h2><span class="eyebrow">' + bandOf(o) + ' · ' + tt('obj.position') + '</span></div>' +
+      '<h2>' + esc(objectName(o)) + '</h2>' +
+      (o.nomeOriginal ? '<span class="nome-original">' + esc(o.nomeOriginal) + '</span>' : '') +
+      '<span class="eyebrow">' + bandOf(o) + (o.surface ? '' : ' · ' + tt('obj.position')) + '</span></div>' +
       '<button class="icon-btn" id="closeObj" aria-label="' + tt('obj.close.aria') + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>' +
     '<div><div class="section-title" style="margin-bottom:8px"><h3>' + tt('obj.sheet') + '</h3>' + badgeHtml + '</div><dl class="facts" style="margin:0">' + facts + '</dl></div>' +
-    '<div class="steps"><div class="section-title"><h3>' + tt('obj.analysis') + '</h3><span class="eyebrow mono">' + steps.length + '/' + ANALYSIS.length + '</span></div>' + stepsHtml + '</div>' +
+    '<div class="steps"><div class="section-title"><h3>' + tt('obj.analysis') + '</h3><span class="eyebrow mono">' + steps.length + '/' + etapas.length + '</span></div>' + stepsHtml + '</div>' +
     '<div style="display:grid;gap:8px">' + action + '</div>';
   el.hidden = false;
 }
@@ -626,6 +678,46 @@ function selectObject(id) {
 }
 function closeObject() { selectedId = null; openStep = null; refresh(); }
 
+function missionObjects(type, pred) {
+  return OBJECTS.filter((o) => o.type === type && pred(o));
+}
+function showMissionObject(o) {
+  if (!o) return;
+  if (o.body !== curDest) flyTo(o.body);
+  if (selectedId !== o.id) selectObject(o.id);
+}
+function onMissionCheck(which) {
+  const m = currentMission();
+  if (!m) return;
+  if (which === '1') {
+    const pending = missionObjects(m.target, (o) => !S.seen.includes(o.id));
+    showMissionObject((pending.length ? pending : missionObjects(m.target, () => true))[0]);
+    return;
+  }
+  if (which === '2') {
+    if (hasAnalyzedType(m.target)) return;
+    const selected = byId[selectedId];
+    const o = (selected && selected.type === m.target && !S.analyzed.includes(selected.id) && selected)
+      || missionObjects(m.target, (item) => S.seen.includes(item.id) && !S.analyzed.includes(item.id))[0]
+      || missionObjects(m.target, (item) => !S.analyzed.includes(item.id))[0];
+    if (!o) return;
+    showMissionObject(o);
+    const steps = S.steps[o.id] || (S.steps[o.id] = []);
+    let added = 0;
+    const etapas = analysisOf(o);
+    etapas.forEach((a) => { if (!steps.includes(a.id)) { steps.push(a.id); added += 1; } });
+    if (added) gainXP(10 * added, I18n.lang === 'en' ? 'Analysis step' : 'Etapa da análise');
+    openStep = etapas[etapas.length - 1].id;
+    conclude();
+    return;
+  }
+  if (!hasAnalyzedType(m.target)) {
+    toast('<b>' + tt('mc.check3') + '</b>' + tt('mc.need.analysis'));
+    return;
+  }
+  openModal('missionsModal');
+}
+
 function doStep(stepId) {
   const o = byId[selectedId]; if (!o) return;
   openStep = openStep === stepId ? null : stepId;
@@ -635,31 +727,140 @@ function doStep(stepId) {
 }
 function conclude() {
   const o = byId[selectedId]; if (!o || S.analyzed.includes(o.id)) return;
+  const etapas = analysisOf(o);
+  const steps = S.steps[o.id] || [];
+  if (steps.length < etapas.length) return;
   S.analyzed.push(o.id);
   addPath('analise', o.id, 'Analisou ' + o.name);
+  const m = currentMission();
+  if (m && o.type === m.target) {
+    S.foco = S.foco || {};
+    S.foco[m.id] = o.id;
+    const frase = window.Jornada && Jornada.texto(m.id, 'aposAnalise');
+    if (frase) toast('<b>' + esc(Jornada.texto(m.id, 'cliente')) + '</b>' + esc(Jornada.preencher(frase)));
+  }
+  if (o.type === 'artefato') prepararJogada(o);
   gainXP(20, 'Análise concluída');
   checkBadges();
   refresh();
 }
 
-function refresh() { document.querySelectorAll('.seg [data-dest]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.dest === curDest))); renderHUD(); renderMissionCard(); renderAtlas(); renderObjPanel(); updateMeshes(); save(); }
+function refresh() {
+  document.querySelectorAll('.seg [data-dest]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.dest === curDest)));
+  const leg = $('moonLegend');
+  if (leg) { leg.hidden = curDest !== 'lua'; if (!leg.hidden) leg.textContent = tt('obj.moon.legend'); }
+  renderHUD(); renderMissionCard(); renderAtlas(); renderObjPanel(); updateMeshes(); save();
+}
 
 /* =====================================================================
    4. MISSÕES (simulador de decisões)
    ===================================================================== */
 let viewMission = null, choice = null, lead = 5;
+const AJUSTE_RISCO = { baixo: 6, moderado: 0, alto: -6, cascata: -12 };
+function scoreFromMeters(b) {
+  const vals = [b.seg, b.comb, b.orc, b.ciencia];
+  const avg = vals.reduce((a, v) => a + v, 0) / vals.length;
+  return Math.round(avg * 0.7 + Math.min(...vals) * 0.3);
+}
 function computeMeters(m, sid, L) {
   const s = STRATEGIES.find((x) => x.id === sid);
   const b = Object.assign({}, s.base);
   const bonus = (m.bonus && m.bonus[sid]) || {};
   Object.keys(bonus).forEach((k) => { b[k] += bonus[k]; });
-  const d = L - 5.5; // antecedência: agir cedo gasta menos combustível, mas observa menos
+  const d = L - 5.5;
   b.seg += d * 3; b.comb += d * 2.5; b.orc -= d * 1; b.ciencia -= d * 1.6;
   Object.keys(b).forEach((k) => { b[k] = Math.max(0, Math.min(100, Math.round(b[k]))); });
-  const vals = Object.values(b);
-  const avg = vals.reduce((a, v) => a + v, 0) / vals.length;
-  const score = Math.round(avg * 0.7 + Math.min(...vals) * 0.3);
-  return { m: b, score };
+  return { m: b, score: scoreFromMeters(b) };
+}
+function previaOrbital(m, sid, L) {
+  const base = computeMeters(m, sid, L);
+  let antes = null, depois = null, ajuste = 0, aviso = null;
+  if (window.AtlasJogo) {
+    try {
+      const sim = AtlasJogo.decidirOrbita(sid, L);
+      if (sim && sim.ok) {
+        antes = sim.antes;
+        depois = sim.depois;
+        ajuste = AJUSTE_RISCO[depois] || 0;
+        aviso = sim.aviso || null;
+      } else aviso = (sim && sim.aviso) || null;
+    } catch (erro) { aviso = 'A simulação não entrou nesta nota.'; console.warn(erro); }
+  }
+  return { m: base.m, score: Math.max(0, Math.min(100, base.score + ajuste)), antes: antes, depois: depois, ajuste: ajuste, aviso: aviso };
+}
+function notaPesos(pesos) {
+  const metros = Jornada.metrosDePesos(pesos);
+  return { m: metros, score: scoreFromMeters(metros) };
+}
+function chaveJogada(o) {
+  return o.id + '|' + (I18n.lang === 'en' ? 'en' : 'pt');
+}
+function prepararJogada(o) {
+  if (!o || o.type !== 'artefato' || !window.AtlasJogo) return;
+  const chave = chaveJogada(o);
+  S.jogada = S.jogada || {};
+  if (S.jogada[chave] || pedindoJogada === chave) return;
+  pedindoJogada = chave;
+  AtlasJogo.jogadaLua(o.dados, I18n.lang === 'en' ? 'en' : 'pt').then((resultado) => {
+    pedindoJogada = null;
+    S.jogada[chave] = resultado && resultado.ok ? resultado : {
+      ok: true, origem: 'estatica', nivel: 'moderado', risco: 'moderado',
+      missao: Jornada.missaoPadrao(o.dados, 'moderado', I18n.lang === 'en' ? 'en' : 'pt'),
+      aviso: (resultado && resultado.aviso) || 'A missão da Lua usou o texto padrão.',
+    };
+    save();
+    if (!$('missionsModal').hidden) renderMissions();
+  }).catch((erro) => {
+    pedindoJogada = null;
+    console.warn(erro);
+    S.jogada[chave] = {
+      ok: true, origem: 'estatica', nivel: 'moderado', risco: 'moderado',
+      missao: Jornada.missaoPadrao(o.dados, 'moderado', I18n.lang === 'en' ? 'en' : 'pt'),
+      aviso: 'A missão da Lua usou o texto padrão.',
+    };
+    save();
+    if (!$('missionsModal').hidden) renderMissions();
+  });
+}
+function nomeEscolha(done) {
+  if (!done) return '';
+  if (done.rotulo) return done.rotulo;
+  if (STRATEGIES.some((s) => s.id === done.strategy)) return tt('strat.' + done.strategy);
+  return done.strategy || '';
+}
+function cienciaDoObjeto(o) {
+  if (!o) return '';
+  if (o._analise && o._analise.riscos) return o._analise.riscos;
+  if (o._analise && o._analise.origem) return o._analise.origem;
+  return '';
+}
+function textoAprendizado(m, detalhe, o) {
+  const cliente = window.Jornada ? Jornada.texto(m.id, 'cliente') : (m.cliente || '');
+  if (m.target === 'artefato') {
+    const feedback = detalhe.feedback || '';
+    const aviso = detalhe.template
+      ? (I18n.lang === 'en' ? ' Standard text: this option had no model feedback.' : ' Texto padrão: esta opção não tinha retorno do modelo.')
+      : '';
+    return tt('result.what') + ' ' + cliente + '. ' + feedback + aviso;
+  }
+  const risco = detalhe.antes
+    ? (I18n.lang === 'en'
+      ? ' Teaching-scenario risk went from ' + Jornada.rotuloRisco(detalhe.antes) + ' to ' + Jornada.rotuloRisco(detalhe.depois) + '.'
+      : ' O risco do cenário didático passou de ' + Jornada.rotuloRisco(detalhe.antes) + ' para ' + Jornada.rotuloRisco(detalhe.depois) + '.')
+    : '';
+  const ficha = cienciaDoObjeto(o);
+  return tt('result.what') + ' ' + cliente + '.' + risco + (ficha ? ' ' + ficha : '');
+}
+function textoNota(detalhe) {
+  if (!detalhe.depois) {
+    return I18n.lang === 'en'
+      ? 'The score is 70% of the average of the four meters and 30% of the lowest one.'
+      : 'A nota é 70% da média dos quatro medidores e 30% do pior deles.';
+  }
+  const ajuste = detalhe.ajuste || 0;
+  return I18n.lang === 'en'
+    ? 'The score is 70% of the average of the four meters and 30% of the lowest one. Risk after the action is ' + Jornada.rotuloRisco(detalhe.depois) + ', which shifts the score by ' + (ajuste > 0 ? '+' : '') + ajuste + '.'
+    : 'A nota é 70% da média dos quatro medidores e 30% do pior deles. O risco depois da ação é ' + Jornada.rotuloRisco(detalhe.depois) + ', o que ajusta a nota em ' + (ajuste > 0 ? '+' : '') + ajuste + '.';
 }
 const gradeOf = (s) => (s >= 80 ? [tt('grade.excellent'), 'var(--good)'] : s >= 65 ? [tt('grade.good'), 'var(--data)'] : s >= 50 ? [tt('grade.risky'), 'var(--warn)'] : [tt('grade.critical'), 'var(--bad)']);
 const meterColor = (v) => (v >= 65 ? 'var(--good)' : v >= 40 ? 'var(--warn)' : 'var(--bad)');
@@ -678,25 +879,63 @@ function renderMissions() {
   const m = MISSIONS.find((x) => x.id === viewMission);
   const t = TYPES[m.target];
   const done = S.done[m.id];
+  const alvo = objetoDoCapitulo(m);
+  const fatos = fatosDoObjeto(alvo);
   let html = '<div style="display:grid;gap:8px"><span class="eyebrow">' + tt('missions.eyebrow2') + '</span><h3>' + esc(missionText(m, 'title')) + '</h3>' +
-    '<p class="placeholder">' + esc(missionText(m, 'briefing')) + '</p></div>';
+    '<p class="placeholder">' + esc(m.target === 'artefato' && !done ? briefingLua(m) : missionText(m, 'briefing')) + '</p></div>';
+  if (fatos.length) {
+    html += '<div><div class="section-title"><h3 style="font-size:15px">' + tt('missions.facts') + '</h3></div><dl class="facts">' +
+      fatos.map((fato) => '<div class="fact"><dt>' + esc(fato.rotulo) + '</dt><dd>' + esc(fato.valor) + '</dd></div>').join('') + '</dl></div>';
+  }
   if (done) {
-    const s = STRATEGIES.find((x) => x.id === done.strategy);
     const [g, c] = gradeOf(done.score);
-    html += '<div class="placeholder" style="border-style:solid">' + tt('missions.youChose') + ' <b>' + esc(tt('strat.' + s.id)) + '</b> ' + tt('missions.andScored') + ' <b style="color:' + c + '">' + done.score + ' ' + tt('missions.points') + ' (' + g + ')</b>.</div>' +
-      '<div class="placeholder">' + esc(missionText(m, 'explain')) + '</div>';
+    html += '<div class="placeholder" style="border-style:solid">' + tt('missions.youChose') + ' <b>' + esc(nomeEscolha(done)) + '</b> ' + tt('missions.andScored') + ' <b style="color:' + c + '">' + done.score + ' ' + tt('missions.points') + ' (' + g + ')</b>.</div>' +
+      '<div class="placeholder">' + esc(done.aprendizado || missionText(m, 'explain')) + '</div>' +
+      (done.porque ? '<div class="placeholder">' + esc(done.porque) + '</div>' : '');
   } else if (!hasAnalyzedType(m.target)) {
     html += '<div class="locked-note"><span>' + tt('missions.locked.msg') + ' <b style="color:' + t.css + '">' + typeLabel(m.target).toLowerCase() + '</b>.</span>' +
       '<button class="btn" data-open="atlas" data-filter="' + m.target + '">' + tt('missions.locked.btn') + '</button></div>';
+  } else if (m.target === 'artefato') {
+    let jog = alvo && S.jogada && S.jogada[chaveJogada(alvo)];
+    if (!jog && alvo && !window.AtlasJogo && window.Jornada) {
+      const chave = chaveJogada(alvo);
+      S.jogada = S.jogada || {};
+      S.jogada[chave] = S.jogada[chave] || { ok: true, origem: 'estatica', nivel: 'moderado', risco: 'moderado', missao: Jornada.missaoPadrao(alvo.dados, 'moderado', I18n.lang === 'en' ? 'en' : 'pt'), aviso: I18n.lang === 'en' ? 'Simulator unavailable. Standard mission.' : 'Simulador indisponível. Missão padrão.' };
+      jog = S.jogada[chave];
+    }
+    if (!jog) {
+      if (alvo) prepararJogada(alvo);
+      html += '<p class="muted">' + tt('missions.preparing') + '</p>';
+    } else {
+      const opcoes = (jog.missao && jog.missao.opcoes) || [];
+      html += '<div style="display:flex;gap:6px;flex-wrap:wrap">' + (jog.origem === 'modelo' ? '<span class="chip ok">' + tt('missions.origin.ai') + '</span>' : '<span class="chip">' + tt('missions.origin.standard') + '</span>') +
+        '<span class="chip">' + tt('missions.risk.env') + ': ' + esc(window.Jornada ? Jornada.rotuloRisco(jog.risco) : (jog.risco || '')) + '</span></div>' +
+        '<div class="strategies" role="radiogroup">' +
+        opcoes.map((op) => '<button class="strategy" role="radio" aria-checked="' + (choice === op.id) + '" data-strategy="' + op.id + '"><strong>' + esc(op.rotulo) + '</strong><span>' + esc(Jornada.resumoOpcao(op.id)) + '</span></button>').join('') +
+        '</div>';
+      if (choice) {
+        const op = opcoes.find((item) => item.id === choice);
+        const r = op ? notaPesos(op.pesos) : null;
+        if (r) {
+          const [g, c] = gradeOf(r.score);
+          html += '<div class="meters">' + METERS.map(([k]) =>
+            '<div class="meter"><div class="mt"><span>' + tt(METER_KEY[k]) + '</span><b>' + r.m[k] + '</b></div><div class="bar"><i style="width:' + r.m[k] + '%;background:' + meterColor(r.m[k]) + '"></i></div></div>').join('') + '</div>' +
+            '<div class="score-line"><div><span class="eyebrow">' + tt('missions.preview') + '</span><div class="sc" style="color:' + c + '">' + r.score + ' · ' + g + '</div></div>' +
+            '<button class="btn primary" id="confirmDecision">' + tt('missions.confirm') + '</button></div>';
+        }
+      } else html += '<p class="muted" style="font-size:13.5px">' + tt('missions.hint.choose') + '</p>';
+    }
   } else {
     html += '<div style="display:grid;gap:8px"><div class="section-title"><h3 style="font-size:15px">' + tt('missions.strategy.title') + '</h3></div><div class="strategies" role="radiogroup" aria-label="' + tt('missions.strategy.title') + '">' +
       STRATEGIES.map((s) => '<button class="strategy" role="radio" aria-checked="' + (choice === s.id) + '" data-strategy="' + s.id + '"><strong>' + tt('strat.' + s.id) + '</strong><span>' + tt('strat.' + s.id + '.desc') + '</span></button>').join('') + '</div></div>' +
       '<div class="slider-row"><label for="leadRange">' + tt('missions.lead.label') + ' <b class="mono">' + lead + '/10</b></label><input type="range" id="leadRange" min="1" max="10" value="' + lead + '"><span class="muted" style="font-size:12.5px">' + tt('missions.lead.hint') + '</span></div>';
     if (choice) {
-      const r = computeMeters(m, choice, lead);
+      const r = previaOrbital(m, choice, lead);
       const [g, c] = gradeOf(r.score);
+      const risco = r.antes ? '<p class="muted" style="font-size:12.5px">' + tt('missions.risk.before') + ' ' + esc(Jornada.rotuloRisco(r.antes)) + ' · ' + tt('missions.risk.after') + ' ' + esc(Jornada.rotuloRisco(r.depois)) + '</p>' : '';
       html += '<div class="meters">' + METERS.map(([k]) =>
         '<div class="meter"><div class="mt"><span>' + tt(METER_KEY[k]) + '</span><b>' + r.m[k] + '</b></div><div class="bar"><i style="width:' + r.m[k] + '%;background:' + meterColor(r.m[k]) + '"></i></div></div>').join('') + '</div>' +
+        risco +
         '<div class="score-line"><div><span class="eyebrow">' + tt('missions.preview') + '</span><div class="sc" style="color:' + c + '">' + r.score + ' · ' + g + '</div></div>' +
         '<button class="btn primary" id="confirmDecision">' + tt('missions.confirm') + '</button></div>';
     } else {
@@ -706,13 +945,46 @@ function renderMissions() {
   $('mDetail').innerHTML = html;
 }
 
+function briefingLua(m) {
+  const o = objetoDoCapitulo(m);
+  const jog = o && S.jogada && S.jogada[chaveJogada(o)];
+  if (jog && jog.missao && jog.missao.briefing) return jog.missao.briefing;
+  return missionText(m, 'briefing');
+}
 function confirmDecision() {
   const m = MISSIONS.find((x) => x.id === viewMission);
   if (!m || !choice || S.done[m.id]) return;
-  const r = computeMeters(m, choice, lead);
-  S.done[m.id] = { strategy: choice, score: r.score, lead };
+  const alvo = objetoDoCapitulo(m);
+  let r, rotulo, feedback = '', template = false, origem = null, aviso = null;
+  if (m.target === 'artefato') {
+    const jog = alvo && S.jogada && S.jogada[chaveJogada(alvo)];
+    const op = jog && jog.missao && jog.missao.opcoes && jog.missao.opcoes.find((item) => item.id === choice);
+    if (!op) return;
+    r = notaPesos(op.pesos);
+    r.antes = jog.risco;
+    r.depois = jog.risco;
+    r.ajuste = 0;
+    rotulo = op.rotulo;
+    feedback = op.feedbackCientifico || (window.Jornada ? Jornada.feedbackPadrao(op.id, jog.nivel || 'moderado', alvo.dados) : '');
+    template = !op.feedbackCientifico || !!op.template;
+    origem = jog.origem;
+    aviso = jog.aviso;
+  } else {
+    if (!STRATEGIES.some((s) => s.id === choice)) return;
+    r = previaOrbital(m, choice, lead);
+    rotulo = tt('strat.' + choice);
+  }
+  const detalhe = { antes: r.antes, depois: r.depois, ajuste: r.ajuste, feedback: feedback, template: template };
+  const aprendizado = textoAprendizado(m, detalhe, alvo);
+  const porque = textoNota(detalhe);
+  S.done[m.id] = {
+    strategy: choice, score: r.score, lead: m.target === 'artefato' ? null : lead, rotulo: rotulo,
+    meters: r.m, riscoAntes: r.antes, riscoDepois: r.depois, ajuste: r.ajuste || 0,
+    origem: origem, aviso: aviso, feedback: feedback, template: template,
+    aprendizado: aprendizado, porque: porque,
+  };
   const xp = 50 + r.score;
-  addPath('missao', m.id, 'Decidiu o capítulo ' + m.chapter + ': ' + STRATEGIES.find((s) => s.id === choice).name);
+  addPath('missao', m.id, 'Decidiu o capítulo ' + m.chapter + ': ' + rotulo);
   gainXP(xp, 'Decisão tomada');
   const gained = checkBadges();
   showLearning = true;
@@ -723,14 +995,31 @@ function confirmDecision() {
     '<div class="result-top"><div class="grade" style="color:' + c + '">' + r.score + '</div><div><strong style="font-family:var(--display);font-size:20px">' + g + '</strong><p class="muted">' + tt('result.chapter') + ' ' + m.chapter + ' · ' + esc(missionText(m, 'title')) + '</p></div></div>' +
     '<div class="meters">' + METERS.map(([k]) =>
       '<div class="meter"><div class="mt"><span>' + tt(METER_KEY[k]) + '</span><b>' + r.m[k] + '</b></div><div class="bar"><i style="width:' + r.m[k] + '%;background:' + meterColor(r.m[k]) + '"></i></div></div>').join('') + '</div>' +
-    '<div style="display:grid;gap:6px"><span class="eyebrow">' + tt('result.science.eyebrow') + '</span><p class="placeholder">' + esc(missionText(m, 'explain')) + '</p></div>' +
+    '<div style="display:grid;gap:6px"><span class="eyebrow">' + tt('result.science.eyebrow') + '</span><p class="placeholder">' + esc(aprendizado) + '</p></div>' +
+    '<div style="display:grid;gap:6px"><span class="eyebrow">' + tt('result.why') + '</span><p class="placeholder">' + esc(porque) + '</p></div>' +
+    (aviso ? '<p class="muted" style="font-size:12.5px">' + esc(aviso) + '</p>' : '') +
     '<div class="gained"><span class="chip target">+' + xp + ' XP</span>' +
       gained.map((id) => '<span class="chip ok">' + esc(tt('badge.' + id)) + '</span>').join('') +
       (next ? '<span class="chip">' + tt('result.chapter') + ' ' + next.chapter + ' ' + tt('result.unlocked') + '</span>' : '<span class="chip ok">' + tt('result.campaignDone') + '</span>') + '</div>' +
-    '<div><button class="btn primary" id="continueBtn">' + (next ? tt('result.next') + ' ' + next.chapter : tt('result.keepExploring')) + '</button></div>';
+    '<div>' + (next ? '' : '<button class="btn" id="openReport">' + tt('result.report') + '</button> ') +
+      '<button class="btn primary" id="continueBtn">' + (next ? tt('result.next') + ' ' + next.chapter : tt('result.keepExploring')) + '</button></div>';
   choice = null; lead = 5;
   openModal('resultModal');
   refresh();
+}
+function abrirRelatorio() {
+  const linhas = MISSIONS.map((m) => {
+    const d = S.done[m.id];
+    if (!d) return '';
+    const risco = d.riscoAntes ? ' · ' + tt('missions.risk.before') + ' ' + (window.Jornada ? Jornada.rotuloRisco(d.riscoAntes) : d.riscoAntes) + ' → ' + (window.Jornada ? Jornada.rotuloRisco(d.riscoDepois) : d.riscoDepois) : '';
+    const origem = d.origem === 'modelo' ? ' · ' + tt('missions.origin.ai') : d.origem ? ' · ' + tt('missions.origin.standard') : '';
+    return '<li><strong>' + esc(missionText(m, 'title')) + '</strong> — ' + esc(nomeEscolha(d)) + ' · ' + d.score + esc(risco) + esc(origem) + '</li>';
+  }).join('');
+  const notas = MISSIONS.map((m) => S.done[m.id] && S.done[m.id].score).filter((n) => n != null);
+  const media = notas.length ? Math.round(notas.reduce((a, b) => a + b, 0) / notas.length) : 0;
+  $('rBody').innerHTML = '<h3>' + tt('result.report') + '</h3><p>' + esc(window.Jornada ? Jornada.preencher(tt('result.report.lead')) : tt('result.report.lead')) + '</p><ol class="path">' + linhas + '</ol><p>' + tt('result.report.avg') + ' <b>' + media + '</b>.</p><p class="muted">' + tt('result.report.ai') + '</p><div><button class="btn primary" id="continueBtn">' + tt('result.keepExploring') + '</button></div>';
+  showLearning = true;
+  openModal('resultModal');
 }
 
 /* =====================================================================
@@ -782,7 +1071,7 @@ function toggleAtlas(force, f) {
 
 let confirmReset = false;
 function renderDiary() {
-  const objCount = S.seen.length;
+  const objCount = S.seen.filter((id) => byId[id]).length;
   const stat = (v, l) => '<div class="k-stat"><b>' + v + '</b><span>' + l + '</span></div>';
   const path = S.path.length
     ? S.path.map((p, i) => '<li><span class="n">' + String(i + 1).padStart(2, '0') + '</span><span>' + esc(p.label) + '<small>' +
@@ -824,6 +1113,7 @@ document.addEventListener('click', (e) => {
   if (t.dataset.speed) { setSpeed(t.dataset.speed); return; }
   if (t.dataset.obj) { selectObject(t.dataset.obj); return; }
   if (t.dataset.f) { filter = t.dataset.f; renderFilters(); renderAtlas(); updateMeshes(); return; }
+  if (t.dataset.mc) { onMissionCheck(t.dataset.mc); return; }
   if (t.dataset.step) { doStep(t.dataset.step); return; }
   if (t.dataset.mission) { viewMission = t.dataset.mission; choice = null; renderMissions(); return; }
   if (t.dataset.strategy) { choice = t.dataset.strategy; renderMissions(); return; }
@@ -832,6 +1122,7 @@ document.addEventListener('click', (e) => {
     case 'concludeBtn': conclude(); break;
     case 'confirmDecision': confirmDecision(); break;
     case 'continueBtn': closeModal('resultModal'); break;
+    case 'openReport': abrirRelatorio(); break;
     case 'startBtn': S.started = true; save(); $('introModal').hidden = true; refresh(); toast('<b>Missão recebida</b>Capítulo 1'); break;
     case 'dAtlas': toggleAtlas(); break;
     case 'dMissions': $('missionsModal').hidden ? openModal('missionsModal') : closeModal('missionsModal'); break;
@@ -1004,6 +1295,11 @@ function makeBody(o) {
   if (o.type === 'fragmento') {
     body = new THREE.Mesh(new THREE.DodecahedronGeometry(0.04, 0), mat);
     body.scale.set(1.3, 0.6, 0.9);
+  } else if (o.type === 'artefato') {
+    body = new THREE.Group();
+    body.add(new THREE.Mesh(new THREE.SphereGeometry(0.055, 16, 12), mat));
+    const anel = new THREE.Mesh(new THREE.RingGeometry(0.07, 0.085, 24), new THREE.MeshBasicMaterial({ color: t.hex, side: THREE.DoubleSide, transparent: true, opacity: 0.9 }));
+    body.add(anel);
   } else if (o.type === 'satelite') {
     body = new THREE.Group();
     body.add(new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.05, 0.05), mat));
@@ -1016,7 +1312,7 @@ function makeBody(o) {
     noz.position.y = -0.083; body.add(cyl); body.add(noz);
   }
   const wrap = new THREE.Group(); wrap.add(body);
-  const sc = o.body === 'lua' ? 0.55 : o.body === 'marte' ? 0.75 : 1;
+  const sc = o.surface ? 1 : o.body === 'lua' ? 0.55 : o.body === 'marte' ? 0.75 : 1;
   wrap.scale.setScalar(sc);
   wrap.userData.mat = mat; wrap.userData.inner = body;
   return wrap;
@@ -1124,6 +1420,19 @@ function initScene() {
   // objetos investigáveis presos ao seu corpo celeste
   const parentOf = { terra: earthGroup, lua: moonGroup, marte: mars.group };
   OBJECTS.forEach((o) => {
+    if (o.surface) {
+      const pin = makeBody(o);
+      const lat = o.lat * Math.PI / 180;
+      const lon = o.lon * Math.PI / 180;
+      const raio = 0.27 * 1.02;
+      // Longitude 0 no +X local. moonMesh.rotation.y = a+π faz esse eixo apontar para a Terra.
+      pin.position.set(Math.cos(lat) * Math.cos(lon) * raio, Math.sin(lat) * raio, Math.cos(lat) * Math.sin(lon) * raio);
+      const hit = new THREE.Mesh(new THREE.SphereGeometry(0.09, 8, 6), new THREE.MeshBasicMaterial({ visible: false }));
+      hit.userData.id = o.id; pin.add(hit); hitList.push(hit);
+      moonMesh.add(pin);
+      meshes[o.id] = { root: pin, orbit: pin, body: pin, line: null, w: 0, spin: 0 };
+      return;
+    }
     const nodeG = new THREE.Group(); nodeG.rotation.y = o.node;
     const inclG = new THREE.Group(); inclG.rotation.x = o.incl; nodeG.add(inclG);
     const orbitG = new THREE.Group(); orbitG.rotation.y = o.phase; inclG.add(orbitG);
@@ -1203,7 +1512,7 @@ function updateMeshes() {
     const sel = selectedId === o.id;
     const tg = m && m.target === o.type && !S.analyzed.includes(o.id);
     const away = o.body !== curDest;
-    me.line.material.opacity = sel ? 0.75 : away ? 0.02 : tg ? 0.2 : 0.07;
+    if (me.line) me.line.material.opacity = sel ? 0.75 : away ? 0.02 : tg ? 0.2 : 0.07;
     me.body.userData.mat.emissiveIntensity = sel ? 0.9 : S.seen.includes(o.id) ? 0.6 : 0.3;
   });
 }
@@ -1478,6 +1787,7 @@ function animate() {
   animate.dust.children.forEach((p) => { p.rotation.y += dt * p.userData.spin * slow; });
   OBJECTS.forEach((o) => {
     const me = meshes[o.id];
+    if (!me || !me.orbit || !me.body || !me.body.userData.inner) return;
     me.orbit.rotation.y += dt * me.w;
     me.body.userData.inner.rotation.x += dt * me.spin * 0.6 * slow;
     me.body.userData.inner.rotation.y += dt * me.spin * slow;
@@ -1529,7 +1839,8 @@ function animate() {
     meshes[selectedId].body.getWorldPosition(worldPos);
     marker.position.copy(worldPos);
     marker.quaternion.copy(camera.quaternion);
-    const s = (1 + Math.sin(performance.now() / 260) * (reduceMotion ? 0 : 0.12)) * (byId[selectedId].body === 'terra' ? 1 : 0.7);
+    const base = byId[selectedId].surface ? 0.45 : (byId[selectedId].body === 'terra' ? 1 : 0.7);
+    const s = (1 + Math.sin(performance.now() / 260) * (reduceMotion ? 0 : 0.12)) * base;
     marker.scale.set(s, s, s);
     marker.visible = true;
   } else marker.visible = false;
@@ -1625,8 +1936,26 @@ function kTrigger() {
   K.parts = K.parts.filter((x) => !x.dead);
   kStats(); if (!K.running) kDraw();
 }
+function kModelo() {
+  if (!window.AtlasJogo) return;
+  const resultado = AtlasJogo.simular({
+    objetosIniciais: 2000,
+    lancamentosPorCiclo: +$('kLaunch').value,
+    remocaoAtivaPorCiclo: +$('kRemove').value,
+    multiplicadorVelocidade: +$('kSpeed').value,
+    ciclos: 40,
+  });
+  if (!resultado || !resultado.ok || !resultado.dados) return;
+  K.serie = resultado.dados;
+  K.riscoModelo = resultado.dados[resultado.dados.length - 1].risco;
+}
 function kRisk() {
-  const rate = K.recent.length; // colisões no último ciclo
+  if (K.riscoModelo) {
+    const mapa = { baixo: ['kessler.risk.low', 'var(--good)'], moderado: ['kessler.risk.mid', 'var(--warn)'], alto: ['kessler.risk.high', 'var(--bad)'], cascata: ['kessler.risk.critical', 'var(--bad)'] };
+    const par = mapa[K.riscoModelo] || mapa.moderado;
+    return [tt(par[0]), par[1]];
+  }
+  const rate = K.recent.length;
   if (rate >= 25) return [tt('kessler.risk.critical'), 'var(--bad)'];
   if (rate >= 12) return [tt('kessler.risk.high'), 'var(--bad)'];
   if (rate >= 5) return [tt('kessler.risk.mid'), 'var(--warn)'];
@@ -1681,7 +2010,8 @@ function kChart() {
   const [g, w, h, dpr] = kSize(cv);
   g.setTransform(dpr, 0, 0, dpr, 0, 0);
   g.clearRect(0, 0, w, h);
-  const H = K.hist; if (H.length < 2) return;
+  const H = (K.serie && K.serie.length > 1) ? K.serie.map((estado) => [estado.objetos, estado.fragmentosAcumulados]) : K.hist;
+  if (H.length < 2) return;
   const max = Math.max(400, ...H.map((x) => x[0])) * 1.1;
   const top = 6, bottom = h - 16;
   g.strokeStyle = 'rgba(143,153,186,0.15)'; g.lineWidth = 1;
@@ -1709,25 +2039,36 @@ function kLoop(now) {
 }
 function kPlay() { if (K.running) { kPause(); return; } K.running = true; K.last = 0; $('kPlay').textContent = tt('kessler.pause'); K.raf = requestAnimationFrame(kLoop); }
 function kPause() { K.running = false; cancelAnimationFrame(K.raf); $('kPlay').textContent = K.t > 0 ? tt('kessler.continue') : tt('kessler.start'); }
-function kOpen() { if (!K.parts.length) kReset(); requestAnimationFrame(() => { kDraw(); kStats(); }); }
+function kOpen() { if (!K.parts.length) kReset(); kModelo(); requestAnimationFrame(() => { kDraw(); kStats(); }); }
 $('kPlay').addEventListener('click', kPlay);
 $('kTrigger').addEventListener('click', kTrigger);
 $('kReset').addEventListener('click', () => { kPause(); kReset(); $('kPlay').textContent = tt('kessler.start'); });
 [['kLaunch', (v) => v], ['kRemove', (v) => v], ['kSpeed', (v) => v + '×']].forEach(([id, f]) => {
-  $(id).addEventListener('input', () => { $(id + 'V').textContent = f($(id).value); });
+  $(id).addEventListener('input', () => { $(id + 'V').textContent = f($(id).value); kModelo(); kChart(); kStats(); });
 });
 window.addEventListener('resize', () => { if (!$('kesslerModal').hidden) kDraw(); });
 
 /* =====================================================================
    8. INICIALIZAÇÃO
    ===================================================================== */
-renderFilters();
-if (hasGL) {
-  try { initScene(); makeLabels(); } catch (e) { console.error(e); }
-} else {
-  $('hint').textContent = 'Não foi possível carregar o 3D. Use o Atlas para explorar os objetos.';
+function bootAtlas() {
+  if (window.AtlasJogo) {
+    try { AtlasJogo.incorporar(OBJECTS, counters); } catch (erro) { console.warn(erro); }
+  }
+  byId = Object.fromEntries(OBJECTS.map((o) => [o.id, o]));
+  renderFilters();
+  if (hasGL) {
+    try { initScene(); makeLabels(); } catch (e) { console.error(e); }
+  } else {
+    $('hint').textContent = 'Não foi possível carregar o 3D. Use o Atlas para explorar os objetos.';
+  }
+  $('loading').remove();
+  cenaPronta = true;
+  orbitRadius = (DEST[curDest] && DEST[curDest].view) || orbitRadius;
+  anunciarCapitulo();
+  refresh();
 }
-$('loading').remove();
+document.addEventListener('DOMContentLoaded', bootAtlas);
 /* =====================================================================
    SISTEMA DE LOGIN E PERFIL
    ===================================================================== */
