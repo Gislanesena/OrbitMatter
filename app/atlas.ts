@@ -14,7 +14,7 @@ import type { EstadoOrbital, RiscoOrbital } from "../simulacao/transicao.ts";
 export { TIPOS_OBJETO, NIVEIS_RISCO } from "../ia/esquema/contexto.ts";
 export { IDS_OPCAO } from "../ia/esquema/missao.ts";
 export { LIMITES } from "../simulacao/simular.ts";
-export { RISCOS_ORBITAIS } from "../simulacao/transicao.ts";
+export { RISCOS_ORBITAIS, MODELO } from "../simulacao/transicao.ts";
 export type { Artefato } from "../data/schemas/artifact.ts";
 export type { TipoObjeto, NivelRisco, ContextoMissao } from "../ia/esquema/contexto.ts";
 export type { Missao, OpcaoJogador, IdOpcao, Pesos } from "../ia/esquema/missao.ts";

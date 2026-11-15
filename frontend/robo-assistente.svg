@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140">
+  <defs>
+    <linearGradient id="roboCabeca" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f8c4e4"/>
+      <stop offset="1" stop-color="#c9b0f6"/>
+    </linearGradient>
+  </defs>
+  <line x1="40" y1="46" x2="30" y2="20" stroke="#f3b7d8" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="28" cy="16" r="6" fill="#f48fb8"/>
+  <line x1="80" y1="46" x2="90" y2="20" stroke="#f3b7d8" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="92" cy="16" r="6" fill="#f48fb8"/>
+  <rect x="50" y="30" width="20" height="9" rx="3" fill="#ffe082"/>
+  <rect x="16" y="38" width="88" height="84" rx="30" fill="url(#roboCabeca)"/>
+  <rect x="28" y="62" width="64" height="34" rx="17" fill="#2c2458"/>
+  <ellipse cx="48" cy="79" rx="9" ry="10" fill="#ffffff"/>
+  <ellipse cx="72" cy="79" rx="9" ry="10" fill="#ffffff"/>
+  <circle cx="50" cy="77" r="3.2" fill="#6a5a9a"/>
+  <circle cx="74" cy="77" r="3.2" fill="#6a5a9a"/>
+  <path d="M50 100 Q60 108 70 100" fill="none" stroke="#8d5d86" stroke-width="2.4" stroke-linecap="round"/>
+</svg>

@@ -259,6 +259,36 @@
     return "Aproximar de " + nome + " revê um equipamento que já está " + estado.toLowerCase() + " em " + local + ". O risco " + risco + " é o cenário didático ao redor da Lua.";
   }
 
+  function mensagemCliente(artefato) {
+    if (!artefato) return "";
+    const en = idioma() === "en";
+    const ano = String(artefato.dataUtc || "").slice(0, 4);
+    const conf = confiancaTexto(artefato.coordenadas && artefato.coordenadas.confianca).toLowerCase();
+    if (en) {
+      return "{jogador}, the Selene team asks for a plan for " + (artefato.missao || "") + ". The catalog records the arrival in " + ano + ", at " + (artefato.local || "") + ". The catalog confidence in the position is " + conf + ".";
+    }
+    return "{jogador}, a Equipe Selene pede um plano para " + (artefato.missao || "") + ". O catálogo registra a chegada em " + ano + ", em " + (artefato.local || "") + ". A confiança da posição no catálogo é " + conf + ".";
+  }
+
+  function limparBriefing(texto, artefato) {
+    let s = String(texto || "");
+    if (!artefato) return s;
+    const nome = artefato.nomeOriginal || "";
+    const missao = artefato.missao || "";
+    const local = artefato.local || "";
+    if (nome.indexOf("(") >= 0 && missao) {
+      const embrulho = missao + " (" + nome + ")";
+      if (s.indexOf(embrulho) >= 0) s = s.replace(embrulho, missao + " — " + nome);
+    }
+    if (local) {
+      const repetido = ", a partir de " + local;
+      if (s.indexOf(local) < s.indexOf(repetido)) s = s.replace(repetido, "");
+      const repetidoEn = ", from " + local;
+      if (s.toLowerCase().indexOf(local.toLowerCase()) < s.toLowerCase().indexOf(repetidoEn.toLowerCase())) s = s.replace(repetidoEn, "");
+    }
+    return s.replace(/\s{2,}/g, " ").trim();
+  }
+
   function missaoPadrao(artefato, nivel, lang) {
     const usar = lang === "en" ? "en" : "pt";
     const pesos = PESOS[nivel] || PESOS.moderado;
@@ -292,5 +322,8 @@
     feedbackPadrao: feedbackPadrao,
     missaoPadrao: missaoPadrao,
     statusTexto: statusTexto,
+    confiancaTexto: confiancaTexto,
+    mensagemCliente: mensagemCliente,
+    limparBriefing: limparBriefing,
   };
 })();

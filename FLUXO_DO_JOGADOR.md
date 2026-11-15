@@ -129,17 +129,30 @@ Não vão para `S`: objeto selecionado, etapa aberta na ficha, filtro do atlas, 
 
 `ParametrosSimulacao`: `objetosIniciais`, `lancamentosPorCiclo`, `remocaoAtivaPorCiclo`, `multiplicadorVelocidade`, `ciclos`. Outra chave é recusada.
 
-`LIMITES`:
+`LIMITES` (a tela lê min, max e step daqui; não escreve a faixa à mão):
 
-| Slider | Mínimo | Máximo |
+| Slider | Mínimo | Máximo | Passo |
+|---|---|---|---|
+| `lancamentosPorCiclo` | 0 | 60 | 1 |
+| `remocaoAtivaPorCiclo` | 0 | 60 | 1 |
+| `multiplicadorVelocidade` | 0,5 | 3 | 0,1 |
+| `ciclos` | 1 | 100 | 1 |
+| `objetosIniciais` | 0 | 50 000 | 1 |
+
+Contagens são inteiros. A velocidade pode ser fracionária, desde que finita e dentro da faixa. O passo 0,1 só organiza o slider; a leitura aceita qualquer número finito na faixa.
+
+Constantes do modelo em `simulacao/transicao.ts` (`MODELO`):
+
+| Constante | Valor | Papel |
 |---|---|---|
-| `lancamentosPorCiclo` | 0 | 60 |
-| `remocaoAtivaPorCiclo` | 0 | 60 |
-| `multiplicadorVelocidade` | 0,5 | 3 |
-| `ciclos` | 1 | 100 |
-| `objetosIniciais` | 0 | 50 000 |
+| `coeficienteColisao` | 1e-7 | taxa do encontro, proporcional a N × (N − 1) e à velocidade |
+| `fragmentosPorColisao` | 6 | fragmentos rastreáveis criados por colisão; 2 objetos saem, saldo +4 |
+| `objetosMaximos` | 250 000 | teto interno; estourar vira cascata |
+| `limiarModerado` | 4 000 | objetos a partir daqui, ou 1 colisão, sobem de baixo para moderado |
+| `limiarAlto` | 8 000 | objetos a partir daqui, ou 5 colisões, sobem para alto se a remoção cobre o saldo |
+| `colisoesAltas` | 5 | colisões no ciclo que já contam como alto |
 
-Contagens são inteiros. A velocidade pode ser fracionária, desde que finita e dentro da faixa.
+O ciclo é uma unidade abstrata do modelo, não um ano. A escala é didática: mostra o efeito das escolhas, não uma previsão de órbita real. `npm run testar` roda `simulacao/testar.ts` em cima desses contratos.
 
 `RISCOS_ORBITAIS`: `baixo`, `moderado`, `alto`, `cascata`. `abrirJogada` lê o risco do último ciclo. `cascata` vira `alto` em `nivelRisco` da missão (`riscoParaMissao`). O risco orbital original continua em `dados.riscoOrbital`.
 
@@ -186,9 +199,26 @@ Os pesos da missão são `impacto`, `combustivel` e `seguranca`, de 0 a 3. Os me
 | `seguranca` | `seg = round(seguranca / 3 * 100)` |
 | não existe no esquema | `orc = round((ciencia + comb + seg) / 3)` |
 
-A nota continua 70% da média e 30% do pior medidor. Nos capítulos da Terra, o risco do último ciclo do `simularOrbita` soma ainda `baixo +6`, `moderado 0`, `alto -6`, `cascata -12`, com a nota presa entre 0 e 100. `remocao` e `desorbitar` aumentam `remocaoAtivaPorCiclo` (30 e 18). `desvio` e `monitorar` não removem. A antecedência 10 começa a ação no primeiro ciclo; a antecedência 1 só no último. Tudo dentro dos limites da seção 4.
+A nota continua 70% da média e 30% do pior medidor. A antecedência só entra nessa conta. Ela não muda a simulação: `remocaoAtivaPorCiclo` é o mesmo em todos os ciclos, e não há instante de início da ação.
 
-O risco da Lua é do cenário didático do entorno (180 objetos, 1 lançamento, 2 remoções, 24 ciclos). Ele não descreve a órbita do artefato. `cascata` vira `alto` só na hora de buscar a missão.
+Remoção da prática, calibrada e mantida: monitorar 0, desvio 0, desorbitar 15, remoção ativa 30. Sem remoção, m1 e m3 terminam em cascata. Com remoção 30, m1 termina em alto e m3 em moderado. O resultado mostra as duas séries no mesmo gráfico. O texto deixa claro que a decisão de uma missão não muda a população: a curva é o efeito da prática se todo mundo a adotasse, no modelo didático.
+
+| Capítulo | Objetos iniciais | Lançamentos | Velocidade | Ciclos | Sem remoção | Com remoção 30 |
+|---|---|---|---|---|---|---|
+| m1 | 2 000 | 60 | 2 | 80 | cascata | alto |
+| m3 | 2 000 | 40 | 1 | 60 | cascata | moderado |
+
+Predefinições do modal, conferidas por `simular()`: órbita sob controle (2 000, 8, 12, 1, 40) fica em baixo; rumo à cascata (2 000, 40, 0, 2, 40) passa por baixo, moderado e termina em cascata; limpeza máxima (12 000, 0, 60, 1, 40) termina em alto.
+
+O risco da Lua é do cenário didático do entorno, não da órbita do artefato. Três cenários cobrem as missões pré-geradas. `cascata` vira `alto` só na hora de buscar a missão.
+
+| Artefato | Nível | Objetos | Lançamentos | Remoção | Velocidade | Ciclos |
+|---|---|---|---|---|---|---|
+| luna-2 | baixo | 180 | 1 | 2 | 1 | 24 |
+| luna-9 | moderado | 4 500 | 2 | 8 | 1 | 24 |
+| surveyor-1 | alto | 10 000 | 0 | 60 | 1 | 20 |
+
+O rótulo na tela continua "Risco do entorno lunar (cenário didático)".
 
 ### De onde sai a missão da Lua
 
