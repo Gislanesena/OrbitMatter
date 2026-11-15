@@ -1,0 +1,390 @@
+{
+  "idioma": "pt",
+  "aviso": "Sem ATLAS_IA_CHAVE este arquivo guarda a missão de reserva, escrita com o texto do catálogo. Com a chave no ambiente, o mesmo script grava a resposta do modelo. Não há versão em inglês: o prompt do Game Master é só em português.",
+  "missoes": {
+    "luna-2": {
+      "baixo": {
+        "ok": true,
+        "origem": "reserva",
+        "aviso": "O modelo está indisponível. A missão exibida foi montada a partir do catálogo.",
+        "missao": {
+          "artefatoId": "luna-2",
+          "titulo": "Aproximação a Luna 2",
+          "briefing": "Luna 2 (Луна-2 (E-1A No.7)), a cargo de União Soviética (OKB-1), chegou a Palus Putredinis, entre as crateras Archimedes e Autolycus em 1959-09-13. Você trata o alvo como artefato histórico, a partir de Palus Putredinis, entre as crateras Archimedes e Autolycus, com risco baixo. O hardware chegou fragmentado e permanece assim no ponto de impacto.",
+          "opcoes": [
+            {
+              "id": "preservar",
+              "rotulo": "Manter distância e só registrar o sítio",
+              "pesos": {
+                "impacto": 1,
+                "combustivel": 0,
+                "seguranca": 3
+              },
+              "feedbackCientifico": "Luna 2 permanece como o catálogo a descreve. O hardware chegou fragmentado e permanece assim no ponto de impacto. A observação distante conserva o sítio e gasta pouco propelente."
+            },
+            {
+              "id": "medir",
+              "rotulo": "Passagem de instrumentos sem tocar o hardware",
+              "pesos": {
+                "impacto": 2,
+                "combustivel": 1,
+                "seguranca": 3
+              },
+              "feedbackCientifico": "A passagem confere 390.2 kg (impacto) em 29.1° N, 0°. Primeiro objeto construído por humanos a atingir outro corpo celeste. O sítio fica intocado se a altitude se mantiver."
+            },
+            {
+              "id": "aproximar",
+              "rotulo": "Descida curta para inspecionar o que restou",
+              "pesos": {
+                "impacto": 3,
+                "combustivel": 2,
+                "seguranca": 2
+              },
+              "feedbackCientifico": "A descida mostra mais de Luna 2 e aumenta a chance de perturbar o sítio. O hardware chegou fragmentado e permanece assim no ponto de impacto. Referência do catálogo: 29.1° N, 0°. Risco desta jogada: baixo."
+            }
+          ]
+        }
+      },
+      "moderado": {
+        "ok": true,
+        "origem": "reserva",
+        "aviso": "O modelo está indisponível. A missão exibida foi montada a partir do catálogo.",
+        "missao": {
+          "artefatoId": "luna-2",
+          "titulo": "Aproximação a Luna 2",
+          "briefing": "Luna 2 (Луна-2 (E-1A No.7)), a cargo de União Soviética (OKB-1), chegou a Palus Putredinis, entre as crateras Archimedes e Autolycus em 1959-09-13. Você trata o alvo como artefato histórico, a partir de Palus Putredinis, entre as crateras Archimedes e Autolycus, com risco moderado. O hardware chegou fragmentado e permanece assim no ponto de impacto.",
+          "opcoes": [
+            {
+              "id": "preservar",
+              "rotulo": "Manter distância e só registrar o sítio",
+              "pesos": {
+                "impacto": 1,
+                "combustivel": 1,
+                "seguranca": 3
+              },
+              "feedbackCientifico": "Luna 2 permanece como o catálogo a descreve. O hardware chegou fragmentado e permanece assim no ponto de impacto. A observação distante conserva o sítio e gasta pouco propelente."
+            },
+            {
+              "id": "medir",
+              "rotulo": "Passagem de instrumentos sem tocar o hardware",
+              "pesos": {
+                "impacto": 2,
+                "combustivel": 2,
+                "seguranca": 2
+              },
+              "feedbackCientifico": "A passagem confere 390.2 kg (impacto) em 29.1° N, 0°. Primeiro objeto construído por humanos a atingir outro corpo celeste. O sítio fica intocado se a altitude se mantiver."
+            },
+            {
+              "id": "aproximar",
+              "rotulo": "Descida curta para inspecionar o que restou",
+              "pesos": {
+                "impacto": 3,
+                "combustivel": 3,
+                "seguranca": 1
+              },
+              "feedbackCientifico": "A descida mostra mais de Luna 2 e aumenta a chance de perturbar o sítio. O hardware chegou fragmentado e permanece assim no ponto de impacto. Referência do catálogo: 29.1° N, 0°. Risco desta jogada: moderado."
+            }
+          ]
+        }
+      },
+      "alto": {
+        "ok": true,
+        "origem": "reserva",
+        "aviso": "O modelo está indisponível. A missão exibida foi montada a partir do catálogo.",
+        "missao": {
+          "artefatoId": "luna-2",
+          "titulo": "Aproximação a Luna 2",
+          "briefing": "Luna 2 (Луна-2 (E-1A No.7)), a cargo de União Soviética (OKB-1), chegou a Palus Putredinis, entre as crateras Archimedes e Autolycus em 1959-09-13. Você trata o alvo como artefato histórico, a partir de Palus Putredinis, entre as crateras Archimedes e Autolycus, com risco alto. O hardware chegou fragmentado e permanece assim no ponto de impacto.",
+          "opcoes": [
+            {
+              "id": "preservar",
+              "rotulo": "Manter distância e só registrar o sítio",
+              "pesos": {
+                "impacto": 1,
+                "combustivel": 1,
+                "seguranca": 2
+              },
+              "feedbackCientifico": "Luna 2 permanece como o catálogo a descreve. O hardware chegou fragmentado e permanece assim no ponto de impacto. A observação distante conserva o sítio e gasta pouco propelente."
+            },
+            {
+              "id": "medir",
+              "rotulo": "Passagem de instrumentos sem tocar o hardware",
+              "pesos": {
+                "impacto": 2,
+                "combustivel": 2,
+                "seguranca": 1
+              },
+              "feedbackCientifico": "A passagem confere 390.2 kg (impacto) em 29.1° N, 0°. Primeiro objeto construído por humanos a atingir outro corpo celeste. O sítio fica intocado se a altitude se mantiver."
+            },
+            {
+              "id": "aproximar",
+              "rotulo": "Descida curta para inspecionar o que restou",
+              "pesos": {
+                "impacto": 3,
+                "combustivel": 3,
+                "seguranca": 0
+              },
+              "feedbackCientifico": "A descida mostra mais de Luna 2 e aumenta a chance de perturbar o sítio. O hardware chegou fragmentado e permanece assim no ponto de impacto. Referência do catálogo: 29.1° N, 0°. Risco desta jogada: alto."
+            }
+          ]
+        }
+      }
+    },
+    "luna-9": {
+      "baixo": {
+        "ok": true,
+        "origem": "reserva",
+        "aviso": "O modelo está indisponível. A missão exibida foi montada a partir do catálogo.",
+        "missao": {
+          "artefatoId": "luna-9",
+          "titulo": "Aproximação a Luna 9",
+          "briefing": "Luna 9 (Луна-9 (E-6M No.202 SA)), a cargo de União Soviética (Lavochkin), chegou a Oceanus Procellarum, a oeste das crateras Reiner e Marius (Planitia Descensus) em 1966-02-03. Você trata o alvo como artefato histórico, a partir de Oceanus Procellarum, a oeste das crateras Reiner e Marius (Planitia Descensus), com risco baixo. O equipamento permanece inativo na superfície desde o fim da missão.",
+          "opcoes": [
+            {
+              "id": "preservar",
+              "rotulo": "Manter distância e só registrar o sítio",
+              "pesos": {
+                "impacto": 1,
+                "combustivel": 0,
+                "seguranca": 3
+              },
+              "feedbackCientifico": "Luna 9 permanece como o catálogo a descreve. O equipamento permanece inativo na superfície desde o fim da missão. A observação distante conserva o sítio e gasta pouco propelente."
+            },
+            {
+              "id": "medir",
+              "rotulo": "Passagem de instrumentos sem tocar o hardware",
+              "pesos": {
+                "impacto": 2,
+                "combustivel": 1,
+                "seguranca": 3
+              },
+              "feedbackCientifico": "A passagem confere 99 kg (pousada) em 7.08° N, 64.37° O. Primeiro pouso suave na Lua. O sítio fica intocado se a altitude se mantiver."
+            },
+            {
+              "id": "aproximar",
+              "rotulo": "Descida curta para inspecionar o que restou",
+              "pesos": {
+                "impacto": 3,
+                "combustivel": 2,
+                "seguranca": 2
+              },
+              "feedbackCientifico": "A descida mostra mais de Luna 9 e aumenta a chance de perturbar o sítio. O equipamento permanece inativo na superfície desde o fim da missão. Referência do catálogo: 7.08° N, 64.37° O. Risco desta jogada: baixo."
+            }
+          ]
+        }
+      },
+      "moderado": {
+        "ok": true,
+        "origem": "reserva",
+        "aviso": "O modelo está indisponível. A missão exibida foi montada a partir do catálogo.",
+        "missao": {
+          "artefatoId": "luna-9",
+          "titulo": "Aproximação a Luna 9",
+          "briefing": "Luna 9 (Луна-9 (E-6M No.202 SA)), a cargo de União Soviética (Lavochkin), chegou a Oceanus Procellarum, a oeste das crateras Reiner e Marius (Planitia Descensus) em 1966-02-03. Você trata o alvo como artefato histórico, a partir de Oceanus Procellarum, a oeste das crateras Reiner e Marius (Planitia Descensus), com risco moderado. O equipamento permanece inativo na superfície desde o fim da missão.",
+          "opcoes": [
+            {
+              "id": "preservar",
+              "rotulo": "Manter distância e só registrar o sítio",
+              "pesos": {
+                "impacto": 1,
+                "combustivel": 1,
+                "seguranca": 3
+              },
+              "feedbackCientifico": "Luna 9 permanece como o catálogo a descreve. O equipamento permanece inativo na superfície desde o fim da missão. A observação distante conserva o sítio e gasta pouco propelente."
+            },
+            {
+              "id": "medir",
+              "rotulo": "Passagem de instrumentos sem tocar o hardware",
+              "pesos": {
+                "impacto": 2,
+                "combustivel": 2,
+                "seguranca": 2
+              },
+              "feedbackCientifico": "A passagem confere 99 kg (pousada) em 7.08° N, 64.37° O. Primeiro pouso suave na Lua. O sítio fica intocado se a altitude se mantiver."
+            },
+            {
+              "id": "aproximar",
+              "rotulo": "Descida curta para inspecionar o que restou",
+              "pesos": {
+                "impacto": 3,
+                "combustivel": 3,
+                "seguranca": 1
+              },
+              "feedbackCientifico": "A descida mostra mais de Luna 9 e aumenta a chance de perturbar o sítio. O equipamento permanece inativo na superfície desde o fim da missão. Referência do catálogo: 7.08° N, 64.37° O. Risco desta jogada: moderado."
+            }
+          ]
+        }
+      },
+      "alto": {
+        "ok": true,
+        "origem": "reserva",
+        "aviso": "O modelo está indisponível. A missão exibida foi montada a partir do catálogo.",
+        "missao": {
+          "artefatoId": "luna-9",
+          "titulo": "Aproximação a Luna 9",
+          "briefing": "Luna 9 (Луна-9 (E-6M No.202 SA)), a cargo de União Soviética (Lavochkin), chegou a Oceanus Procellarum, a oeste das crateras Reiner e Marius (Planitia Descensus) em 1966-02-03. Você trata o alvo como artefato histórico, a partir de Oceanus Procellarum, a oeste das crateras Reiner e Marius (Planitia Descensus), com risco alto. O equipamento permanece inativo na superfície desde o fim da missão.",
+          "opcoes": [
+            {
+              "id": "preservar",
+              "rotulo": "Manter distância e só registrar o sítio",
+              "pesos": {
+                "impacto": 1,
+                "combustivel": 1,
+                "seguranca": 2
+              },
+              "feedbackCientifico": "Luna 9 permanece como o catálogo a descreve. O equipamento permanece inativo na superfície desde o fim da missão. A observação distante conserva o sítio e gasta pouco propelente."
+            },
+            {
+              "id": "medir",
+              "rotulo": "Passagem de instrumentos sem tocar o hardware",
+              "pesos": {
+                "impacto": 2,
+                "combustivel": 2,
+                "seguranca": 1
+              },
+              "feedbackCientifico": "A passagem confere 99 kg (pousada) em 7.08° N, 64.37° O. Primeiro pouso suave na Lua. O sítio fica intocado se a altitude se mantiver."
+            },
+            {
+              "id": "aproximar",
+              "rotulo": "Descida curta para inspecionar o que restou",
+              "pesos": {
+                "impacto": 3,
+                "combustivel": 3,
+                "seguranca": 0
+              },
+              "feedbackCientifico": "A descida mostra mais de Luna 9 e aumenta a chance de perturbar o sítio. O equipamento permanece inativo na superfície desde o fim da missão. Referência do catálogo: 7.08° N, 64.37° O. Risco desta jogada: alto."
+            }
+          ]
+        }
+      }
+    },
+    "surveyor-1": {
+      "baixo": {
+        "ok": true,
+        "origem": "reserva",
+        "aviso": "O modelo está indisponível. A missão exibida foi montada a partir do catálogo.",
+        "missao": {
+          "artefatoId": "surveyor-1",
+          "titulo": "Aproximação a Surveyor 1",
+          "briefing": "Surveyor 1 (Surveyor SC-1 (Surveyor-A)), a cargo de NASA (JPL), chegou a Oceanus Procellarum, interior do anel de Flamsteed (Flamsteed P) em 1966-06-02. Você trata o alvo como artefato histórico, a partir de Oceanus Procellarum, interior do anel de Flamsteed (Flamsteed P), com risco baixo. O equipamento permanece inativo na superfície desde o fim da missão.",
+          "opcoes": [
+            {
+              "id": "preservar",
+              "rotulo": "Manter distância e só registrar o sítio",
+              "pesos": {
+                "impacto": 1,
+                "combustivel": 0,
+                "seguranca": 3
+              },
+              "feedbackCientifico": "Surveyor 1 permanece como o catálogo a descreve. O equipamento permanece inativo na superfície desde o fim da missão. A observação distante conserva o sítio e gasta pouco propelente."
+            },
+            {
+              "id": "medir",
+              "rotulo": "Passagem de instrumentos sem tocar o hardware",
+              "pesos": {
+                "impacto": 2,
+                "combustivel": 1,
+                "seguranca": 3
+              },
+              "feedbackCientifico": "A passagem confere 294.3 kg (pousada) em 2.4745° S, 43.3398° O. Primeiro pouso suave dos Estados Unidos na Lua e ensaio de solo para a Apollo. O sítio fica intocado se a altitude se mantiver."
+            },
+            {
+              "id": "aproximar",
+              "rotulo": "Descida curta para inspecionar o que restou",
+              "pesos": {
+                "impacto": 3,
+                "combustivel": 2,
+                "seguranca": 2
+              },
+              "feedbackCientifico": "A descida mostra mais de Surveyor 1 e aumenta a chance de perturbar o sítio. O equipamento permanece inativo na superfície desde o fim da missão. Referência do catálogo: 2.4745° S, 43.3398° O. Risco desta jogada: baixo."
+            }
+          ]
+        }
+      },
+      "moderado": {
+        "ok": true,
+        "origem": "reserva",
+        "aviso": "O modelo está indisponível. A missão exibida foi montada a partir do catálogo.",
+        "missao": {
+          "artefatoId": "surveyor-1",
+          "titulo": "Aproximação a Surveyor 1",
+          "briefing": "Surveyor 1 (Surveyor SC-1 (Surveyor-A)), a cargo de NASA (JPL), chegou a Oceanus Procellarum, interior do anel de Flamsteed (Flamsteed P) em 1966-06-02. Você trata o alvo como artefato histórico, a partir de Oceanus Procellarum, interior do anel de Flamsteed (Flamsteed P), com risco moderado. O equipamento permanece inativo na superfície desde o fim da missão.",
+          "opcoes": [
+            {
+              "id": "preservar",
+              "rotulo": "Manter distância e só registrar o sítio",
+              "pesos": {
+                "impacto": 1,
+                "combustivel": 1,
+                "seguranca": 3
+              },
+              "feedbackCientifico": "Surveyor 1 permanece como o catálogo a descreve. O equipamento permanece inativo na superfície desde o fim da missão. A observação distante conserva o sítio e gasta pouco propelente."
+            },
+            {
+              "id": "medir",
+              "rotulo": "Passagem de instrumentos sem tocar o hardware",
+              "pesos": {
+                "impacto": 2,
+                "combustivel": 2,
+                "seguranca": 2
+              },
+              "feedbackCientifico": "A passagem confere 294.3 kg (pousada) em 2.4745° S, 43.3398° O. Primeiro pouso suave dos Estados Unidos na Lua e ensaio de solo para a Apollo. O sítio fica intocado se a altitude se mantiver."
+            },
+            {
+              "id": "aproximar",
+              "rotulo": "Descida curta para inspecionar o que restou",
+              "pesos": {
+                "impacto": 3,
+                "combustivel": 3,
+                "seguranca": 1
+              },
+              "feedbackCientifico": "A descida mostra mais de Surveyor 1 e aumenta a chance de perturbar o sítio. O equipamento permanece inativo na superfície desde o fim da missão. Referência do catálogo: 2.4745° S, 43.3398° O. Risco desta jogada: moderado."
+            }
+          ]
+        }
+      },
+      "alto": {
+        "ok": true,
+        "origem": "reserva",
+        "aviso": "O modelo está indisponível. A missão exibida foi montada a partir do catálogo.",
+        "missao": {
+          "artefatoId": "surveyor-1",
+          "titulo": "Aproximação a Surveyor 1",
+          "briefing": "Surveyor 1 (Surveyor SC-1 (Surveyor-A)), a cargo de NASA (JPL), chegou a Oceanus Procellarum, interior do anel de Flamsteed (Flamsteed P) em 1966-06-02. Você trata o alvo como artefato histórico, a partir de Oceanus Procellarum, interior do anel de Flamsteed (Flamsteed P), com risco alto. O equipamento permanece inativo na superfície desde o fim da missão.",
+          "opcoes": [
+            {
+              "id": "preservar",
+              "rotulo": "Manter distância e só registrar o sítio",
+              "pesos": {
+                "impacto": 1,
+                "combustivel": 1,
+                "seguranca": 2
+              },
+              "feedbackCientifico": "Surveyor 1 permanece como o catálogo a descreve. O equipamento permanece inativo na superfície desde o fim da missão. A observação distante conserva o sítio e gasta pouco propelente."
+            },
+            {
+              "id": "medir",
+              "rotulo": "Passagem de instrumentos sem tocar o hardware",
+              "pesos": {
+                "impacto": 2,
+                "combustivel": 2,
+                "seguranca": 1
+              },
+              "feedbackCientifico": "A passagem confere 294.3 kg (pousada) em 2.4745° S, 43.3398° O. Primeiro pouso suave dos Estados Unidos na Lua e ensaio de solo para a Apollo. O sítio fica intocado se a altitude se mantiver."
+            },
+            {
+              "id": "aproximar",
+              "rotulo": "Descida curta para inspecionar o que restou",
+              "pesos": {
+                "impacto": 3,
+                "combustivel": 3,
+                "seguranca": 0
+              },
+              "feedbackCientifico": "A descida mostra mais de Surveyor 1 e aumenta a chance de perturbar o sítio. O equipamento permanece inativo na superfície desde o fim da missão. Referência do catálogo: 2.4745° S, 43.3398° O. Risco desta jogada: alto."
+            }
+          ]
+        }
+      }
+    }
+  }
+}
