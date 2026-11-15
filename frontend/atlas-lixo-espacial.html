@@ -2832,8 +2832,8 @@ document.addEventListener('DOMContentLoaded', () => {
     statusEl.textContent = STATUS[state] || STATUS.idle;
   }
   function updateSend() { sendBtn.disabled = busy || input.value.trim() === ''; }
-  const ROBOT_IDLE = 'frente.png';
-  const ROBOT_THINK = ['apontando_olhando_esquerda.png', 'frente.png', 'apontando_olhando_direita.png'];
+  const ROBOT_IDLE = '../assets/images/mascote/mascote-frente.png';
+  const ROBOT_THINK = ['../assets/images/mascote/mascote-apontando-olhando-esquerda.png', '../assets/images/mascote/mascote-frente.png', '../assets/images/mascote/mascote-apontando-olhando-direita.png'];
   const reduceRobotMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   let thinkTimer = null;
   let thinkFrame = 0;
@@ -3067,7 +3067,7 @@ document.addEventListener('DOMContentLoaded', () => {
   <section id="robotBubble" class="hidden" role="dialog" aria-label="Chat com o SojournBot">
     <header class="robot-header">
       <div class="robot-id">
-        <img class="robot-img robot-avatar" src="frente.png" alt="">
+        <img class="robot-img robot-avatar" src="../assets/images/mascote/mascote-frente.png" alt="">
         <div>
           <strong>SojournBot</strong>
           <span class="robot-status" id="robotStatus">Pronto para ajudar</span>
@@ -3105,7 +3105,7 @@ document.addEventListener('DOMContentLoaded', () => {
   <!-- Robô animado + seta à direita: os dois abrem e fecham o chat -->
   <div class="robot-launcher">
     <button type="button" id="robotCharacter" aria-label="Abrir SojournBot" aria-expanded="false" aria-controls="robotBubble">
-      <img class="robot-img" src="frente.png" alt="">
+      <img class="robot-img" src="../assets/images/mascote/mascote-frente.png" alt="">
     </button>
     <button type="button" id="robotArrow" aria-label="Abrir chat" aria-expanded="false" aria-controls="robotBubble">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>
