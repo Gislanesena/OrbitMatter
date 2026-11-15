@@ -8,6 +8,7 @@
     "montar": "esbuild app/entrada-navegador.ts --bundle --format=iife --global-name=AtlasIA --platform=browser --target=es2018 --outfile=dist/atlas-ia.js",
     "pregerar": "esbuild scripts/pregerar-missoes.ts --bundle --platform=node --format=cjs --outfile=dist/pregerar.cjs && node dist/pregerar.cjs",
     "testar": "node --experimental-strip-types scripts/testar-simulacao.ts",
+    "testar:minijogo": "node scripts/testar-minijogo.mjs",
     "calibrar": "node --experimental-strip-types scripts/calibrar-cenarios.ts"
   },
   "devDependencies": {

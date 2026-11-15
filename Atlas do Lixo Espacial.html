@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oxanium:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans:wght@400;600&display=swap">
-  <link rel="stylesheet" href="atlas.css?v=11">
+  <link rel="stylesheet" href="atlas.css?v=14">
 </head>
 <body>
 <div id="loading" data-i18n="loading">Loading orbit…</div>
@@ -209,6 +209,40 @@
   </div>
 </div>
 
+<!-- Planejamento de rota (sub-etapa da Decisão, capítulo 2) -->
+<div class="overlay" id="minijogoModal" hidden>
+  <div class="modal mj-modal" role="dialog" aria-modal="true" aria-labelledby="mjTitle">
+    <div class="modal-head">
+      <div><span class="eyebrow" data-i18n="moon.eyebrow">Etapa 4 · Decisão</span><h2 id="mjTitle" data-i18n="moon.title">Planejar a aproximação</h2></div>
+      <button class="icon-btn" id="mjClose" data-close aria-label="Fechar" data-i18n="missions.close" data-i18n-attr="aria-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <div class="modal-body mj-body">
+      <p class="k-note" id="mjScale"></p>
+      <div class="mj-layout">
+        <div id="mjStage"><canvas id="mjCanvas"></canvas></div>
+        <div class="mj-side">
+          <div class="legend">
+            <span><i style="background:#e8ebf5"></i><span data-i18n="moon.legend.uncertainty">Incerteza (tracejado)</span></span>
+            <span><i style="background:#ff5d6c"></i><span data-i18n="moon.legend.exclusion">Zona de exclusão (hachura)</span></span>
+            <span><i style="background:#7fd8ff"></i><span data-i18n="moon.legend.band">Banda de observação</span></span>
+          </div>
+          <div class="meter"><div class="mt"><span data-i18n="moon.fuel">Combustível</span><b id="mjFuelTxt">100%</b></div><div class="bar"><i id="mjFuelBar" style="width:100%;background:var(--warn)"></i></div></div>
+          <div class="meter"><div class="mt"><span data-i18n="moon.reading">Leitura</span></div><div class="bar"><i id="mjReadBar" style="width:0;background:var(--data)"></i></div></div>
+          <p class="muted" style="font-size:13px;margin:0"><span data-i18n="moon.distance">Distância ao sítio</span> <b id="mjDist" class="mono">—</b></p>
+          <p class="mj-warn" id="mjWarn" hidden data-i18n="moon.inside">Dentro da zona de exclusão</p>
+          <div class="k-buttons">
+            <button class="btn" id="mjUndo" type="button" data-i18n="moon.undo">Desfazer</button>
+            <button class="btn" id="mjClear" type="button" data-i18n="moon.clear">Limpar</button>
+            <button class="btn primary" id="mjRun" type="button" data-i18n="moon.run">Executar</button>
+          </div>
+          <button class="btn primary" id="mjConfirm" type="button" data-i18n="moon.confirm" hidden>Confirmar rota</button>
+          <button class="btn ghost" id="mjSound" type="button" aria-pressed="false">Som desligado</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Kessler -->
 <div class="overlay" id="kesslerModal" hidden>
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="kTitle">
@@ -286,7 +320,7 @@
   </div>
 </div>
 
-<script src="i18n.js?v=11"></script>
+<script src="i18n.js?v=13"></script>
 <script src="firebase-config.js?v=4"></script>
 <script type="module" src="firebase-app.js?v=4"></script>
 <script src="auth-progresso.js?v=4"></script>
@@ -295,7 +329,9 @@
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="deep-space/voyager-1.js?v=2"></script>
-<script src="js/jornada.js?v=2"></script>
+<script src="js/jornada.js?v=3"></script>
+<script src="js/minijogo-lua-nucleo.js?v=1"></script>
+<script src="js/minijogo-lua.js?v=1"></script>
 <script src="js/artefatos-reserva.js?v=1"></script>
 <script src="dist/atlas-ia.js?v=2" defer></script>
 <script src="js/atlas-adapter.js?v=2" defer></script>
@@ -771,6 +807,8 @@ function refresh() {
    4. MISSÕES (simulador de decisões)
    ===================================================================== */
 let viewMission = null, choice = null, lead = 5;
+const MINIJOGO_LUA = true;
+let rotaLuaPendente = null;
 function scoreFromMeters(b) {
   const vals = [b.seg, b.comb, b.orc, b.ciencia];
   const avg = vals.reduce((a, v) => a + v, 0) / vals.length;
@@ -832,6 +870,96 @@ function blocoSeries(sim) {
 function notaPesos(pesos) {
   const metros = Jornada.metrosDePesos(pesos);
   return { m: metros, score: scoreFromMeters(metros) };
+}
+function riscoDoEntorno(risco) {
+  if (risco === 'cascata') return 'alto';
+  if (risco === 'baixo' || risco === 'moderado' || risco === 'alto') return risco;
+  return 'moderado';
+}
+function metrosDidaticos(n) {
+  const v = Math.round(Number(n) * 10) / 10;
+  return v.toLocaleString(I18n.lang === 'en' ? 'en-US' : 'pt-BR');
+}
+function chipPosicao(dados) {
+  const coords = (dados && dados.coordenadas) || {};
+  const conf = window.Jornada ? Jornada.confiancaTexto(coords.confianca).toLowerCase() : (coords.confianca || '');
+  if (coords.incertezaMetros != null && coords.incertezaMetros !== '') {
+    return tt('moon.position.m').replace('{conf}', conf).replace('{m}', metrosDidaticos(coords.incertezaMetros));
+  }
+  return tt('moon.position').replace('{conf}', conf);
+}
+function miniBarras(pesos) {
+  const m = Jornada.metrosDePesos(pesos);
+  const itens = [['ciencia', 'moon.bar.ciencia'], ['comb', 'moon.bar.comb'], ['seg', 'moon.bar.seg']];
+  return '<span class="mini-bars">' + itens.map(([k, chave]) =>
+    '<span><i>' + tt(chave) + '</i><b><em style="width:' + m[k] + '%"></em></b></span>').join('') + '</span>';
+}
+function porqueRota(dados) {
+  if (!dados || !window.MinijogoLuaNucleo || !window.Jornada) return '';
+  const cena = MinijogoLuaNucleo.cenario(dados, 'medir', 'moderado');
+  const conf = Jornada.confiancaTexto(cena.confianca).toLowerCase();
+  return tt('moon.why.line')
+    .replace('{conf}', conf)
+    .replace('{inc}', metrosDidaticos(cena.rIncertezaMetros))
+    .replace('{exc}', metrosDidaticos(cena.rExclusaoMetros));
+}
+function trilhaSvg(amostras, cena) {
+  const cores = { banda: '#5fd49a', fora: '#8f99ba', exclusao: '#ff5d6c', incerteza: '#ff5d6c' };
+  let linhas = '';
+  for (let i = 1; i < amostras.length; i++) {
+    const a = amostras[i - 1];
+    const b = amostras[i];
+    linhas += '<line x1="' + a.x.toFixed(3) + '" y1="' + a.y.toFixed(3) + '" x2="' + b.x.toFixed(3) + '" y2="' + b.y.toFixed(3) + '" stroke="' + (cores[b.zona] || '#8f99ba') + '" stroke-width="0.07" stroke-linecap="round"/>';
+  }
+  const banda = 1 + (cena && cena.banda ? cena.banda : 0);
+  return '<svg class="mj-trilha" viewBox="-2.8 -2.8 5.6 5.6" role="img" aria-label="' + esc(tt('moon.trail')) + '"><g transform="scale(1,-1)">' +
+    '<circle cx="0" cy="0" r="' + banda.toFixed(3) + '" fill="none" stroke="#7fd8ff" stroke-width="0.045"/>' +
+    '<circle cx="0" cy="0" r="1" fill="none" stroke="#ff5d6c" stroke-width="0.04"/>' +
+    linhas + '</g></svg>';
+}
+function blocoMinijogo(done, dados) {
+  if (!done || !done.jogo) return '';
+  try {
+    const jogo = done.jogo;
+    const m = done.meters || {};
+    const itens = [['ciencia', 'moon.bar.ciencia'], ['comb', 'moon.bar.comb'], ['seg', 'moon.bar.seg']];
+    const barras = '<div class="meters">' + itens.map(([k, chave]) =>
+      '<div class="meter"><div class="mt"><span>' + tt(chave) + '</span><b>' + (m[k] != null ? m[k] : '—') + '</b></div><div class="bar"><i style="width:' + (m[k] || 0) + '%;background:' + meterColor(m[k] || 0) + '"></i></div></div>').join('') + '</div>';
+    let mapa = '<p class="muted" style="font-size:12.5px">' + esc(tt('moon.auto.note')) + '</p>';
+    if (jogo.rota && window.MinijogoLuaNucleo && dados) {
+      const cena = MinijogoLuaNucleo.cenario(dados, done.strategy, riscoDoEntorno(done.riscoAntes));
+      const avaliado = MinijogoLuaNucleo.avaliar(cena, jogo.rota);
+      mapa = trilhaSvg(avaliado.amostras, cena);
+    }
+    const motivo = porqueRota(dados);
+    return '<div class="mj-result">' + mapa + barras +
+      '<p class="k-note">' + esc(tt('moon.scale')) + '</p>' +
+      (motivo ? '<div style="display:grid;gap:6px"><span class="eyebrow">' + tt('result.why') + '</span><p class="placeholder">' + esc(motivo) + '</p><p class="placeholder">' + esc(tt('moon.lesson')) + '</p></div>' : '') +
+      '</div>';
+  } catch (erro) {
+    console.warn(erro);
+    return '';
+  }
+}
+function abrirMinijogo() {
+  const m = MISSIONS.find((x) => x.id === viewMission);
+  const alvo = m && objetoDoCapitulo(m);
+  const jog = alvo && S.jogada && S.jogada[chaveJogada(alvo)];
+  if (!MINIJOGO_LUA || !window.MinijogoLua || !alvo || !alvo.dados || !choice) throw new Error('minijogo indisponível');
+  $('missionsModal').hidden = true;
+  MinijogoLua.abrir({
+    artefato: alvo.dados,
+    perfil: choice,
+    risco: riscoDoEntorno(jog && jog.risco),
+    confirmar: function (resultado) {
+      rotaLuaPendente = {
+        seg: resultado.seg, ciencia: resultado.ciencia, comb: resultado.comb,
+        violacao: resultado.violacao, rota: resultado.pontos,
+      };
+      try { confirmDecision(); } catch (erro) { console.warn(erro); rotaLuaPendente = null; }
+      if ($('resultModal').hidden) { $('missionsModal').hidden = false; syncDock(); }
+    },
+  });
 }
 function chaveJogada(o) {
   return o.id + '|' + (I18n.lang === 'en' ? 'en' : 'pt') + '|orb2';
@@ -920,8 +1048,15 @@ function renderMissions() {
   const done = S.done[m.id];
   const alvo = objetoDoCapitulo(m);
   const fatos = fatosDoObjeto(alvo);
-  let html = '<div style="display:grid;gap:8px"><span class="eyebrow">' + tt('missions.eyebrow2') + '</span><h3>' + esc(missionText(m, 'title')) + '</h3>' +
-    '<p class="placeholder">' + esc(m.target === 'artefato' && !done ? briefingLua(m) : missionText(m, 'briefing')) + '</p></div>';
+  const luaNova = MINIJOGO_LUA && m.target === 'artefato' && !done && alvo && alvo.dados && window.Jornada;
+  let html = '<div style="display:grid;gap:8px"><span class="eyebrow">' + tt('missions.eyebrow2') + '</span><h3>' + esc(missionText(m, 'title')) + '</h3>';
+  if (luaNova) {
+    html += '<div class="client-note"><span class="eyebrow">' + tt('moon.client') + '</span><p>' + esc(Jornada.preencher(Jornada.mensagemCliente(alvo.dados))) + '</p></div>' +
+      '<details class="catalog-brief"><summary>' + tt('moon.briefing') + '</summary><p>' + esc(briefingLua(m)) + '</p></details>';
+  } else {
+    html += '<p class="placeholder">' + esc(m.target === 'artefato' && !done ? briefingLua(m) : missionText(m, 'briefing')) + '</p>';
+  }
+  html += '</div>';
   if (fatos.length) {
     html += '<div><div class="section-title"><h3 style="font-size:15px">' + tt('missions.facts') + '</h3></div><dl class="facts">' +
       fatos.map((fato) => '<div class="fact"><dt>' + esc(fato.rotulo) + '</dt><dd>' + esc(fato.valor) + '</dd></div>').join('') + '</dl></div>';
@@ -930,7 +1065,7 @@ function renderMissions() {
     const [g, c] = gradeOf(done.score);
     html += '<div class="placeholder" style="border-style:solid">' + tt('missions.youChose') + ' <b>' + esc(nomeEscolha(done)) + '</b> ' + tt('missions.andScored') + ' <b style="color:' + c + '">' + done.score + ' ' + tt('missions.points') + ' (' + g + ')</b>.</div>' +
       '<div class="placeholder">' + esc(done.aprendizado || missionText(m, 'explain')) + '</div>' +
-      (done.porque ? '<div class="placeholder">' + esc(done.porque) + '</div>' : '');
+      (blocoMinijogo(done, alvo && alvo.dados) || (done.porque ? '<div class="placeholder">' + esc(done.porque) + '</div>' : ''));
     if (m.target !== 'artefato' && window.AtlasJogo) {
       html += blocoSeries(AtlasJogo.decidirOrbita(m.id, done.strategy)) +
         '<button class="btn" id="seeSim" data-capitulo="' + m.id + '" data-estrategia="' + done.strategy + '">' + tt('result.seeSim') + '</button>';
@@ -952,11 +1087,19 @@ function renderMissions() {
     } else {
       const opcoes = (jog.missao && jog.missao.opcoes) || [];
       html += '<div style="display:flex;gap:6px;flex-wrap:wrap">' + (jog.origem === 'modelo' ? '<span class="chip ok">' + tt('missions.origin.ai') + '</span>' : '<span class="chip">' + tt('missions.origin.standard') + '</span>') +
-        '<span class="chip">' + tt('missions.risk.env') + ': ' + esc(window.Jornada ? Jornada.rotuloRisco(jog.risco) : (jog.risco || '')) + '</span></div>' +
+        '<span class="chip">' + tt('missions.risk.env') + ': ' + esc(window.Jornada ? Jornada.rotuloRisco(jog.risco) : (jog.risco || '')) + '</span>' +
+        (MINIJOGO_LUA && alvo && alvo.dados ? '<span class="chip">' + esc(chipPosicao(alvo.dados)) + '</span>' : '') + '</div>' +
         '<div class="strategies" role="radiogroup">' +
-        opcoes.map((op) => '<button class="strategy" role="radio" aria-checked="' + (choice === op.id) + '" data-strategy="' + op.id + '"><strong>' + esc(op.rotulo) + '</strong><span>' + esc(Jornada.resumoOpcao(op.id)) + '</span></button>').join('') +
+        opcoes.map((op) => '<button class="strategy" role="radio" aria-checked="' + (choice === op.id) + '" data-strategy="' + op.id + '"><strong>' + esc(op.rotulo) + '</strong><span>' + esc(Jornada.resumoOpcao(op.id)) + '</span>' +
+          (MINIJOGO_LUA ? miniBarras(op.pesos) : '') + '</button>').join('') +
         '</div>';
-      if (choice) {
+      if (choice && MINIJOGO_LUA) {
+        const op = opcoes.find((item) => item.id === choice);
+        const efeito = op && (op.feedbackCientifico || (window.Jornada && alvo ? Jornada.feedbackPadrao(op.id, jog.nivel || 'moderado', alvo.dados) : ''));
+        html += '<p class="placeholder">' + esc(efeito || '') + '</p>' +
+          '<div class="score-line"><button class="btn primary" id="planejarRota">' + tt('moon.plan') + '</button>' +
+          '<button class="btn" id="rotaAutomatica">' + tt('moon.auto') + '</button></div>';
+      } else if (choice) {
         const op = opcoes.find((item) => item.id === choice);
         const r = op ? notaPesos(op.pesos) : null;
         if (r) {
@@ -966,7 +1109,7 @@ function renderMissions() {
             '<div class="score-line"><div><span class="eyebrow">' + tt('missions.preview') + '</span><div class="sc" style="color:' + c + '">' + r.score + ' · ' + g + '</div></div>' +
             '<button class="btn primary" id="confirmDecision">' + tt('missions.confirm') + '</button></div>';
         }
-      } else html += '<p class="muted" style="font-size:13.5px">' + tt('missions.hint.choose') + '</p>';
+      } else html += '<p class="muted" style="font-size:13.5px">' + tt(MINIJOGO_LUA ? 'moon.hint' : 'missions.hint.choose') + '</p>';
     }
   } else {
     html += '<div style="display:grid;gap:8px"><div class="section-title"><h3 style="font-size:15px">' + tt('missions.strategy.title') + '</h3></div><div class="strategies" role="radiogroup" aria-label="' + tt('missions.strategy.title') + '">' +
@@ -990,10 +1133,13 @@ function renderMissions() {
 function briefingLua(m) {
   const o = objetoDoCapitulo(m);
   const jog = o && S.jogada && S.jogada[chaveJogada(o)];
-  if (jog && jog.missao && jog.missao.briefing) return jog.missao.briefing;
-  return missionText(m, 'briefing');
+  const texto = jog && jog.missao && jog.missao.briefing ? jog.missao.briefing : missionText(m, 'briefing');
+  if (o && o.dados && window.Jornada) return Jornada.limparBriefing(texto, o.dados);
+  return texto;
 }
 function confirmDecision() {
+  const pendente = MINIJOGO_LUA ? rotaLuaPendente : null;
+  rotaLuaPendente = null;
   const m = MISSIONS.find((x) => x.id === viewMission);
   if (!m || !choice || S.done[m.id]) return;
   const alvo = objetoDoCapitulo(m);
@@ -1003,6 +1149,16 @@ function confirmDecision() {
     const op = jog && jog.missao && jog.missao.opcoes && jog.missao.opcoes.find((item) => item.id === choice);
     if (!op) return;
     r = notaPesos(op.pesos);
+    if (pendente && window.MinijogoLuaNucleo) {
+      try {
+        r.m = MinijogoLuaNucleo.combinar(r.m, pendente);
+        r.score = scoreFromMeters(r.m);
+        r.jogo = { seg: pendente.seg, ciencia: pendente.ciencia, comb: pendente.comb, violacao: pendente.violacao, rota: pendente.rota || null };
+      } catch (erro) {
+        console.warn(erro);
+        r = notaPesos(op.pesos);
+      }
+    }
     r.antes = jog.risco;
     r.depois = jog.risco;
     r.ajuste = 0;
@@ -1018,13 +1174,15 @@ function confirmDecision() {
   }
   const detalhe = { antes: r.antes, depois: r.depois, ajuste: r.ajuste, feedback: feedback, template: template };
   const aprendizado = textoAprendizado(m, detalhe, alvo);
-  const porque = textoNota(detalhe);
+  const motivoRota = r.jogo && alvo && alvo.dados ? porqueRota(alvo.dados) : '';
+  const porque = motivoRota ? motivoRota + ' ' + tt('moon.lesson') : textoNota(detalhe);
   S.done[m.id] = {
     strategy: choice, score: r.score, lead: m.target === 'artefato' ? null : lead, rotulo: rotulo,
     meters: r.m, riscoAntes: r.antes, riscoDepois: r.depois, ajuste: r.ajuste || 0,
     origem: origem, aviso: aviso, feedback: feedback, template: template,
     aprendizado: aprendizado, porque: porque,
   };
+  if (r.jogo) S.done[m.id].jogo = r.jogo;
   const xp = 50 + r.score;
   addPath('missao', m.id, 'Decidiu o capítulo ' + m.chapter + ': ' + rotulo);
   gainXP(xp, 'Decisão tomada');
@@ -1038,7 +1196,7 @@ function confirmDecision() {
     '<div class="meters">' + METERS.map(([k]) =>
       '<div class="meter"><div class="mt"><span>' + tt(METER_KEY[k]) + '</span><b>' + r.m[k] + '</b></div><div class="bar"><i style="width:' + r.m[k] + '%;background:' + meterColor(r.m[k]) + '"></i></div></div>').join('') + '</div>' +
     '<div style="display:grid;gap:6px"><span class="eyebrow">' + tt('result.science.eyebrow') + '</span><p class="placeholder">' + esc(aprendizado) + '</p></div>' +
-    '<div style="display:grid;gap:6px"><span class="eyebrow">' + tt('result.why') + '</span><p class="placeholder">' + esc(porque) + '</p></div>' +
+    (r.jogo ? (blocoMinijogo(S.done[m.id], alvo && alvo.dados) || '<div style="display:grid;gap:6px"><span class="eyebrow">' + tt('result.why') + '</span><p class="placeholder">' + esc(porque) + '</p></div>') : '<div style="display:grid;gap:6px"><span class="eyebrow">' + tt('result.why') + '</span><p class="placeholder">' + esc(porque) + '</p></div>') +
     (m.target !== 'artefato' ? blocoSeries(r) + '<button class="btn" id="seeSim" data-capitulo="' + m.id + '" data-estrategia="' + choice + '">' + tt('result.seeSim') + '</button>' : '') +
     (aviso ? '<p class="muted" style="font-size:12.5px">' + esc(aviso) + '</p>' : '') +
     '<div class="gained"><span class="chip target">+' + xp + ' XP</span>' +
@@ -1056,11 +1214,18 @@ function abrirRelatorio() {
     if (!d) return '';
     const risco = d.riscoAntes ? ' · ' + tt('missions.risk.before') + ' ' + (window.Jornada ? Jornada.rotuloRisco(d.riscoAntes) : d.riscoAntes) + ' → ' + (window.Jornada ? Jornada.rotuloRisco(d.riscoDepois) : d.riscoDepois) : '';
     const origem = d.origem === 'modelo' ? ' · ' + tt('missions.origin.ai') : d.origem ? ' · ' + tt('missions.origin.standard') : '';
-    return '<li><strong>' + esc(missionText(m, 'title')) + '</strong> — ' + esc(nomeEscolha(d)) + ' · ' + d.score + esc(risco) + esc(origem) + '</li>';
+    const jogo = d.jogo ? ' · ' + tt(d.jogo.violacao === 'automatica' ? 'moon.auto.short' : 'moon.report.route') : '';
+    return '<li><strong>' + esc(missionText(m, 'title')) + '</strong> — ' + esc(nomeEscolha(d)) + ' · ' + d.score + esc(risco) + esc(origem) + esc(jogo) + '</li>';
+  }).join('');
+  const blocos = MISSIONS.map((m) => {
+    const d = S.done[m.id];
+    if (!d || !d.jogo) return '';
+    const alvo = objetoDoCapitulo(m);
+    return blocoMinijogo(d, alvo && alvo.dados);
   }).join('');
   const notas = MISSIONS.map((m) => S.done[m.id] && S.done[m.id].score).filter((n) => n != null);
   const media = notas.length ? Math.round(notas.reduce((a, b) => a + b, 0) / notas.length) : 0;
-  $('rBody').innerHTML = '<h3>' + tt('result.report') + '</h3><p>' + esc(window.Jornada ? Jornada.preencher(tt('result.report.lead')) : tt('result.report.lead')) + '</p><ol class="path">' + linhas + '</ol><p>' + tt('result.report.avg') + ' <b>' + media + '</b>.</p><p class="muted">' + tt('result.report.ai') + '</p><div><button class="btn primary" id="continueBtn">' + tt('result.keepExploring') + '</button></div>';
+  $('rBody').innerHTML = '<h3>' + tt('result.report') + '</h3><p>' + esc(window.Jornada ? Jornada.preencher(tt('result.report.lead')) : tt('result.report.lead')) + '</p><ol class="path">' + linhas + '</ol>' + blocos + '<p>' + tt('result.report.avg') + ' <b>' + media + '</b>.</p><p class="muted">' + tt('result.report.ai') + '</p><div><button class="btn primary" id="continueBtn">' + tt('result.keepExploring') + '</button></div>';
   showLearning = true;
   openModal('resultModal');
 }
@@ -1069,7 +1234,12 @@ function abrirRelatorio() {
    5. MODAIS E NAVEGAÇÃO
    ===================================================================== */
 function openModal(id) {
-  ['missionsModal', 'kesslerModal', 'diaryModal', 'resultModal', 'introModal'].forEach((m) => { if (m !== id) $(m).hidden = true; });
+  ['missionsModal', 'kesslerModal', 'diaryModal', 'resultModal', 'introModal', 'minijogoModal'].forEach((m) => {
+    if (m !== id) {
+      if (m === 'minijogoModal' && !$(m).hidden && window.MinijogoLua) MinijogoLua.fechar();
+      $(m).hidden = true;
+    }
+  });
   $(id).hidden = false;
   if (id === 'missionsModal') renderMissions();
   if (id === 'diaryModal') renderDiary();
@@ -1078,7 +1248,9 @@ function openModal(id) {
   const f = $(id).querySelector('button'); if (f) f.focus({ preventScroll: true });
 }
 function closeModal(id) {
+  if (id === 'minijogoModal' && window.MinijogoLua) MinijogoLua.fechar();
   $(id).hidden = true;
+  if (id === 'minijogoModal' && $('missionsModal').hidden && $('resultModal').hidden) $('missionsModal').hidden = false;
   if (id === 'kesslerModal') kPause();
   if (id === 'resultModal') { showLearning = false; refresh(); }
   syncDock();
@@ -1164,6 +1336,13 @@ document.addEventListener('click', (e) => {
     case 'closeObj': closeObject(); break;
     case 'concludeBtn': conclude(); break;
     case 'confirmDecision': confirmDecision(); break;
+    case 'planejarRota':
+      try { abrirMinijogo(); } catch (erro) { console.warn(erro); rotaLuaPendente = null; $('missionsModal').hidden = false; confirmDecision(); }
+      break;
+    case 'rotaAutomatica':
+      rotaLuaPendente = { seg: 50, ciencia: 50, comb: 50, violacao: 'automatica', rota: null };
+      confirmDecision();
+      break;
     case 'continueBtn': closeModal('resultModal'); break;
     case 'openReport': abrirRelatorio(); break;
     case 'seeSim': verNaSimulacao(t.dataset.capitulo, t.dataset.estrategia); break;
@@ -2518,6 +2697,7 @@ window._onLangChange = () => {
     kPintar();
     $('kPlay').textContent = K.running ? tt('kessler.pause') : (K.indice > 0 ? tt('kessler.continue') : tt('kessler.start'));
   }
+  if (!$('minijogoModal').hidden && window.MinijogoLua) MinijogoLua.redesenhar();
 };
 setSpeed('agora');
 refresh();
@@ -2525,5 +2705,48 @@ refresh();
 // Só mostra intro se já há sessão ativa E o jogador ainda não iniciou.
 if (AP.sessaoAtiva() && !S.started) { renderIntro(); $('introModal').hidden = false; }
 })();</script>
+<script src="js/assistente-orbital.js?v=1"></script>
+
+<div id="robotAssistant">
+  <section id="robotBubble" class="hidden" role="dialog" aria-label="Chat com o Assistente Orbital" data-i18n="robot.chat" data-i18n-attr="aria-label">
+    <header class="robot-header">
+      <div class="robot-id">
+        <img class="robot-img robot-avatar" src="frontend/robo-assistente.svg" alt="">
+        <div>
+          <strong data-i18n="robot.title">Assistente Orbital</strong>
+          <span class="robot-status" id="robotStatus" data-i18n="robot.status">Pronto para ajudar</span>
+        </div>
+      </div>
+      <button class="robot-close" id="robotCloseBtn" type="button" aria-label="Fechar chat" data-i18n="robot.close" data-i18n-attr="aria-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </header>
+    <div id="robotMessages" role="log" aria-live="polite">
+      <div class="robot-msg bot" data-i18n="robot.hello">Olá! Sou o assistente orbital. Pergunte sobre lixo espacial, órbitas e as missões do Atlas. Você pode digitar ou usar o microfone.</div>
+    </div>
+    <div class="robot-suggest" id="robotSuggest">
+      <button type="button" data-i18n="robot.q1">O que é lixo espacial?</button>
+      <button type="button" data-i18n="robot.q2">O que é a síndrome de Kessler?</button>
+      <button type="button" data-i18n="robot.q3">Como reduzir o lixo orbital?</button>
+    </div>
+    <form class="robot-input-container" id="robotForm" autocomplete="off">
+      <input type="text" id="robotUserInput" placeholder="Digite ou fale sua dúvida…" aria-label="Sua dúvida" maxlength="500" data-i18n="robot.placeholder" data-i18n-attr="placeholder">
+      <button type="button" class="robot-btn" id="robotMicBtn" aria-label="Gravar pergunta por voz" aria-pressed="false" data-i18n="robot.mic" data-i18n-attr="aria-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+      </button>
+      <button type="submit" class="robot-btn" id="robotSendBtn" aria-label="Enviar" disabled data-i18n="robot.send" data-i18n-attr="aria-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg>
+      </button>
+    </form>
+  </section>
+  <div class="robot-launcher">
+    <button type="button" id="robotCharacter" aria-label="Abrir assistente" aria-expanded="false" aria-controls="robotBubble" data-i18n="robot.open" data-i18n-attr="aria-label">
+      <img class="robot-img" src="frontend/robo-assistente.svg" alt="">
+    </button>
+    <button type="button" id="robotArrow" aria-label="Abrir chat" aria-expanded="false" aria-controls="robotBubble" data-i18n="robot.arrow" data-i18n-attr="aria-label">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>
+    </button>
+  </div>
+</div>
 
 </body></html>
