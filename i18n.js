@@ -67,6 +67,7 @@ window.I18n = (() => {
     'obj.band.mid':                { pt: 'Órbita média',                           en: 'Medium orbit' },
     'obj.band.high':               { pt: 'Órbita alta',                            en: 'High orbit' },
     'obj.band.surface':            { pt: 'Superfície lunar',                       en: 'Lunar surface' },
+    'obj.band.surface.mars':       { pt: 'Superfície de Marte',                    en: 'Martian surface' },
     'obj.moon.legend':             { pt: 'Longitude 0° do pino aponta para a Terra. A textura da Lua é procedural e não é um mapa.',
                                      en: 'Pin longitude 0° faces Earth. The Moon texture is procedural and is not a map.' },
     'obj.band.lunar':              { pt: 'Órbita lunar',                           en: 'Lunar orbit' },
@@ -662,6 +663,17 @@ window.I18n = (() => {
     'aware.terra.legado.1': { pt: "O legado se guarda no registro da missão. O corpo em órbita pede um fim planejado.", en: "The legacy is kept in the mission record. The body in orbit needs a planned end." },
     'aware.terra.responsabilidade.0': { pt: "A prática atual dos EUA pede descarte da órbita baixa em até cinco anos após o fim da missão.", en: "Current US practice asks for disposal from low Earth orbit within five years after the mission ends." },
     'aware.terra.responsabilidade.1': { pt: "Antes, a referência mais citada era a regra de 25 anos do IADC.", en: "Before that, the most cited reference was the IADC 25-year rule." },
+
+    /* ---- InSight (superfície de Marte) ---- */
+    'insight.origem': { pt: 'NASA / JPL · InSight. Pouso em 26 de novembro de 2018 em Elysium Planitia.', en: 'NASA / JPL · InSight. Landed on 26 November 2018 at Elysium Planitia.' },
+    'insight.altitude': { pt: 'Superfície, Elysium Planitia (cerca de 4,5° N, 135,6° E). A posição no mapa é ilustrativa.', en: 'Surface, Elysium Planitia (about 4.5° N, 135.6° E). The map position is illustrative.' },
+    'insight.velocidade': { pt: 'No solo, imóvel desde o fim da missão.', en: 'On the ground, stationary since the mission ended.' },
+    'insight.permanencia': { pt: 'Contato encerrado em dezembro de 2022, quando a poeira cobriu os painéis solares.', en: 'Contact ended in December 2022, when dust covered the solar panels.' },
+    'insight.riscos': { pt: 'Já não se move. Removê-lo sem estudo apaga um monumento da sismologia de Marte.', en: 'It no longer moves. Removing it without study erases a monument of Martian seismology.' },
+    'insight.destinos': { pt: 'Permanecer como hardware legado na superfície.', en: 'Remain as legacy hardware on the surface.' },
+    'insight.analise.origem': { pt: 'O lander InSight foi lançado em 5 de maio de 2018 e pousou em Elysium Planitia em 26 de novembro de 2018. O JPL, laboratório da NASA, o usou para ouvir os martemotos.', en: 'The InSight lander launched on 5 May 2018 and landed at Elysium Planitia on 26 November 2018. JPL, NASA’s laboratory, used it to listen for marsquakes.' },
+    'insight.analise.permanencia': { pt: 'O contato terminou em dezembro de 2022. O veículo permanece inteiro no solo, fora de qualquer órbita.', en: 'Contact ended in December 2022. The vehicle remains whole on the ground, outside any orbit.' },
+    'insight.analise.riscos': { pt: 'InSight já não opera. Tratá-lo como fragmento sem história apaga o registro de uma missão que mediu o interior de Marte.', en: 'InSight no longer operates. Treating it as a fragment with no history erases the record of a mission that measured the interior of Mars.' },
   };
 
   /* ── estado ─────────────────────────────────────────────────────── */

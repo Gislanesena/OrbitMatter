@@ -455,6 +455,16 @@ window.DADOS_OBJETOS = {
     analise_riscos:     'Os destroços do Schiaparelli na superfície de Marte representam um risco mínimo de colisão, mas levantam questões sobre contaminação de locais de interesse científico. A carcaça traseira, o paraquedas e os propelentes espalhados podem interferir com medições químicas em estudos futuros da região de Meridiani Planum.',
   },
 
+  /* InSight fica na superfície. Os textos da ficha estão no i18n.js (insight.*). */
+  'insight': {
+    nome: 'InSight',
+    tipo: 'artefato',
+    corpo: 'marte',
+    superficie: true,
+    latitude: 4.5,
+    longitude: 135.6,
+  },
+
 };
 /*
  * ================================================================
