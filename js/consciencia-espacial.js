@@ -56,17 +56,39 @@
     const nota = document.getElementById('expertNote');
     const card = document.getElementById('missionCard');
     if (!nota || !card) return;
-    if (card.hidden) { nota.hidden = true; return; }
-    const r = card.getBoundingClientRect();
+    if (card.hidden) {
+      nota.hidden = true;
+      card.style.maxHeight = '';
+      card.style.overflow = '';
+      return;
+    }
     let limite = window.innerHeight - 12;
     ['.navbar', '.dock'].forEach((sel) => {
       const el = document.querySelector(sel);
       if (el && el.getClientRects().length) limite = Math.min(limite, el.getBoundingClientRect().top - 12);
     });
-    const topo = r.bottom + 12;
-    const espaco = limite - topo;
-    if (espaco < 72) { nota.hidden = true; return; }
+    card.style.boxSizing = 'border-box';
+    nota.style.boxSizing = 'border-box';
+    card.style.maxHeight = '';
+    card.style.overflow = '';
+    const topoCard = card.getBoundingClientRect().top;
+    const disponivel = Math.max(0, limite - topoCard);
+    const folga = 12;
+    const natural = card.offsetHeight;
+    const alvoNota = 72;
+    if (natural + folga + alvoNota > disponivel) {
+      let cardH = Math.max(48, disponivel - folga - alvoNota);
+      if (cardH + folga > disponivel) {
+        cardH = Math.floor(Math.max(0, disponivel - folga) * 0.5);
+      }
+      card.style.maxHeight = Math.max(0, Math.floor(cardH)) + 'px';
+      card.style.overflow = 'auto';
+    }
+    const fundo = card.getBoundingClientRect().bottom;
+    const topo = Math.min(fundo + folga, limite);
+    const espaco = Math.max(0, limite - topo);
     nota.hidden = false;
+    nota.style.overflow = 'auto';
     nota.style.top = Math.round(topo) + 'px';
     nota.style.maxHeight = Math.round(espaco) + 'px';
   }

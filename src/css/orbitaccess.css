@@ -1,0 +1,303 @@
+/* OrbitAccess. A escala vive em --oa-scale no <html> e os textos abaixo usam rem. */
+
+html { --oa-scale: 1; }
+html.oa-fs-down { --oa-scale: 0.875; }
+html.oa-fs-1 { --oa-scale: 1.125; }
+html.oa-fs-2 { --oa-scale: 1.25; }
+html.oa-fs-3 { --oa-scale: 1.5; }
+
+html.oa-scaled { font-size: calc(16px * var(--oa-scale)); }
+html.oa-scaled body { font-size: 0.9375rem; }
+
+html.oa-scaled .eyebrow { font-size: 0.6875rem; }
+html.oa-scaled .brand h1 { font-size: 1.0625rem; white-space: normal; }
+html.oa-scaled .brand span { font-size: 0.65625rem; }
+html.oa-scaled .phases { flex-wrap: wrap; justify-content: center; }
+html.oa-scaled .phases li { font-size: 0.6875rem; white-space: normal; }
+html.oa-scaled .hud { flex-wrap: wrap; align-items: flex-start; height: auto; }
+html.oa-scaled .player { flex-wrap: wrap; justify-content: flex-end; }
+html.oa-scaled .lvl { min-width: 0; }
+html.oa-scaled .lvl-top { font-size: 0.75rem; }
+html.oa-scaled .lvl-top strong { font-size: 0.875rem; }
+html.oa-scaled .badge-count { font-size: 0.75rem; }
+html.oa-scaled #missionCard,
+html.oa-scaled #expertNote { box-sizing: border-box; min-height: 0; }
+html.oa-scaled #missionCard,
+html.oa-scaled #objPanel { top: calc(var(--oa-top, 78px) + 8px); }
+html.oa-scaled #missionCard h2 { font-size: 1.125rem; }
+html.oa-scaled .expert-badge { font-size: 0.9375rem; }
+html.oa-scaled #expertNote h3 { font-size: 0.875rem; }
+html.oa-scaled .aware-taxon { font-size: 0.65625rem; white-space: normal; }
+html.oa-scaled .aware-themes { display: flex; flex-wrap: wrap; gap: 6px; }
+html.oa-scaled .aware-themes button { font-size: 0.6875rem; }
+html.oa-scaled #expertNote p { font-size: 0.8125rem; }
+html.oa-scaled #awareMoreBtn { font-size: 0.78125rem; }
+html.oa-scaled .checklist .check { font-size: 0.84375rem; }
+html.oa-scaled #objPanel {
+  max-height: calc(100vh - var(--oa-top, 78px) - var(--dock-h) - var(--nav-h) - 36px);
+}
+html.oa-scaled .op-head h2 { font-size: 1.3125rem; }
+html.oa-scaled .chip { font-size: 0.6875rem; white-space: normal; }
+html.oa-scaled .fact dt { font-size: 0.65625rem; }
+html.oa-scaled .fact dd { font-size: 0.8125rem; }
+html.oa-scaled .facts { grid-template-columns: 1fr; }
+html.oa-scaled .section-title { flex-wrap: wrap; gap: 4px; }
+html.oa-scaled .section-title h3 { font-size: 0.9375rem; }
+html.oa-scaled .step { font-size: 0.875rem; height: auto; }
+html.oa-scaled .step .num { font-size: 0.75rem; }
+html.oa-scaled .step .xp { font-size: 0.71875rem; }
+html.oa-scaled .reveal { font-size: 0.84375rem; }
+html.oa-scaled .btn { font-size: 0.875rem; height: auto; }
+html.oa-scaled .dock-inner { height: auto; }
+html.oa-scaled .dock button { font-size: 0.75rem; min-width: 0; height: auto; }
+html.oa-scaled .dock button span {
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: center;
+  line-height: 1.15;
+}
+html.oa-scaled .filters { flex-wrap: wrap; }
+html.oa-scaled .filters button { font-size: 0.71875rem; }
+html.oa-scaled .obj-list .nm { font-size: 0.84375rem; }
+html.oa-scaled .obj-list .nm small { font-size: 0.6875rem; }
+html.oa-scaled .status { font-size: 0.65625rem; }
+html.oa-scaled .modal-head h2 { font-size: 1.375rem; }
+html.oa-scaled .intro-hero h2,
+html.oa-scaled .login-welcome h2 { font-size: 1.5rem; }
+html.oa-scaled .journey li strong,
+html.oa-scaled .strategy strong,
+html.oa-scaled .chapters strong { font-size: 0.9375rem; }
+html.oa-scaled .journey li span,
+html.oa-scaled .strategy span { font-size: 0.78125rem; }
+html.oa-scaled .chapters .st { font-size: 0.6875rem; }
+html.oa-scaled .m-detail h3 { font-size: 1.25rem; }
+html.oa-scaled .fim-titulo { font-size: clamp(2rem, 5vw, 3.25rem); }
+html.oa-scaled .fim-sub { font-size: 0.875rem; }
+html.oa-scaled .slider-row label,
+html.oa-scaled .meter .mt,
+html.oa-scaled .placeholder,
+html.oa-scaled .catalog-brief { font-size: 0.84375rem; }
+html.oa-scaled .lead-scale { font-size: 0.6875rem; flex-wrap: wrap; }
+html.oa-scaled #leadHelp { font-size: 0.78125rem; }
+html.oa-scaled .score-line .sc { font-size: 1.625rem; }
+html.oa-scaled .client-note p { font-size: 0.9375rem; }
+html.oa-scaled .catalog-brief summary { font-size: 0.875rem; }
+html.oa-scaled .k-stat b { font-size: 1.25rem; }
+html.oa-scaled .k-stat span,
+html.oa-scaled .k-note,
+html.oa-scaled .k-rules,
+html.oa-scaled .legend { font-size: 0.75rem; }
+html.oa-scaled .risk-pill { font-size: 0.75rem; }
+html.oa-scaled .k-advanced summary { font-size: 0.8125rem; }
+html.oa-scaled .path li { font-size: 0.84375rem; }
+html.oa-scaled .path li .n { font-size: 0.75rem; }
+html.oa-scaled .path li small { font-size: 0.6875rem; }
+html.oa-scaled .bdg strong { font-size: 0.84375rem; }
+html.oa-scaled .bdg span { font-size: 0.75rem; }
+html.oa-scaled .seg { flex-wrap: wrap; }
+html.oa-scaled .seg-label { font-size: 0.65625rem; }
+html.oa-scaled .seg button { font-size: 0.8125rem; min-width: 0; }
+html.oa-scaled .navbar { max-width: calc(100vw - 24px); }
+html.oa-scaled .clock b { font-size: 0.875rem; }
+html.oa-scaled .daynight { font-size: 0.71875rem; }
+html.oa-scaled #tip,
+html.oa-scaled #hint,
+html.oa-scaled .moon-legend { font-size: 0.75rem; }
+html.oa-scaled .toast { font-size: 0.84375rem; }
+html.oa-scaled .login-tabs button,
+html.oa-scaled .login-welcome p,
+html.oa-scaled .profile-menu button { font-size: 0.84375rem; }
+html.oa-scaled .form-field label { font-size: 0.8125rem; }
+html.oa-scaled .form-field input { font-size: 1rem; }
+html.oa-scaled .form-field .field-error,
+html.oa-scaled .login-divider { font-size: 0.78125rem; }
+html.oa-scaled .profile-menu-header strong,
+html.oa-scaled .robot-id strong { font-size: 0.9375rem; }
+html.oa-scaled .profile-menu-header span { font-size: 0.71875rem; }
+html.oa-scaled .robot-msg,
+html.oa-scaled #robotUserInput { font-size: 1rem; }
+html.oa-scaled .ds-note { font-size: 0.875rem; }
+html.oa-scaled .ds-figure figcaption,
+html.oa-scaled .ds-record figcaption { font-size: 0.75rem; }
+html.oa-scaled .mj-warn { font-size: 0.875rem; }
+
+/* Alto contraste. Texto >= 4,5:1. Borda de controle >= 3:1. Seleção também tem contorno e sublinhado. */
+html.oa-contrast {
+  --fg: #ffffff;
+  --muted: #e4e9f8;
+  --faint: #d0d8ee;
+  --line: #a9bce0;
+  --line-soft: #8ea4d4;
+  --panel: #0b1122;
+  --panel-solid: #0b1122;
+  --raise: #16203d;
+  --deep: #070c18;
+  --accent: #ffbf5c;
+  --accent-ink: #1c1203;
+  --data: #c6f1ff;
+  --good: #b6ffd8;
+  --bad: #ffd0d4;
+  --frag: #ffd0c2;
+  --sat: #c6f1ff;
+  --stage: #e4dcff;
+  --art: #ffe3a3;
+}
+html.oa-contrast .dock button,
+html.oa-contrast .seg button,
+html.oa-contrast .btn,
+html.oa-contrast .panel,
+html.oa-contrast .modal,
+html.oa-contrast .chip,
+html.oa-contrast .strategy,
+html.oa-contrast .filters button,
+html.oa-contrast .login-tabs button,
+html.oa-contrast .aware-themes button,
+html.oa-contrast .phases li {
+  border: 2px solid var(--line);
+}
+html.oa-contrast .dock button[aria-pressed="true"],
+html.oa-contrast .seg button[aria-pressed="true"],
+html.oa-contrast .login-tabs button[aria-pressed="true"],
+html.oa-contrast .aware-themes button[aria-pressed="true"],
+html.oa-contrast .filters button[aria-pressed="true"],
+html.oa-contrast .strategy[aria-checked="true"],
+html.oa-contrast .phases li.now,
+html.oa-contrast .obj-list li.on,
+html.oa-contrast .checklist .check.cur {
+  outline: 3px solid var(--fg);
+  outline-offset: 2px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 700;
+}
+
+/* Movimento decorativo. O relógio, o clique e o minijogo não passam por estas regras. */
+html.oa-reduce *,
+html.oa-reduce *::before,
+html.oa-reduce *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Foco sempre visível, desenhado para dentro para não sumir atrás de overflow. */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid #ffe7b0 !important;
+  outline-offset: 2px !important;
+  box-shadow: inset 0 0 0 2px #05080f, inset 0 0 0 5px #ffe7b0 !important;
+}
+
+.dock button.oa-open { border: 1px solid var(--line); flex-direction: column; }
+.oa-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--line);
+  background: rgba(11, 17, 34, .86);
+  color: var(--fg);
+  border-radius: 999px;
+  padding: 6px 10px;
+  font: 600 12px/1 var(--display);
+}
+.oa-open svg { width: 18px; height: 18px; }
+.oa-open-login {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 4;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  justify-content: center;
+}
+.oa-count {
+  min-width: 1.1rem;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font: 700 11px/1.4 var(--mono);
+  text-align: center;
+}
+
+.oa-dialog {
+  position: fixed;
+  z-index: 70;
+  top: calc(12px + env(safe-area-inset-top, 0px));
+  right: max(12px, env(safe-area-inset-right, 0px));
+  width: min(22rem, calc(100vw - 24px));
+  max-height: min(85vh, 40rem);
+  overflow: auto;
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  background: var(--panel-solid);
+  color: var(--fg);
+  border: 2px solid var(--line);
+  border-radius: 14px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .55);
+}
+.oa-dialog[hidden] { display: none !important; }
+.oa-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.oa-head h2 { font-size: 1.25rem; }
+.oa-x {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 8px;
+  border: 2px solid var(--line);
+  background: var(--raise);
+  color: var(--fg);
+  font-size: 1.4rem;
+  line-height: 1;
+}
+.oa-dialog section { display: grid; gap: 8px; }
+.oa-dialog h3 { font-size: 0.95rem; }
+.oa-status, .oa-help, #oaFontLevel { margin: 0; color: var(--muted); font-size: 0.875rem; }
+.oa-font { display: flex; align-items: center; gap: 8px; }
+.oa-font button, .oa-text, .oa-switch, .oa-restore {
+  border: 2px solid var(--line);
+  background: var(--raise);
+  color: var(--fg);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font: 600 0.95rem/1.3 var(--body);
+}
+.oa-font button { min-width: 2.75rem; }
+.oa-font p { flex: 1; text-align: center; }
+.oa-switch[aria-pressed="true"],
+.oa-dialog .oa-font button:active {
+  outline: 3px solid var(--fg);
+  outline-offset: 2px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.oa-switch[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.oa-restore { justify-self: start; }
+
+@media (max-width: 720px) {
+  html.oa-scaled .dock-inner { flex-wrap: wrap; }
+  html.oa-scaled .dock button {
+    flex: 1 1 30%;
+    min-width: 5.5rem;
+    max-width: 100%;
+    padding: 6px 4px;
+  }
+  .oa-dialog {
+    top: auto;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    max-height: 85vh;
+    border-radius: 16px 16px 0 0;
+  }
+  .oa-open span[data-i18n="oa.dock"] { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+}
