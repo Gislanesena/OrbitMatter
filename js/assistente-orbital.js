@@ -1,11 +1,13 @@
 /**
- * Assistente orbital no canto da tela.
+ * SojournBot. O prompt, a troca de modelos, a formatação da resposta
+ * e as poses de interrogação vêm da página Memórias do Espaço.
  * A chave, se existir, fica em window.GROQ_API_KEY (frontend/groq-local.js, fora do Git).
  * Sem chave, o chat responde com as frases locais.
+ * Os textos visíveis passam pelo i18n.js.
  */
 document.addEventListener("DOMContentLoaded", () => {
   const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
-  const GROQ_MODELS = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"];
+  const GROQ_MODELS = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "qwen/qwen3.8-27b"];
   const GROQ_SYSTEM = [
     "Você é o SojournBot, um rover inteligente do Atlas do Lixo Espacial. Seu nome é SojournBot: apresente-se e reconheça-se sempre com esse nome. Você é especializado em orientação espacial e em dados de detritos orbitais. Ajude entusiastas em idade escolar e curiosos a descobrirem as máquinas históricas que a humanidade e a NASA deixaram na Lua, em Marte e no espaço profundo, e explique os riscos dos detritos orbitais e da Síndrome de Kessler.",
     "Diretrizes:",
@@ -15,15 +17,24 @@ document.addEventListener("DOMContentLoaded", () => {
     "4. Concisão: cada resposta tem no máximo 2 ou 3 frases curtas. Não escreva parágrafos longos, listas grandes nem blocos de texto.",
     "Só passe desse limite se a pessoa pedir explicitamente mais detalhe, uma explicação aprofundada ou um passo a passo.",
     "Tom de chat: fale como um rover amigo, direto e curioso. Entregue a ideia principal e deixe uma pergunta curta para a pessoa continuar, sem despejar o assunto inteiro de uma vez.",
+    "Diálogo:",
+    "Leia o histórico desta conversa antes de responder. Pronomes e continuações (\"eles\", \"isso\", \"e como\", \"e aí\") referem-se à mensagem anterior.",
+    "Responda à frase que acabou de chegar. Uma saudação recebe uma saudação curta. Uma pergunta curta, como \"lixo espacial?\", recebe duas ou três frases sobre esse tema. Um pedido de continuação retoma só o ponto anterior.",
+    "Não comece com \"Exatamente!\", \"Isso mesmo!\", \"Com certeza!\", \"Ótima pergunta!\" ou outra concordância vazia quando a pessoa não afirmou nada para você confirmar.",
+    "Não invente que a pessoa concordou com você. Não responda como se houvesse uma fala anterior que não está no histórico.",
     "Restrições de escopo e assuntos proibidos:",
     "Responda somente sobre exploração espacial, satélites, engenharia orbital, a história de artefatos e sondas (como Surveyor 1, Voyager, Luna e equivalentes), detritos espaciais e a Síndrome de Kessler.",
     "Não responda quando uma palavra do tema aparecer isolada em outro assunto. Exemplos fora de escopo: bolo ou receita \"espacial\", festa, horóscopo, astrologia, filmes de ficção científica genéricos, culinária e piadas sem relação com ciência espacial.",
     "Ao recusar, não responda à pergunta fora de contexto. Redirecione com educação para o Atlas.",
-    "Se o idioma da interface estiver em inglês, responda em inglês. Caso contrário, responda em português.",
   ].join("\n");
   const MAX_HISTORY = 10;
   const MAX_VISIBLE = 30;
   const REQUEST_TIMEOUT_MS = 30000;
+  const ROBOT_IDLE = "assets/images/mascote/mascote-frente.png";
+  const ROBOT_THINK = [
+    "assets/images/mascote/mascote-apontando-direita-interrogacao.png",
+    "assets/images/mascote/mascote-apontando-esquerda-interrogacao.png",
+  ];
 
   const $r = (id) => document.getElementById(id);
   const root = $r("robotAssistant");
@@ -40,10 +51,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const statusEl = $r("robotStatus");
   if (!root || !bubble || !form) return;
 
-  const history = [];
+  const greeting = (list.querySelector(".robot-msg.bot") || {}).textContent || "";
+  const history = greeting ? [{ role: "assistant", content: greeting.trim() }] : [];
   let busy = false;
   let recognition = null;
   let micError = "";
+  const reduceRobotMotion = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let thinkTimer = null;
+  let thinkFrame = 0;
 
   function tt(chave) {
     return window.I18n ? I18n.t(chave) : chave;
@@ -63,6 +78,26 @@ document.addEventListener("DOMContentLoaded", () => {
     else img.addEventListener("error", fallback, { once: true });
   });
 
+  function setRobotPose(src) {
+    root.querySelectorAll(".robot-img").forEach((img) => {
+      if (img.getAttribute("src") !== src) img.src = src;
+    });
+  }
+  function startThinking() {
+    stopThinking(false);
+    if (reduceRobotMotion) return;
+    thinkFrame = 0;
+    setRobotPose(ROBOT_THINK[0]);
+    thinkTimer = setInterval(() => {
+      thinkFrame = (thinkFrame + 1) % ROBOT_THINK.length;
+      setRobotPose(ROBOT_THINK[thinkFrame]);
+    }, 300);
+  }
+  function stopThinking(reset) {
+    if (thinkTimer) { clearInterval(thinkTimer); thinkTimer = null; }
+    if (reset !== false) setRobotPose(ROBOT_IDLE);
+  }
+
   function setOpen(open) {
     bubble.classList.toggle("hidden", !open);
     root.classList.toggle("robot-open", open);
@@ -73,9 +108,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (open) {
       list.scrollTop = list.scrollHeight;
       if (window.matchMedia("(pointer: fine)").matches) input.focus();
-    } else if (recognition) {
-      micError = "aborted";
-      try { recognition.abort(); } catch (e) { /* já encerrou */ }
+    } else {
+      cancelListening();
     }
     placeRobot();
   }
@@ -87,10 +121,44 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.key === "Escape") { e.stopPropagation(); setOpen(false); robotBtn.focus(); }
   });
 
+  function chatHtml(raw) {
+    const escHtml = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const inline = (s) => escHtml(s)
+      .replace(/`([^`]+)`/g, "<code>$1</code>")
+      .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+      .replace(/__([^_]+)__/g, "<strong>$1</strong>")
+      .replace(/(^|[\s(])\*([^*\n]+)\*/g, "$1<em>$2</em>")
+      .replace(/(^|[\s(])_([^_\n]+)_/g, "$1<em>$2</em>");
+    const lines = String(raw || "").replace(/\r\n/g, "\n").split("\n");
+    const blocks = [];
+    let lista = null;
+    const flush = () => {
+      if (!lista) return;
+      const tag = lista.ordered ? "ol" : "ul";
+      blocks.push("<" + tag + ">" + lista.items.map((item) => "<li>" + inline(item) + "</li>").join("") + "</" + tag + ">");
+      lista = null;
+    };
+    lines.forEach((line) => {
+      const ul = line.match(/^\s*[-*]\s+(.+)$/);
+      const ol = line.match(/^\s*\d+[.)]\s+(.+)$/);
+      if (ul || ol) {
+        const ordered = !!ol;
+        if (!lista || lista.ordered !== ordered) { flush(); lista = { ordered, items: [] }; }
+        lista.items.push((ul || ol)[1]);
+        return;
+      }
+      flush();
+      if (line.trim()) blocks.push("<p>" + inline(line) + "</p>");
+    });
+    flush();
+    return blocks.join("") || "<p></p>";
+  }
+
   function addMessage(role, text, extra) {
     const div = document.createElement("div");
     div.className = "robot-msg " + role + (extra ? " " + extra : "");
-    div.textContent = text;
+    if (role === "bot" && extra !== "error") div.innerHTML = chatHtml(text);
+    else div.textContent = text;
     list.appendChild(div);
     const msgs = list.querySelectorAll(".robot-msg:not(.robot-typing)");
     const sobra = msgs.length - MAX_VISIBLE;
@@ -102,6 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function addTyping() {
     const div = document.createElement("div");
     div.className = "robot-msg bot robot-typing";
+    div.setAttribute("aria-label", tt("robot.typing"));
     div.innerHTML = "<i></i><i></i><i></i>";
     list.appendChild(div);
     list.scrollTop = list.scrollHeight;
@@ -119,6 +188,8 @@ document.addEventListener("DOMContentLoaded", () => {
     micBtn.disabled = b;
     input.disabled = b;
     setState(b ? "thinking" : "idle");
+    if (b) startThinking();
+    else stopThinking(true);
     updateSend();
     if (!b && !bubble.classList.contains("hidden") && window.matchMedia("(pointer: fine)").matches) input.focus();
   }
@@ -126,32 +197,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function demoReply(q) {
     const t = q.toLowerCase();
-    const en = ingles();
     if (/(^|\s)(ol[áa]|oi|bom dia|boa tarde|boa noite|hello|hi|hey)(\s|!|,|$)/.test(t)) return tt("robot.hello");
-    if (t.includes("kessler")) {
-      return en
-        ? "Kessler syndrome is a chain reaction: collisions make fragments, the fragments cause more collisions, and some orbits can become unusable. The Atlas can simulate that."
-        : "A síndrome de Kessler é uma reação em cadeia: colisões geram fragmentos, que causam novas colisões e podem deixar certas órbitas inutilizáveis. Dá para simular isso no Atlas.";
-    }
-    if (t.includes("reduz") || t.includes("limpar") || t.includes("remov") || t.includes("reduc") || t.includes("clean")) {
-      return en
-        ? "Two main paths: avoid making new debris (deorbit satellites at end of life) and remove the most dangerous objects already up there."
-        : "Duas frentes principais: evitar criar lixo novo (desorbitar satélites no fim da vida) e remover os objetos mais perigosos que já estão lá em cima.";
-    }
-    if (t.includes("lixo") || t.includes("detrito") || t.includes("espacial") || t.includes("debris") || t.includes("junk") || t.includes("orbit")) {
-      return en
-        ? "Space debris is unused material in orbit: inactive satellites, rocket stages, and fragments. It travels at thousands of kilometers per hour and threatens active satellites."
-        : "Lixo espacial são objetos sem uso em órbita, como satélites inativos, estágios de foguete e fragmentos. Eles viajam a milhares de km/h e ameaçam satélites ativos.";
-    }
-    return en
-      ? "I am in demonstration mode, with no AI connected. Once the server is configured, I can answer questions about the Atlas."
-      : "Ainda estou em modo de demonstração, sem IA conectada. Quando o servidor for configurado, vou responder qualquer dúvida sobre o Atlas.";
+    if (t.includes("kessler")) return tt("robot.demo.kessler");
+    if (t.includes("reduz") || t.includes("limpar") || t.includes("remov") || t.includes("reduc") || t.includes("clean")) return tt("robot.demo.reduce");
+    if (t.includes("lixo") || t.includes("detrito") || t.includes("espacial") || t.includes("debris") || t.includes("junk") || t.includes("orbit")) return tt("robot.demo.debris");
+    return tt("robot.demo.offline");
   }
-
   function groqKey() {
     return String(window.GROQ_API_KEY || "").trim();
   }
-
+  function trocaDeModelo(err) {
+    if (err && (err.status === 401 || err.status === 403)) return false;
+    return true;
+  }
   async function pedirModelo(messages, model, signal) {
     const res = await fetch(GROQ_URL, {
       method: "POST",
@@ -172,17 +230,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!text) throw new Error("Resposta vazia");
     return String(text).trim();
   }
-
-  async function askAI(message) {
-    if (!groqKey()) {
-      await new Promise((r) => setTimeout(r, 700));
-      return demoReply(message);
-    }
-    const messages = [
-      { role: "system", content: GROQ_SYSTEM + (ingles() ? "\nResponda em inglês." : "\nResponda em português.") },
-      ...history.slice(-MAX_HISTORY),
-      { role: "user", content: message },
-    ];
+  async function pedirCadeia(messages) {
     let ultimo = null;
     for (const model of GROQ_MODELS) {
       const ctrl = new AbortController();
@@ -191,12 +239,32 @@ document.addEventListener("DOMContentLoaded", () => {
         return await pedirModelo(messages, model, ctrl.signal);
       } catch (err) {
         ultimo = err;
-        if (err && (err.status === 401 || err.status === 403)) break;
+        if (!trocaDeModelo(err)) throw err;
       } finally {
         clearTimeout(timer);
       }
     }
     throw ultimo || new Error("modelos indisponiveis");
+  }
+  async function askAI(message) {
+    if (!groqKey()) {
+      await new Promise((r) => setTimeout(r, 700));
+      return demoReply(message);
+    }
+    const idioma = ingles()
+      ? "\nResponda em inglês. Ao recusar um assunto fora do Atlas, redirecione em inglês."
+      : "\nResponda em português.";
+    const messages = [
+      { role: "system", content: GROQ_SYSTEM + idioma },
+      ...history.slice(-MAX_HISTORY),
+      { role: "user", content: message },
+    ];
+    try {
+      return await pedirCadeia(messages);
+    } catch (err) {
+      if (!trocaDeModelo(err)) throw err;
+      return await pedirCadeia(messages);
+    }
   }
 
   async function send(raw) {
@@ -216,9 +284,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (err) {
       console.error(err);
       typing.remove();
-      addMessage("bot", ingles()
-        ? "I could not reach the AI just now. Try again in a moment."
-        : "Não consegui falar com a IA agora. Tente de novo em instantes.", "error");
+      addMessage("bot", tt("robot.unstable"), "error");
     } finally {
       setBusy(false);
     }
@@ -230,20 +296,26 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const MIC_MESSAGES = {
+    "not-allowed": "robot.mic.denied",
+    "service-not-allowed": "robot.mic.denied",
+    "audio-capture": "robot.mic.none",
+    "no-speech": "robot.mic.silent",
+    network: "robot.mic.network",
+  };
 
   function setListening(on) {
     micBtn.classList.toggle("recording", on);
     micBtn.setAttribute("aria-pressed", String(on));
-    micBtn.setAttribute("aria-label", tt(on ? "robot.close" : "robot.mic"));
-    input.placeholder = on ? tt("robot.listening") : tt("robot.placeholder");
+    micBtn.setAttribute("aria-label", tt(on ? "robot.mic.stop" : "robot.mic"));
+    micBtn.title = tt(on ? "robot.mic.stop.title" : "robot.mic.title");
+    input.placeholder = on ? tt("robot.listen.placeholder") : tt("robot.placeholder");
     setState(on ? "listening" : busy ? "thinking" : "idle");
   }
 
   function startListening() {
     if (!SpeechRec) {
-      addMessage("bot", ingles()
-        ? "This browser cannot record voice. Use Chrome, Edge, or Safari, or type your question."
-        : "Seu navegador não suporta gravação de voz. Use o Chrome, Edge ou Safari, ou digite sua dúvida.", "error");
+      addMessage("bot", tt("robot.mic.unsupported"), "error");
       return;
     }
     if (busy) return;
@@ -264,11 +336,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     recognition.onerror = (e) => {
       micError = e.error || "erro";
-      if (micError !== "aborted") {
-        addMessage("bot", ingles()
-          ? "I could not record that. Try again or type your question."
-          : "Não consegui gravar. Tente de novo ou digite sua dúvida.", "error");
-      }
+      if (micError !== "aborted") addMessage("bot", tt(MIC_MESSAGES[micError] || "robot.mic.fail"), "error");
     };
     recognition.onend = () => {
       setListening(false);
@@ -280,6 +348,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function stopListening() { if (recognition) { try { recognition.stop(); } catch (e) { /* já parou */ } } }
+  function cancelListening() {
+    if (recognition) { micError = "aborted"; try { recognition.abort(); } catch (e) { /* já encerrou */ } }
+  }
   micBtn.addEventListener("click", () => (recognition ? stopListening() : startListening()));
 
   function placeRobot() {
@@ -304,6 +375,7 @@ document.addEventListener("DOMContentLoaded", () => {
   placeRobot();
   setOpen(false);
   window.addEventListener("resize", placeRobot);
+  window.addEventListener("load", placeRobot);
   if (window.ResizeObserver) {
     const ro = new ResizeObserver(placeRobot);
     [".navbar", ".dock-inner"].forEach((sel) => {
