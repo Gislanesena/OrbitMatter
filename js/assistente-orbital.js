@@ -2,6 +2,7 @@
  * SojournBot. O prompt, a troca de modelos, a formatação da resposta
  * e as poses de interrogação vêm da página Memórias do Espaço.
  * A chave, se existir, fica em window.GROQ_API_KEY (frontend/groq-local.js, fora do Git).
+ * Sem chave, o chat responde com as frases locais.
  * Os textos visíveis passam pelo i18n.js.
  */
 document.addEventListener("DOMContentLoaded", () => {
@@ -194,6 +195,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   input.addEventListener("input", updateSend);
 
+  function demoReply(q) {
+    const t = q.toLowerCase();
+    if (/(^|\s)(ol[áa]|oi|bom dia|boa tarde|boa noite|hello|hi|hey)(\s|!|,|$)/.test(t)) return tt("robot.hello");
+    if (t.includes("kessler")) return tt("robot.demo.kessler");
+    if (t.includes("reduz") || t.includes("limpar") || t.includes("remov") || t.includes("reduc") || t.includes("clean")) return tt("robot.demo.reduce");
+    if (t.includes("lixo") || t.includes("detrito") || t.includes("espacial") || t.includes("debris") || t.includes("junk") || t.includes("orbit")) return tt("robot.demo.debris");
+    return tt("robot.demo.offline");
+  }
   function groqKey() {
     return String(window.GROQ_API_KEY || "").trim();
   }
@@ -238,7 +247,10 @@ document.addEventListener("DOMContentLoaded", () => {
     throw ultimo || new Error("modelos indisponiveis");
   }
   async function askAI(message) {
-    if (!groqKey()) throw new Error("sem chave");
+    if (!groqKey()) {
+      await new Promise((r) => setTimeout(r, 700));
+      return demoReply(message);
+    }
     const idioma = ingles()
       ? "\nResponda em inglês. Ao recusar um assunto fora do Atlas, redirecione em inglês."
       : "\nResponda em português.";
