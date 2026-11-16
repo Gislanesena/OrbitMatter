@@ -3,6 +3,7 @@ import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+// A raiz publicada é index.html: o Atlas do Lixo Espacial, com inglês inicial, i18n e login.
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const require = createRequire(import.meta.url);
 const serveBin = require.resolve("serve/build/main.js");

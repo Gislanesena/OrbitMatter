@@ -1,5 +1,6 @@
 {
   "name": "orbit-matter",
+  "description": "Atlas do Lixo Espacial. A única entrada publicada é o index.html da raiz.",
   "private": true,
   "type": "module",
   "scripts": {

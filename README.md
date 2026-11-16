@@ -1,6 +1,6 @@
 # OrbitMatter
 
-Atlas do lixo espacial. A página que o servidor abre é o `index.html` da raiz, com o SojournBot, os mapas e o chat. Imagens, `dados-objetos.js` e a chave local ficam em `frontend/`. `Atlas do Lixo Espacial.html` na raiz é a versão anterior, sem o chat. A lógica tipada que a interface consome fica nas pastas abaixo.
+Atlas do lixo espacial. A única entrada do site é o `index.html` da raiz: o Atlas do Lixo Espacial, em inglês no início, com seletor de idioma, campanha de 3 capítulos e modal de login. `npm run dev` abre essa página. `Atlas do Lixo Espacial.html` e `frontend/Atlas do Lixo Espacial.html` só redirecionam para ela. A página anterior, Memórias do Espaço, ficou em `src/legacy/memorias-do-espaco.html`. A lógica tipada que a interface consome fica nas pastas abaixo.
 
 ## Estrutura
 
