@@ -136,6 +136,13 @@ p{margin:0}
 .step .xp{font-family:var(--mono);font-size:11.5px;color:var(--accent)}
 .step.done .xp{color:var(--good)}
 .reveal{font-size:13.5px;color:var(--muted);border-left:2px solid var(--accent);padding:4px 0 4px 12px}
+.step-block{display:grid;gap:8px}
+.quiz{display:grid;gap:8px}
+.quiz p{margin:0;font-size:13.5px}
+.quiz-opt{text-align:left;border:1px solid var(--line);border-radius:8px;background:var(--deep);color:var(--fg);padding:8px 10px;font-size:13px;line-height:1.4}
+.quiz-opt:hover{border-color:var(--faint)}
+.quiz-opt.bad{border-color:var(--bad);color:var(--bad)}
+.quiz-note{margin:0;color:var(--bad);font-size:12.5px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:8px;padding:10px 16px;
   border:1px solid var(--line);background:var(--raise);font-weight:500;font-size:14px}
 .btn:hover{border-color:var(--faint)}

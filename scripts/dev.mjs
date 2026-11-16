@@ -20,6 +20,7 @@ function forward(stream, chunk) {
   const match = chunk.toString().match(/https?:\/\/localhost:\d+/);
   if (!match) return;
   opened = true;
+  // A raiz publica index.html, a pagina Atlas do Lixo Espacial.
   const url = `${match[0]}/`;
   spawn("cmd", ["/c", "start", "", url], {
     cwd: root,
