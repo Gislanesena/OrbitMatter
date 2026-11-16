@@ -83,15 +83,18 @@ document.addEventListener("DOMContentLoaded", () => {
       if (img.getAttribute("src") !== src) img.src = src;
     });
   }
+  function pensarParado() {
+    return reduceRobotMotion || document.documentElement.classList.contains("oa-reduce");
+  }
   function startThinking() {
     stopThinking(false);
-    if (reduceRobotMotion) return;
+    if (pensarParado()) return;
     thinkFrame = 0;
     setRobotPose(ROBOT_THINK[0]);
     thinkTimer = setInterval(() => {
       thinkFrame = (thinkFrame + 1) % ROBOT_THINK.length;
       setRobotPose(ROBOT_THINK[thinkFrame]);
-    }, 300);
+    }, 500);
   }
   function stopThinking(reset) {
     if (thinkTimer) { clearInterval(thinkTimer); thinkTimer = null; }
@@ -114,6 +117,9 @@ document.addEventListener("DOMContentLoaded", () => {
     placeRobot();
   }
   const toggle = () => setOpen(bubble.classList.contains("hidden"));
+  document.addEventListener("orbitaccess:change", () => {
+    if (pensarParado()) stopThinking(true);
+  });
   robotBtn.addEventListener("click", toggle);
   arrowBtn.addEventListener("click", toggle);
   closeBtn.addEventListener("click", () => { setOpen(false); robotBtn.focus(); });
