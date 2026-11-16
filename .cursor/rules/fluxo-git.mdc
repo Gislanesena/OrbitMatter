@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Fluxo Git do Atlas
 
-Nunca altere código direto na `main`. Vale para o `index.html` da raiz e para qualquer arquivo relacionado.
+Nunca altere código direto na `main`. Vale para o `Atlas do Lixo Espacial.html` da raiz e para qualquer arquivo relacionado.
 
 Antes de iniciar uma tarefa:
 
@@ -24,7 +24,7 @@ Ao terminar a alteração, feche o ciclo nesta branch, com mensagem no padrão `
 
 ```powershell
 git status
-git add index.html
+git add "Atlas do Lixo Espacial.html"
 git commit -m "feat: descricao clara da mudanca"
 git push -u origin HEAD
 ```
