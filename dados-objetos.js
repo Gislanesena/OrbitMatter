@@ -1,5 +1,5 @@
 /*
- * dados-objetos.js — Atlas do Lixo Espacial
+ * dados-objetos.js — Memórias do Espaço
  * Fonte da verdade: Terra.md, Material Geral Lua.md,
  *                   Material_Geral_Marte.md, Hackathon_M.md
  *
@@ -263,7 +263,7 @@ window.DADOS_OBJETOS = {
     destinos:    'Sem plano ativo de remoção. Os fragmentos em órbita polar (99,79°) cruzam todos os outros objetos em órbita baixa. Reentrada esperada em escala de séculos para a maioria.',
     analise_origem:     'O estágio Thor-Agena D foi responsável por colocar o Nimbus 4 em sua órbita polar de 1.076 km. Cinco meses após a missão, explodiu por razões não completamente esclarecidas — provavelmente propelentes residuais não despressurizados. O evento moldou as políticas de passivação de estágios de foguete que hoje são obrigatórias na maioria das agências espaciais.',
     analise_permanencia:'Com altitude entre 1.051–1.094 km, os fragmentos do estágio Agena estão em órbita extremamente estável. A vida orbital estimada é de centenas de anos, tornando este um dos campos de detritos mais persistentes da órbita terrestre.',
-    analise_riscos:     'A órbita polar (inclinação quase 100°) é particularmente perigosa porque os fragmentos cruzam todas as outras órbitas. Com 245 fragmentos remanescentes em órbita há mais de 50 anos, o caso do Nimbus 4 é um dos exemplos mais antigos de lixo orbital persistente na órbita baixa.',
+    analise_riscos:     'A órbita polar (inclinação quase 100°) é particularmente perigosa porque os fragmentos cruzam todas as outras órbitas. Com 245 fragmentos remanescentes em órbita há mais de 50 anos, o caso do Nimbus 4 é um dos exemplos mais antigos de detrito orbital persistente na órbita baixa.',
   },
 
   'E-02': {

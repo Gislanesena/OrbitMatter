@@ -55,6 +55,14 @@ export function criarProvedorCompativel(ambiente: AmbienteIa): ProvedorDeTexto {
   };
 }
 
+export function criarProvedorChat(ambiente: AmbienteIa): ProvedorDeTexto {
+  return {
+    completar(pedido) {
+      return completar(ambiente, pedido, false);
+    },
+  };
+}
+
 async function completar(ambiente: AmbienteIa, pedido: PedidoAoModelo, jsonForcado: boolean): Promise<string> {
   if (ambiente.chave === null || ambiente.url === null) {
     throw new ErroDeProvedor("indisponivel", "Modelo sem chave ou sem URL http(s).");
@@ -102,6 +110,7 @@ function corpoDaRequisicao(modelo: string, pedido: PedidoAoModelo, jsonForcado: 
     temperature: 0.4,
     messages: [
       { role: "system", content: pedido.sistema },
+      ...(pedido.historico ?? []),
       { role: "user", content: pedido.usuario },
     ],
   };

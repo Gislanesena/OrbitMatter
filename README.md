@@ -1,40 +1,111 @@
-# OrbitMatter
+# Memórias do Espaço
 
-Atlas do lixo espacial. A página que o servidor abre é o `index.html` da raiz, com o SojournBot, os mapas e o chat. Imagens, `dados-objetos.js` e a chave local ficam em `frontend/`. `Atlas do Lixo Espacial.html` na raiz é a versão anterior, sem o chat. A lógica tipada que a interface consome fica nas pastas abaixo.
+**Memórias do Espaço** é um projeto educativo e interativo desenvolvido para o **NASA Space Apps Challenge**. A proposta é aproximar o público da exploração espacial e da sustentabilidade orbital por meio de uma jornada visual: investigar objetos e artefatos, conhecer histórias de missões e experimentar como escolhas diferentes podem afetar o ambiente orbital.
 
-## Estrutura
+O projeto é independente e não é um produto oficial nem representa um endosso da NASA.
 
-| Pasta | Conteúdo |
-|---|---|
-| `data/` | Catálogo de artefatos. `artifacts.ts` guarda Luna 2, Luna 9 e Surveyor 1. `schemas/artifact.ts` valida cada registro. Guia: `data/etapa-1-catalogo.md`. |
-| `ia/` | Game Master. O esquema de entrada e de missão fica em `ia/esquema/`. O prompt, a reserva e a chamada ao modelo ficam em `ia/game-master/`. Guia: `ia/etapa-2-game-master.md`. |
-| `simulacao/` | Motor orbital da Síndrome de Kessler. Cada ciclo é uma função pura. Guia: `simulacao/etapa-3-simulador.md`. |
-| `app/atlas.ts` | Fachada única. Exporta `criarAtlas()`, os tipos e as constantes dos controles. Guia: `app/etapa-4-fachada.md`. |
+## A ideia
 
-A tela importa só `app/atlas.ts`. Catálogo, missão e órbita passam por esse módulo.
+O espaço próximo da Terra é usado por satélites e missões, mas também contém objetos sem função que podem colidir e gerar mais fragmentos. A experiência apresenta esse problema junto à história da exploração espacial, ajudando a distinguir detritos em órbita, espaçonaves em atividade e artefatos históricos deixados em outros corpos celestes.
 
-A Voyager 1 não entra nesse catálogo: ele só aceita equipamento que ficou na Lua. O rastreador dela fica em `deep-space/` e abre pelo botão Voyager do protótipo visual. Guia: `deep-space/etapa-deep-space.md`.
+Em vez de ser uma ferramenta de previsão ou de operação espacial, o site transforma esses temas em exploração, pequenas missões e simulações educativas. O jogador observa, investiga e toma decisões enquanto aprende sobre o legado das missões e os desafios de manter o espaço utilizável.
 
-## Como importar a fachada
+## O que você encontra
 
-Na raiz do repositório:
+- **Mapa interativo em 3D:** explore a cena espacial e alterne entre Terra, Lua e Marte. Selecione objetos para abrir suas fichas.
+- **Atlas de Memórias:** consulte e filtre objetos e registros históricos ligados à exploração espacial e ao ambiente orbital.
+- **Jornada por missões:** avance por capítulos que abordam um estágio em órbita, um artefato lunar e uma nuvem de fragmentos. Investigue objetos, leia análises e escolha estratégias.
+- **Simulação da síndrome de Kessler:** ajuste lançamentos, remoção ativa, velocidade e ciclos; acompanhe objetos, colisões, fragmentos e níveis de risco em gráficos.
+- **Consciência Espacial:** leia informações sobre o destino selecionado. O painel pode ser fechado e reaberto, inclusive em telas pequenas.
+- **Voyager 1 no espaço profundo:** consulte marcos históricos, descobertas, o Disco de Ouro e uma posição calculada com dados do JPL Horizons.
+- **SojournBot:** converse sobre exploração espacial, missões, artefatos e sustentabilidade orbital. O chat oferece interface em português e inglês e pode receber perguntas por voz em navegadores compatíveis.
+- **Progresso e diário de bordo:** acompanhe a jornada, experiência e distintivos; o projeto mantém suporte ao progresso local e à integração já existente com Firebase.
+- **Interface em português e inglês:** alterne o idioma pela própria tela.
 
-```ts
-import { criarAtlas, LIMITES, TIPOS_OBJETO, NIVEIS_RISCO } from "./app/atlas.ts";
+## Ciência e limites da experiência
 
-const atlas = criarAtlas();
+- O simulador de Kessler é um **modelo didático**. Seus ciclos e resultados ajudam a visualizar relações de causa e efeito; não são anos, previsões orbitais nem recomendações operacionais.
+- A posição da Voyager é calculada a partir do serviço JPL Horizons quando a ficha é consultada. Isso não é telemetria ao vivo. Informações sobre o estado dos instrumentos são identificadas como dados publicados.
+- O catálogo tipado de artefatos lunares inclui Luna 2, Luna 9 e Surveyor 1. O projeto também apresenta registros orbitais e históricos na experiência principal; essas fontes de dados têm papéis diferentes.
+- O SojournBot usa um modelo de IA quando a chave da Groq está configurada no servidor. Sem configuração ou se o provedor estiver indisponível, a rota informa que o chat não pode responder.
+
+## Como executar
+
+Use Node.js e npm. Na pasta do projeto:
+
+```bash
+npm ci
+npm run dev
 ```
 
-Dentro de `app/`, o caminho é `"./atlas.ts"`.
+`npm run dev` inicia o site estático. Para testar também a função `/api/chat` localmente, use `npm run dev:vercel`; esse comando inicia a Vercel CLI em modo local, sem precisar vincular o projeto. Configure `GROQ_API_KEY` no ambiente local antes de testar respostas reais; o CLI carrega `.env`. Não coloque a chave em HTML, JavaScript do navegador ou no repositório.
+
+## Configuração da IA e deploy
+
+### Chat do SojournBot
+
+Na Vercel, adicione em **Project Settings → Environment Variables**:
+
+| Variável | Obrigatória? | Uso |
+|---|---|---|
+| `GROQ_API_KEY` | Sim, para respostas reais | Chave secreta usada pela função server-side `api/chat.ts`. |
+| `GROQ_MODEL` | Não | Modelo Groq; padrão `llama-3.3-70b-versatile`. |
+
+Depois de salvar a variável, faça um novo deploy. A página chama `/api/chat`; a chave não é enviada ao navegador.
+
+### Game Master e outros recursos
+
+`ATLAS_IA_CHAVE` é uma configuração separada, usada pelo Game Master em tarefas Node e na geração prévia de missões (`npm run pregerar`). Para esse fluxo, `ATLAS_IA_URL`, `ATLAS_IA_MODELO` e `ATLAS_IA_TEMPO_MS` são opcionais. Elas não substituem `GROQ_API_KEY` do chat principal.
+
+A configuração web do Firebase está em `firebase-config.js`; não é uma chave secreta de servidor. As regras e os domínios permitidos devem ser mantidos nas configurações do próprio Firebase. O projeto não requer cron nem variável de fuso horário.
+
+## Desenvolvimento e verificações
+
+```bash
+npm run verificar
+npm run testar
+npm run testar:chat
+```
+
+- `npm run verificar`: verifica os tipos TypeScript com as opções estritas do projeto.
+- `npm run testar`: executa os testes do simulador orbital.
+- `npm run testar:chat`: verifica a rota do chat com um provedor simulado, sem usar uma chave real.
+
+Outros comandos disponíveis:
+
+| Comando | Finalidade |
+|---|---|
+| `npm run montar` | Gera o bundle do Game Master em `dist/atlas-ia.js`. |
+| `npm run pregerar` | Gera missões usando o modelo configurado ou os dados de reserva. |
+| `npm run testar:minijogo` | Executa os testes do minijogo. |
+| `npm run testar:minijogo-fragmentos` | Executa os testes do núcleo de fragmentos. |
+| `npm run calibrar` | Executa a calibração dos cenários do simulador. |
+
+## Estrutura do projeto
+
+| Caminho | Responsabilidade |
+|---|---|
+| `index.html`, `atlas.css`, `i18n.js` | Interface principal, estilos e textos da experiência em português e inglês. |
+| `frontend/` | Dados e recursos usados pela visualização 3D. |
+| `js/` | Interações da jornada, atlas, chat, Voyager, progresso e módulos de minijogos. |
+| `data/` | Catálogo tipado de artefatos lunares e validação dos registros. |
+| `ia/chat/` | Prompt e validação das mensagens do SojournBot. |
+| `ia/game-master/` e `ia/esquema/` | Geração e validação de missões estruturadas. |
+| `api/chat.ts` | Função Vercel que conversa com a Groq sem expor a chave no navegador. |
+| `simulacao/` | Modelo orbital didático, parâmetros, cenários e testes. |
+| `app/` | Fachada TypeScript para o catálogo, missões e simulador. |
+| `deep-space/` | Ficha e rastreador da Voyager 1. |
+| `scripts/` | Desenvolvimento local, pré-geração, testes e calibração. |
+
+## Fachada TypeScript
+
+Os módulos de domínio também podem ser usados separadamente:
 
 ```ts
+import { criarAtlas } from "./app/atlas.ts";
+
+const atlas = criarAtlas();
 const artefatos = atlas.listarArtefatos();
-
-const ficha = atlas.obterArtefato("luna-9");
-if (ficha.ok) {
-  console.log(ficha.dados.missao);
-}
-
 const orbita = atlas.simularOrbita({
   objetosIniciais: 2000,
   lancamentosPorCiclo: 8,
@@ -42,34 +113,6 @@ const orbita = atlas.simularOrbita({
   multiplicadorVelocidade: 1,
   ciclos: 40,
 });
-
-const jogada = await atlas.abrirJogada({
-  artefatoId: "luna-9",
-  tipoObjeto: "modulo_de_pouso",
-  local: "órbita lunar baixa",
-  orbita: {
-    objetosIniciais: 2000,
-    lancamentosPorCiclo: 8,
-    remocaoAtivaPorCiclo: 12,
-    multiplicadorVelocidade: 1,
-    ciclos: 40,
-  },
-});
 ```
 
-`obterArtefato`, `simularOrbita`, `pedirMissao` e `abrirJogada` devolvem `{ ok: true, dados }` ou `{ ok: false, falha }`. Leia `ok` antes de usar `dados`. Essas funções não lançam exceção para a tela.
-
-`abrirJogada` valida o artefato, roda a órbita e só então pede a missão. O risco `cascata` entra na missão como `alto`. Se o modelo estiver indisponível, a missão de reserva chega com `origem: "reserva"`.
-
-Os limites dos sliders estão em `LIMITES`. `TIPOS_OBJETO` e `NIVEIS_RISCO` fecham os selects da jogada.
-
-## Verificação de tipos
-
-```bash
-npm install
-npm run verificar
-```
-
-`tsconfig.json` usa `strict`, `noUncheckedIndexedAccess` e `exactOptionalPropertyTypes`. `npm run verificar` roda `tsc --noEmit` sobre `data/`, `ia/`, `simulacao/` e `app/`.
-
-Para chamar o modelo de verdade, defina `ATLAS_IA_CHAVE`. Sem essa chave, `pedirMissao` e `abrirJogada` entregam a missão montada a partir do catálogo.
+As operações retornam resultados com `ok: true` e `dados`, ou `ok: false` e `falha`, para que a interface trate erros sem interromper a jornada.

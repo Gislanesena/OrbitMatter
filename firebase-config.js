@@ -6,7 +6,7 @@
  *
  * 1. Acesse https://console.firebase.google.com e faça login com sua conta Google.
  *
- * 2. Clique em "Criar um projeto" → dê um nome (ex.: "atlas-lixo-espacial") →
+ * 2. Clique em "Criar um projeto" → dê um nome (ex.: "memorias-do-espaco") →
  *    desative o Google Analytics se quiser simplificar → clique em "Criar projeto".
  *
  * 3. No menu lateral, clique em "Authentication" → aba "Sign-in method" →
@@ -64,7 +64,7 @@
  * }
  */
 
-// ✅ Configuração do projeto atlas-lixo-espacial
+// Configuração do projeto Firebase conectado à aplicação.
 window.FIREBASE_CONFIG = {
   apiKey:            "AIzaSyBYtXbTSrJFZCzfxZOLEjfLMxhWnO1QvoI",
   authDomain:        "atlas-lixo-espacial.firebaseapp.com",

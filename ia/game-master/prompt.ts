@@ -9,6 +9,12 @@ import { ROTULO_TIPO, type ContextoMissao } from "../esquema/contexto.ts";
 export interface PedidoAoModelo {
   readonly sistema: string;
   readonly usuario: string;
+  readonly historico?: readonly MensagemDeConversa[];
+}
+
+export interface MensagemDeConversa {
+  readonly role: "user" | "assistant";
+  readonly content: string;
 }
 
 export const PROMPT_DE_SISTEMA = `Você é o Game Master de um atlas-RPG de equipamentos espaciais históricos.

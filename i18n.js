@@ -1,6 +1,6 @@
 /**
  * i18n.js — Sistema de internacionalização PT/EN
- * Atlas do Lixo Espacial
+ * Memórias do Espaço
  *
  * Uso:
  *   I18n.setLang('en')  — muda para inglês
@@ -40,7 +40,7 @@ window.I18n = (() => {
     'navbar.time.night':           { pt: 'Noite em Brasília',                      en: 'Nighttime in Brasília' },
 
     /* ---- dock ---- */
-    'dock.atlas':                  { pt: 'Atlas',                                  en: 'Atlas' },
+    'dock.atlas':                  { pt: 'Memórias',                               en: 'Memories' },
     'dock.missions':               { pt: 'Missões',                                en: 'Missions' },
     'dock.simulation':             { pt: 'Simulação',                              en: 'Simulation' },
     'dock.diary':                  { pt: 'Diário',                                 en: 'Log' },
@@ -49,7 +49,7 @@ window.I18n = (() => {
     'voyager.pin.sub':             { pt: 'Muito além dos planetas',                en: 'Far beyond the planets' },
 
     /* ---- atlas drawer ---- */
-    'atlas.title':                 { pt: 'Atlas orbital',                          en: 'Orbital atlas' },
+    'atlas.title':                 { pt: 'Atlas de Memórias',                      en: 'Memory Atlas' },
     'atlas.investigated':          { pt: 'investigados',                           en: 'investigated' },
     'atlas.none':                  { pt: 'Nenhum objeto deste tipo aqui.',         en: 'No objects of this type here.' },
     'atlas.filter.all':            { pt: 'Todos',                                  en: 'All' },
@@ -107,8 +107,8 @@ window.I18n = (() => {
     /* ---- mission card ---- */
     'mc.done':                     { pt: 'Campanha concluída',                     en: 'Campaign complete' },
     'mc.done.title':               { pt: 'Todos os capítulos concluídos',          en: 'All chapters completed' },
-    'mc.done.sub':                 { pt: 'Continue explorando o atlas ou teste cenários na simulação.',
-                                     en: 'Keep exploring the atlas or try scenarios in the simulation.' },
+    'mc.done.sub':                 { pt: 'Continue explorando o mapa de memórias ou teste cenários na simulação.',
+                                     en: 'Keep exploring the memory map or try scenarios in the simulation.' },
     'mc.done.diary':               { pt: 'Ver diário',                             en: 'View log' },
     'mc.chapter':                  { pt: 'Capítulo',                               en: 'Chapter' },
     'mc.of':                       { pt: 'de',                                     en: 'of' },
@@ -122,7 +122,7 @@ window.I18n = (() => {
     'mc.need.see':                 { pt: 'Esse passo abre depois que você investigar um alvo.', en: 'This step opens after you investigate a target.' },
     'mc.need.analysis':            { pt: 'Conclua a análise antes de escolher a estratégia.', en: 'Finish the analysis before choosing a strategy.' },
     'mc.decide.btn':               { pt: 'Tomar decisão',                          en: 'Make decision' },
-    'mc.atlas.btn':                { pt: 'Ver alvos no atlas',                     en: 'View targets in atlas' },
+    'mc.atlas.btn':                { pt: 'Ver alvos no mapa de memórias',          en: 'View targets on the memory map' },
     'm1.hunt.title':               { pt: 'Procurar os estágios',                   en: 'Search for the stages' },
     'm1.hunt.hint':                { pt: 'Explore o mapa e clique no estágio com esse nome. Ele fica assinalado aqui quando você o encontra.',
                                      en: 'Explore the map and click the stage with that name. It is checked here when you find it.' },
@@ -225,7 +225,7 @@ window.I18n = (() => {
     'frag.fx.desvio':              { pt: 'No jogo: não remove fragmentos; na segurança, o risco conta um nível abaixo (didático).', en: 'In the game: it does not remove fragments; for safety, the risk counts one level lower (teaching scale).' },
     'frag.manage':                 { pt: 'Gerenciar a casca orbital',              en: 'Manage the orbital shell' },
     'frag.auto':                   { pt: 'Jogar no automático',                    en: 'Play automatically' },
-    'frag.atlas':                  { pt: 'Ver alvos no atlas',                     en: 'See targets in the atlas' },
+    'frag.atlas':                  { pt: 'Ver alvos no mapa de memórias',          en: 'See targets on the memory map' },
     'frag.hunt.open':              { pt: 'Buscar fragmentos',                      en: 'Search fragments' },
     'frag.hunt.title':             { pt: 'Buscar os fragmentos',                   en: 'Search for the fragments' },
     'frag.hunt.hint':              { pt: 'Explore o mapa e clique no fragmento com esse nome. Ele fica assinalado aqui quando você o encontra.',
@@ -268,11 +268,11 @@ window.I18n = (() => {
     'robot.open':                  { pt: 'Abrir SojournBot',                       en: 'Open SojournBot' },
     'robot.arrow':                 { pt: 'Abrir chat',                             en: 'Open chat' },
     'robot.chat':                  { pt: 'Chat com o SojournBot',                  en: 'Chat with SojournBot' },
-    'robot.hello':                 { pt: 'Olá! Sou o SojournBot. Pergunte sobre lixo espacial, órbitas e as missões do Atlas. Você pode digitar ou usar o microfone.',
-                                     en: 'Hello! I am SojournBot. Ask about space debris, orbits, and the Atlas missions. You can type or use the microphone.' },
-    'robot.q1':                    { pt: 'O que é lixo espacial?',                 en: 'What is space debris?' },
+    'robot.hello':                 { pt: 'Olá! Sou o SojournBot. Pergunte sobre detritos espaciais, órbitas e missões de exploração. Você pode digitar ou usar o microfone.',
+                                     en: 'Hello! I am SojournBot. Ask about space debris, orbits, and exploration missions. You can type or use the microphone.' },
+    'robot.q1':                    { pt: 'O que são detritos espaciais?',          en: 'What is space debris?' },
     'robot.q2':                    { pt: 'O que é a síndrome de Kessler?',         en: 'What is Kessler syndrome?' },
-    'robot.q3':                    { pt: 'Como reduzir o lixo orbital?',           en: 'How can orbital debris be reduced?' },
+    'robot.q3':                    { pt: 'Como reduzir os detritos orbitais?',    en: 'How can orbital debris be reduced?' },
     'robot.placeholder':           { pt: 'Digite ou fale sua dúvida…',             en: 'Type or speak your question…' },
     'robot.input':                 { pt: 'Sua dúvida',                             en: 'Your question' },
     'robot.mic':                   { pt: 'Gravar pergunta por voz',                en: 'Record a spoken question' },
@@ -281,14 +281,14 @@ window.I18n = (() => {
     'robot.typing':                { pt: 'SojournBot está respondendo',            en: 'SojournBot is replying' },
     'robot.unstable':              { pt: 'Houve um pico de instabilidade orbital momentâneo. Tente perguntar de novo em alguns segundos.',
                                      en: 'There was a brief orbital glitch. Try asking again in a few seconds.' },
-    'robot.demo.kessler':          { pt: 'A síndrome de Kessler é uma reação em cadeia: colisões geram fragmentos, que causam novas colisões e podem deixar certas órbitas inutilizáveis. Dá para simular isso no Atlas.',
-                                     en: 'Kessler syndrome is a chain reaction: collisions make fragments, the fragments cause more collisions, and some orbits can become unusable. The Atlas can simulate that.' },
-    'robot.demo.debris':           { pt: 'Lixo espacial são objetos sem uso em órbita, como satélites inativos, estágios de foguete e fragmentos. Eles viajam a milhares de km/h e ameaçam satélites ativos.',
+    'robot.demo.kessler':          { pt: 'A síndrome de Kessler é uma reação em cadeia: colisões geram fragmentos, que causam novas colisões e podem deixar certas órbitas inutilizáveis. Dá para simular isso em Memórias do Espaço.',
+                                     en: 'Kessler syndrome is a chain reaction: collisions make fragments, the fragments cause more collisions, and some orbits can become unusable. Memórias do Espaço can simulate that.' },
+    'robot.demo.debris':           { pt: 'Detritos espaciais são objetos sem uso em órbita, como satélites inativos, estágios de foguete e fragmentos. Eles viajam a milhares de km/h e ameaçam satélites ativos.',
                                      en: 'Space debris is unused material in orbit: inactive satellites, rocket stages, and fragments. It travels at thousands of kilometers per hour and threatens active satellites.' },
-    'robot.demo.reduce':           { pt: 'Duas frentes principais: evitar criar lixo novo (desorbitar satélites no fim da vida) e remover os objetos mais perigosos que já estão lá em cima.',
+    'robot.demo.reduce':           { pt: 'Duas frentes principais: evitar criar novos detritos (desorbitar satélites no fim da vida) e remover os objetos mais perigosos que já estão lá em cima.',
                                      en: 'Two main paths: avoid making new debris (deorbit satellites at end of life) and remove the most dangerous objects already up there.' },
-    'robot.demo.offline':          { pt: 'Ainda estou em modo de demonstração, sem IA conectada. Quando o servidor for configurado, vou responder qualquer dúvida sobre o Atlas.',
-                                     en: 'I am in demonstration mode, with no AI connected. Once the server is configured, I can answer questions about the Atlas.' },
+    'robot.demo.offline':          { pt: 'Ainda estou em modo de demonstração, sem IA conectada. Quando o servidor for configurado, vou responder dúvidas sobre exploração espacial.',
+                                     en: 'I am in demonstration mode, with no AI connected. Once the server is configured, I can answer questions about space exploration.' },
     'robot.listen.placeholder':    { pt: 'Ouvindo… fale sua dúvida',               en: 'Listening… speak your question' },
     'robot.mic.stop':              { pt: 'Parar gravação',                         en: 'Stop recording' },
     'robot.mic.stop.title':        { pt: 'Parar e enviar',                         en: 'Stop and send' },
@@ -361,7 +361,7 @@ window.I18n = (() => {
                                      en: 'Select a strategy to see the balance between safety, fuel, budget and science.' },
     'missions.locked.msg':         { pt: 'Para liberar a decisão, investigue e conclua a análise de um',
                                      en: 'To unlock the decision, investigate and complete the analysis of a' },
-    'missions.locked.btn':         { pt: 'Ver alvos no atlas',                     en: 'View targets in atlas' },
+    'missions.locked.btn':         { pt: 'Ver alvos no mapa de memórias',          en: 'View targets on the memory map' },
     'missions.youChose':           { pt: 'Você escolheu',                          en: 'You chose' },
     'missions.andScored':          { pt: 'e tirou',                                en: 'and scored' },
     'missions.points':             { pt: 'pontos',                                 en: 'points' },
@@ -498,7 +498,7 @@ window.I18n = (() => {
     'toast.google':                { pt: 'Requer servidor local. Ver instruções abaixo.', en: 'Requires local server. See instructions below.' },
 
     /* ---- login modal ---- */
-    'login.eyebrow':               { pt: 'Atlas do Lixo Espacial',                 en: 'Space Debris Atlas' },
+    'login.eyebrow':               { pt: 'Memórias do Espaço',                     en: 'Space Memories' },
     'login.title':                 { pt: 'Bem-vindo, comandante.',                  en: 'Welcome, commander.' },
     'login.subtitle':              { pt: 'Identifique-se para salvar seu progresso e retomar de onde parou.',
                                      en: 'Sign in to save your progress and pick up where you left off.' },
@@ -620,7 +620,7 @@ window.I18n = (() => {
     'aware.insight.kessler.1': { pt: "O risco dele não é gerar detrito orbital.", en: "Its risk is not the creation of orbital debris." },
     'aware.insight.legado.0': { pt: "A missão ouviu martemotos e mediu o interior de Marte.", en: "The mission heard marsquakes and measured the interior of Mars." },
     'aware.insight.legado.1': { pt: "O hardware que sobrou é a evidência física desse trabalho.", en: "The hardware that remains is the physical evidence of that work." },
-    'aware.insight.responsabilidade.0': { pt: "Encerrar o contato não transforma o lander em lixo comum.", en: "Ending contact does not turn the lander into ordinary trash." },
+    'aware.insight.responsabilidade.0': { pt: "Encerrar o contato não transforma o lander em detrito comum.", en: "Ending contact does not turn the lander into ordinary debris." },
     'aware.insight.responsabilidade.1': { pt: "A decisão correta começa por reconhecer uma missão concluída.", en: "The right decision starts by recognizing a completed mission." },
     'aware.voyager.arqueologia.0': { pt: "A Voyager 1 ainda se comunica. Não é um artefato abandonado.", en: "Voyager 1 is still in contact. It is not an abandoned artifact." },
     'aware.voyager.arqueologia.1': { pt: "Ela é o objeto humano mais distante e segue sendo operada pelo JPL.", en: "It is the most distant human-made object and is still operated by JPL." },
@@ -639,7 +639,7 @@ window.I18n = (() => {
     'aware.lunar.kessler.0': { pt: "O risco de cascata que Kessler estudou está na órbita terrestre.", en: "The cascade risk Kessler studied is in Earth orbit." },
     'aware.lunar.kessler.1': { pt: "Um impacto lunar controlado em 1966 não alimenta essa cascata.", en: "A controlled lunar impact in 1966 does not feed that cascade." },
     'aware.lunar.legado.0': { pt: "As fotos da Lunar Orbiter ajudaram a escolher locais de pouso.", en: "Lunar Orbiter’s photographs helped choose landing sites." },
-    'aware.lunar.legado.1': { pt: "O valor está no mapa que ela fez, não em tratar o impacto como lixo qualquer.", en: "The value is in the map it made, not in treating the impact as ordinary trash." },
+    'aware.lunar.legado.1': { pt: "O valor está no mapa que ela fez, não em tratar o impacto como um simples detrito.", en: "The value is in the map it made, not in treating the impact as just another piece of debris." },
     'aware.lunar.responsabilidade.0': { pt: "A equipe encerrou a órbita de propósito.", en: "The team ended the orbit on purpose." },
     'aware.lunar.responsabilidade.1': { pt: "Essa escolha mostra responsabilidade com as missões que viriam depois.", en: "That choice shows responsibility toward the missions that would come later." },
     'aware.beresheet.arqueologia.0': { pt: "A Beresheet, da SpaceIL, bateu na Lua em 11 de abril de 2019 durante a tentativa de pouso.", en: "Beresheet, from SpaceIL, struck the Moon on 11 April 2019 during its landing attempt." },
@@ -649,7 +649,7 @@ window.I18n = (() => {
     'aware.beresheet.kessler.0': { pt: "Kessler trata de colisões que se multiplicam em órbita.", en: "Kessler is about collisions that multiply in orbit." },
     'aware.beresheet.kessler.1': { pt: "O impacto da Beresheet não criou essa cascata na Terra.", en: "The Beresheet impact did not create that cascade at Earth." },
     'aware.beresheet.legado.0': { pt: "A missão foi a primeira tentativa privada de pousar na Lua.", en: "The mission was the first private attempt to land on the Moon." },
-    'aware.beresheet.legado.1': { pt: "O legado é a tentativa e os dados, não uma licença para chamar todo hardware lunar de lixo.", en: "The legacy is the attempt and the data, not a license to call all lunar hardware trash." },
+    'aware.beresheet.legado.1': { pt: "O legado é a tentativa e os dados, não uma licença para classificar todo hardware lunar como detrito.", en: "The legacy is the attempt and the data, not a license to classify all lunar hardware as debris." },
     'aware.beresheet.responsabilidade.0': { pt: "Falhar no pouso pede registro honesto do acidente.", en: "A failed landing calls for an honest record of the accident." },
     'aware.beresheet.responsabilidade.1': { pt: "Não pede apagar a diferença entre impacto e monumento histórico.", en: "It does not call for erasing the difference between an impact and a historic monument." },
     'aware.schiaparelli.arqueologia.0': { pt: "O módulo Schiaparelli, da ExoMars, caiu em Marte em 19 de outubro de 2016.", en: "The Schiaparelli module, from ExoMars, crashed on Mars on 19 October 2016." },
@@ -660,7 +660,7 @@ window.I18n = (() => {
     'aware.schiaparelli.kessler.1': { pt: "Esse risco continua sendo o das colisões em órbita.", en: "That risk remains the risk of collisions in orbit." },
     'aware.schiaparelli.legado.0': { pt: "A falha ensinou sobre a entrada na atmosfera de Marte.", en: "The failure taught lessons about entry into the Martian atmosphere." },
     'aware.schiaparelli.legado.1': { pt: "Guardar a lição não exige tratar o módulo como se ainda operasse.", en: "Keeping the lesson does not require treating the module as if it were still operating." },
-    'aware.schiaparelli.responsabilidade.0': { pt: "Nomear o acidente evita dois erros: chamar tudo de lixo ou tudo de monumento.", en: "Naming the accident avoids two mistakes: calling everything trash, or everything a monument." },
+    'aware.schiaparelli.responsabilidade.0': { pt: "Nomear o acidente evita dois erros: classificar tudo como detrito ou como monumento.", en: "Naming the accident avoids two mistakes: classifying everything as debris or as a monument." },
     'aware.schiaparelli.responsabilidade.1': { pt: "O Schiaparelli é um impacto, não o lander InSight.", en: "Schiaparelli is an impact, not the InSight lander." },
     'aware.lua.arqueologia.0': { pt: "Em 2011 a NASA publicou recomendações para proteger artefatos lunares dos EUA, como etapas de descida e experimentos Apollo.", en: "In 2011 NASA published recommendations to protect US lunar artifacts, such as descent stages and Apollo experiments." },
     'aware.lua.arqueologia.1': { pt: "Isso é arqueologia espacial: hardware deixado na exploração, não fragmento em órbita.", en: "That is space archaeology: hardware left by exploration, not a fragment in orbit." },
@@ -732,11 +732,52 @@ window.I18n = (() => {
     'oa.motion.help': { pt: 'Para o giro decorativo, o pulso do marcador e as transições rápidas. O relógio, os cliques e os minijogos continuam.', en: 'Stops decorative spin, the marker pulse, and fast transitions. The clock, clicks, and minigames keep working.' },
     'oa.sr.note': { pt: 'Os botões e diálogos já têm nome. Esta fase não acrescenta outro ajuste de leitor de tela.', en: 'Buttons and dialogs already have names. This phase does not add another screen-reader setting.' },
     'oa.audio.note': { pt: 'Legendas e transcrições ficam para uma fase seguinte. Nenhum controle de áudio entra aqui.', en: 'Captions and transcripts come in a later phase. No audio control is added here.' },
+    'page.title': { pt: 'Memórias do Espaço', en: 'Space Memories' },
+    'main.navigation': { pt: 'Navegação', en: 'Navigation' },
+    'main.speed': { pt: 'Velocidade do tempo', en: 'Time speed' },
+    'main.mission': { pt: 'Missão atual', en: 'Current mission' },
+    'main.deepSpace': { pt: 'Espaço profundo', en: 'Deep space' },
+    'main.openInfo': { pt: 'Abrir informações do destino', en: 'Open destination information' },
+    'main.closeInfo': { pt: 'Fechar informações do destino', en: 'Close destination information' },
+    'main.awareness': { pt: 'Consciência Espacial', en: 'Space Awareness' },
+    'main.awareness.taxon.earth': { pt: 'Detrito, estágio e satélite inativo', en: 'Debris, rocket stages and inactive satellites' },
+    'main.awareness.taxon.moon': { pt: 'Hardware legado e detrito', en: 'Legacy hardware and debris' },
+    'main.awareness.taxon.mars': { pt: 'Inativo, legado e impacto', en: 'Inactive hardware, legacy and impact debris' },
+    'main.theme.archaeology': { pt: 'Arqueologia', en: 'Archaeology' },
+    'main.theme.sustainability': { pt: 'Sustentabilidade', en: 'Sustainability' },
+    'main.theme.kessler': { pt: 'Kessler', en: 'Kessler' },
+    'main.theme.legacy': { pt: 'Legado', en: 'Legacy' },
+    'main.theme.responsibility': { pt: 'Responsabilidade', en: 'Responsibility' },
+    'main.theme.archaeology.button': { pt: '🏛 Arqueologia', en: '🏛 Archaeology' },
+    'main.theme.sustainability.button': { pt: '♻️ Sustentabilidade', en: '♻️ Sustainability' },
+    'main.theme.kessler.button': { pt: '🌀 Kessler', en: '🌀 Kessler' },
+    'main.theme.legacy.button': { pt: '📡 Legado', en: '📡 Legacy' },
+    'main.theme.responsibility.button': { pt: '🧭 Responsabilidade', en: '🧭 Responsibility' },
+    'main.awareness.themes': { pt: 'Eixos da consciência espacial', en: 'Space awareness themes' },
+    'main.openVoyager': { pt: 'Abrir a Voyager 1 no espaço profundo', en: 'Open Voyager 1 in deep space' },
+    'main.earthOrbit': { pt: 'Órbita da Terra', en: 'Earth orbit' },
+    'main.scene.aria': { pt: 'Mapa orbital em 3D. Arraste para girar e toque em um objeto para investigar.', en: '3D orbital map. Drag to rotate and tap an object to investigate.' },
+    'main.hint': { pt: 'Arraste o planeta com o mouse para girar a cena', en: 'Drag the planet with your mouse to rotate the scene' },
+    'main.no3d': { pt: 'Não foi possível carregar o 3D. Use o mapa de memórias para explorar os objetos.', en: 'Could not load the 3D scene. Use the memory map to explore objects.' },
+    'main.intro.j2': { pt: 'Clique em fragmentos, satélites e estágios.', en: 'Click fragments, satellites and rocket stages.' },
+    'main.intro.briefing': {
+      pt: 'Na órbita da Terra, estágios de foguete abandonados podem explodir sozinhos. O terceiro estágio do foguete do CBERS 1, por exemplo, se fragmentou cinco meses depois do lançamento e virou centenas de pedaços. Agora um estágio assim, abandonado, cruza a rota de uma missão planejada. O que você faz?',
+      en: 'Abandoned rocket stages in Earth orbit can explode on their own. The CBERS 1 rocket’s third stage, for example, broke apart five months after launch, creating hundreds of pieces. Now an abandoned stage like this is crossing the route of a planned mission. What do you do?',
+    },
+    'main.close': { pt: 'Fechar', en: 'Close' },
+    'main.intro.modal.aria': { pt: 'A órbita da Terra está ficando lotada.', en: 'Earth’s orbit is getting crowded.' },
   };
 
   /* ── estado ─────────────────────────────────────────────────────── */
-  // A página abre sempre em inglês. PT só entra se a pessoa clicar no botão.
-  let _lang = 'en';
+  // The current page starts in Portuguese and switches when the user asks.
+  let _lang = 'pt';
+  const textTranslations = new Map();
+  Object.values(dict).forEach((entry) => {
+    if (entry.pt && !textTranslations.has(entry.pt)) textTranslations.set(entry.pt, entry.en || entry.pt);
+  });
+  const textSources = new WeakMap();
+  const attributeSources = new WeakMap();
+  let observer = null;
 
   /* ── API ────────────────────────────────────────────────────────── */
   function t(key) {
@@ -752,6 +793,75 @@ window.I18n = (() => {
     _apply();
     // Notifica o jogo para re-renderizar
     if (window._onLangChange) window._onLangChange(lang);
+  }
+
+  function translateText(text) {
+    if (_lang !== 'en') return text;
+    if (textTranslations.has(text)) return textTranslations.get(text);
+    const patterns = [
+      [/^Nível (\d+)$/, 'Level $1'],
+      [/^Capítulo (\d+) de (\d+)$/, 'Chapter $1 of $2'],
+      [/^(\d+) investigados$/, '$1 investigated'],
+      [/^Investigue estágio de foguete$/, 'Investigate a rocket stage'],
+      [/^Investigue satélite inativo$/, 'Investigate an inactive satellite'],
+      [/^Investigue fragmento$/, 'Investigate a fragment'],
+      [/^Investigue artefato histórico$/, 'Investigate a historic artifact'],
+      [/^Investigar um estágio de foguete$/, 'Investigate a rocket stage'],
+      [/^Investigar um satélite inativo$/, 'Investigate an inactive satellite'],
+      [/^Investigar um fragmento$/, 'Investigate a fragment'],
+      [/^Investigar um artefato histórico$/, 'Investigate a historic artifact'],
+      [/^Atlas de Memórias · (Terra|Lua|Marte)$/, (_, body) =>
+        'Memory Atlas · ' + ({ Terra: 'Earth', Lua: 'Moon', Marte: 'Mars' }[body])],
+      [/^(← )?(Terra|Lua|Marte)( →)?$/, (_, arrow, body, trailing) =>
+        (arrow || '') + ({ Terra: 'Earth', Lua: 'Moon', Marte: 'Mars' }[body]) + (trailing || '')],
+    ];
+    for (const [pattern, replacement] of patterns) {
+      if (pattern.test(text)) return text.replace(pattern, replacement);
+    }
+    return text;
+  }
+
+  function translateNode(node) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const current = node.nodeValue;
+      const previous = textSources.get(node);
+      const source = previous && current === previous.translated ? previous.source : current;
+      const translated = translateText(source);
+      textSources.set(node, { source, translated });
+      if (translated !== current) node.nodeValue = translated;
+      return;
+    }
+    if (node.nodeType !== Node.ELEMENT_NODE) return;
+    ['aria-label', 'placeholder', 'title'].forEach((attribute) => {
+      if (!node.hasAttribute(attribute)) return;
+      const current = node.getAttribute(attribute);
+      const stored = attributeSources.get(node) || {};
+      const previous = stored[attribute];
+      const source = previous && current === previous.translated ? previous.source : current;
+      const translated = translateText(source);
+      stored[attribute] = { source, translated };
+      attributeSources.set(node, stored);
+      if (translated !== current) node.setAttribute(attribute, translated);
+    });
+    for (const child of node.childNodes) translateNode(child);
+  }
+
+  function observePage() {
+    if (!document.body || observer) return;
+    translateNode(document.body);
+    observer = new MutationObserver((records) => {
+      records.forEach((record) => {
+        if (record.type === 'characterData' || record.type === 'attributes') translateNode(record.target);
+        else record.addedNodes.forEach(translateNode);
+      });
+    });
+    observer.observe(document.body, {
+      subtree: true,
+      childList: true,
+      characterData: true,
+      attributes: true,
+      attributeFilter: ['aria-label', 'placeholder', 'title'],
+    });
   }
 
   /* ── aplica data-i18n no HTML estático ─────────────────────────── */
@@ -771,9 +881,10 @@ window.I18n = (() => {
     });
     // Atualiza lang no <html>
     document.documentElement.lang = _lang === 'pt' ? 'pt-BR' : 'en';
+    document.title = t('page.title');
     // Atualiza botão e garante o clique
-    const label = _lang === 'pt' ? 'PT' : 'EN';
-    const aria = _lang === 'pt' ? 'Idioma português. Clique para inglês.' : 'English. Click to switch to Portuguese.';
+    const label = _lang === 'pt' ? 'EN' : 'PT';
+    const aria = _lang === 'pt' ? 'Traduzir para inglês' : 'Translate to Portuguese';
     document.querySelectorAll('[data-lang-toggle]').forEach((btn) => {
       btn.type = 'button';
       btn.textContent = label;
@@ -783,6 +894,8 @@ window.I18n = (() => {
         btn.addEventListener('click', () => setLang(_lang === 'pt' ? 'en' : 'pt'));
       }
     });
+    if (document.body) translateNode(document.body);
+    observePage();
   }
 
   /* ── executa ao carregar ────────────────────────────────────────── */
@@ -790,5 +903,5 @@ window.I18n = (() => {
   // fallback: se DOM já carregado
   if (document.readyState !== 'loading') _apply();
 
-  return { t, setLang, get lang() { return _lang; } };
+  return { t, setLang, translateText, get lang() { return _lang; } };
 })();

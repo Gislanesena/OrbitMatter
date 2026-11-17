@@ -1,6 +1,6 @@
 # Deep Space Tracker — Voyager 1
 
-A Voyager 1 não é lixo orbital e não ficou na Lua. O catálogo de `data/artifacts.ts` só aceita equipamento no corpo `"lua"`. Por isso a sonda não entra nesse registro e não é desenhada na cena da Terra, da Lua e de Marte.
+A Voyager 1 não é um detrito orbital e não ficou na Lua. O catálogo de `data/artifacts.ts` só aceita equipamento no corpo `"lua"`. Por isso a sonda não entra nesse registro e não é desenhada na cena da Terra, da Lua e de Marte.
 
 O botão **Voyager**, no mesmo dock do Atlas, das Missões, da Simulação e do Diário, abre um modal no visual que o jogo já usa.
 
@@ -70,7 +70,7 @@ O marco de um dia-luz (16,094 bilhões de milhas, 25,902 bilhões de quilômetro
 |---|---|
 | `deep-space/voyager-1.js` | Ficha, consulta, cache e desenho do modal |
 | `deep-space/checar.mjs` | Confere o leitor e o retrato, sem rede |
-| `Atlas do Lixo Espacial.html` | Botão do dock, modal vazio e o ganho de XP na primeira abertura |
+| `index.html` | Botão do dock, modal e o ganho de XP na primeira abertura |
 | `atlas.css` | O modal usa as cores e os cartões que o atlas já tinha |
 | `i18n.js` | O rótulo do botão |
 

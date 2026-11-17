@@ -1,12 +1,12 @@
 # Fluxo do jogador
 
-Fase 0 do Atlas do Lixo Espacial, mais o que a jornada passou a fazer na tela. As seções 1 a 4 registram o diagnóstico. A seção 5 é a implementação.
+Fase 0 de Memórias do Espaço, mais o que a jornada passou a fazer na tela. As seções 1 a 4 registram o diagnóstico. A seção 5 é a implementação.
 
 Verificação de B em 14 nov 2026: `npm run verificar` (`tsc --noEmit`) passou. Não há suíte de testes em `data/`, `ia/`, `simulacao/` nem `app/` (nenhum `*.test.ts` / `*.spec.ts`). O único script de checagem fora do tipo é `node deep-space/checar.mjs`, e ele não cobre o módulo B.
 
 ## 1. Fluxo atual
 
-O jogador vive em `Atlas do Lixo Espacial.html`. Os objetos orbitais vêm de `dados-objetos.js` (`window.DADOS_OBJETOS`). O catálogo lunar de `data/artifacts.ts` não entra nessa tela.
+O jogador vive em `index.html`. Os objetos orbitais vêm de `dados-objetos.js` (`window.DADOS_OBJETOS`). O catálogo lunar de `data/artifacts.ts` não entra nessa tela.
 
 ```mermaid
 flowchart TD
@@ -83,7 +83,7 @@ Marte fica fora dos capítulos até o esquema aceitar outro corpo. Hoje `CORPOS 
 
 ## 3. Estado `S`
 
-`blank()` em `Atlas do Lixo Espacial.html`. O load faz `Object.assign(blank(), save)`, então um save antigo ganha o padrão dos campos que ainda não tinha. `save()` grava em `localStorage` (`atlas-lixo-espacial-v1`) ou chama `AP.salvarProgresso`.
+`blank()` em `index.html`. O load faz `Object.assign(blank(), save)`, então um save antigo ganha o padrão dos campos que ainda não tinha. `save()` grava no armazenamento local existente ou chama `AP.salvarProgresso`.
 
 | Campo | Tipo no save | Padrão | Papel |
 |---|---|---|---|

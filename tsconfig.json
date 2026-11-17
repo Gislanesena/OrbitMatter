@@ -18,5 +18,5 @@
     "skipLibCheck": true,
     "types": []
   },
-  "include": ["data/**/*.ts", "ia/**/*.ts", "simulacao/**/*.ts", "app/**/*.ts"]
+  "include": ["data/**/*.ts", "ia/**/*.ts", "simulacao/**/*.ts", "app/**/*.ts", "api/**/*.ts"]
 }

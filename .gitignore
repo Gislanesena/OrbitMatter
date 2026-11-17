@@ -1,2 +1,6 @@
 node_modules/
 frontend/groq-local.js
+.env
+.env.*
+!.env.example
+.vercel/
