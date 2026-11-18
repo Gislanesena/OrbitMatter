@@ -38,7 +38,7 @@ npm ci
 npm run dev
 ```
 
-`npm run dev` inicia o site estático. Para testar também a função `/api/chat` localmente, use `npm run dev:vercel`; esse comando inicia a Vercel CLI em modo local, sem precisar vincular o projeto. Configure `GROQ_API_KEY` no ambiente local antes de testar respostas reais; o CLI carrega `.env`. Não coloque a chave em HTML, JavaScript do navegador ou no repositório.
+`npm run dev` inicia o site e a rota `/api/chat` no mesmo servidor local. A chave `GROQ_API_KEY` é carregada de `.env`; sem ela, a API retorna uma mensagem de configuração ausente. Não coloque a chave em HTML, JavaScript do navegador ou no repositório.
 
 ## Configuração da IA e deploy
 

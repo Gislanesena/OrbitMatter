@@ -3,8 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node scripts/dev.mjs",
-    "dev:vercel": "npx --yes vercel dev --local",
+    "dev": "node --experimental-strip-types --env-file-if-exists=.env scripts/dev.mjs",
     "verificar": "tsc --noEmit",
     "montar": "esbuild app/entrada-navegador.ts --bundle --format=iife --global-name=AtlasIA --platform=browser --target=es2018 --outfile=dist/atlas-ia.js",
     "pregerar": "esbuild scripts/pregerar-missoes.ts --bundle --platform=node --format=cjs --outfile=dist/pregerar.cjs && node dist/pregerar.cjs",
@@ -16,7 +15,7 @@
   },
   "devDependencies": {
     "esbuild": "^0.28.2",
-    "serve": "^14.2.4",
+    "serve-handler": "^6.1.8",
     "typescript": "^5.8.3"
   }
 }
